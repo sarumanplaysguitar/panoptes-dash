@@ -18,10 +18,10 @@ This quarter was spent doing initial planning and design work for the frontend o
 
 - [x] **Designed concepts for the dashboard's responsive layout,** which will consist of *Status* and *Observing Log* panels:
 
-  ![](D:\astro199\docs\images\concept_previews.png)
+  ![Concept previews](.\docs\images\concept_previews.png)
 
 - [x] **Created a responsive grid layout** styled in Tailwind CSS with hardcoded, placeholder Vue components:
-  ![Responsive layout - mobile vs. computer example](D:\astro199\docs\images\responsive_layout.png)
+  ![Responsive layout - mobile vs. computer example](.\docs\images\responsive_layout.png)
 
 ### Spring (Apr–Jun 2024)
 
@@ -54,7 +54,7 @@ To wrap things up, I will be focusing on the exciting data visualization aspects
 
 ### Web Frameworks
 
-![Tech stack](D:\astro199\docs\images\tech_stack.png)
+![Tech stack](.\docs\images\tech_stack.png)
 
 - **Frontend:** The **[Vue.js](https://vuejs.org/)** framework will be used to create the dashboard UI, binding HTML to JavaScript automatically and coupling the real-time unit data to the UI components (ie. with **[Vuefire](https://vuefire.vuejs.org/)**). The [**Tailwind CSS**](https://tailwindcss.com/) framework will be used to style these components.
 
