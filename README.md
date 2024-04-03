@@ -56,7 +56,7 @@ To wrap things up, I will be focusing on the exciting data visualization aspects
 
 ![Tech stack](docs/images/tech_stack.png)
 
-- **Frontend:** The **[Vue.js](https://vuejs.org/)** framework will be used to create the dashboard UI, binding HTML to JavaScript automatically and coupling the real-time unit data to the UI components (ie. with **[Vuefire](https://vuefire.vuejs.org/)**). The [**Tailwind CSS**](https://tailwindcss.com/) framework will be used to style these components.
+- **Frontend:** The **[Vue.js](https://vuejs.org/)** framework (Composition API) will be used to create the dashboard UI, binding HTML to JavaScript automatically and coupling the real-time unit data to the UI components (ie. with **[Vuefire](https://vuefire.vuejs.org/)**). The [**Tailwind CSS**](https://tailwindcss.com/) framework will be used to style these components.
 
   Fonts are from **[Google Fonts](https://fonts.google.com/),** including **[Google's Material Symbols](https://fonts.google.com/icons)**; country flag icons are from the open-source **[Flagpack](https://flagpack.xyz/)** project.
 
@@ -98,7 +98,9 @@ Notable directories and files are listed below.
 ├── 📂 public
 │   └── (Static assets like images, fonts, or external JS/CSS files)
 │
-├── 📄 index.js (The main Express server file. TODO: move into /server/)
+├── 📂 server
+│   └──  📄 index.js (The main Express server file.)
+│
 ├── 📄 package.json (Lists dependencies; contains the start command that points to /server/index.js which GCP will look for.)
 │
 └── ...
