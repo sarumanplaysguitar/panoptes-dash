@@ -29,18 +29,19 @@ import UnitObservationLog from './UnitObservationLog.vue';
         </ul>
         <!-- <div class="flex h-[calc(100vh_-_2.5rem)]"> -->
         <div class="flex h-full">
-            <div v-if="tab === 1" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 w-full h-full p-1 mt-1">
-                <div class="rounded-md col-span-2 bg-neutral-800 p-4 text-neutral-500">
+            <div v-if="tab === 1" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 w-full h-full p-1 mt-1">
+
+                <!-- TODO: convert the below cards into components -->
+
+                <!-- Card: Current Target -->
+                <!-- Display if observing; otherwise summarize last run and point to obs log page -->
+                <div class="rounded-md col-span-1 md:col-span-2 bg-neutral-800 p-4 text-neutral-500">
                     <!-- Current Target -->
                     <div class="flex w-full flex-row-reverse space-y-4 flex-wrap md:flex-nowrap justify-center md:justify-normal">
-                        <!-- Planisphere -->
-                        <div class="aspect-square w-full md:max-w-48 lg:max-w-72 rounded-full bg-neutral-700">
-                            <!-- (Circle placeholder) -->
-                            <div class="aspect-square w-full rounded-full bg-neutral-700"></div>
-                        </div>
+                        
 
                         <!-- Current target info -->
-                        <div class="text-neutral-500 text-center md:text-left w-full">
+                        <div class="text-neutral-500 text-center md:text-left w-full border-2 border-neutral-600">
                             <p class="text-sm">
                                 <span class="material-symbols-outlined text-sm inline-block align-bottom pr-0.5">
                                     my_location
@@ -49,23 +50,48 @@ import UnitObservationLog from './UnitObservationLog.vue';
                             </p>
                             <h2 class="text-neutral-300 py-2 text-2xl md:py-0 uppercase">TESS Sector 20</h2>
                             <p class="font-mono text-sm py-1">RA 00<span class="align-top text-xs">h</span> 00<span class="align-top text-xs">m</span> 00<span class="align-top text-xs">s</span>,<br> Dec ±00° 00' 00"</p>
-                            <p class="text-sm">Observed from __ to __.</p>
-                            <p class="text-sm"># frames primary, secondary.</p>
-                            <p class="text-sm"># lightcurves detected</p>
+                            <p class="text-sm">Observing for <span class="font-semibold text-neutral-400">1 hour</span></p>
+
+                            <div class="rounded-md bg-[url('@/assets/mock_cmos_data.png')] backdrop-blur-sm  w-full h-12 mr-4"></div>
+
                         </div>
                     </div>
                 </div>
-                <div class="rounded-md row-span-2 bg-neutral-800 p-4 text-neutral-500 col-span-2 lg:col-span-1">[sensors]</div>
-                <div class="rounded-md row-span-1 bg-neutral-800 p-4 text-neutral-500 col-span-2 lg:col-span-1">[weather]</div>
-                <div class="rounded-md bg-neutral-800 p-4 text-neutral-500 col-span-2 lg:col-span-1">[moon]</div>
+
+                <!-- Another idea- view objects in the scheduler file? (display the YAML neatly) -->
+
+                <!-- Card: Sky Overhead -->
+                <div class="rounded-md col-span-1 bg-neutral-800 p-4 text-neutral-500">
+                    <div class="font-semibold test-xs uppercase text-neutral-500">Sky Overhead</div>
+                    <!-- Planisphere -->
+                    <div class="aspect-square w-full rounded-full bg-neutral-700">
+                        <!-- (Circle placeholder) -->
+                        <div class="aspect-square w-full rounded-full bg-neutral-700"></div>
+                    </div>
+                </div>
+
+                <!-- Card: Sensors -->
+                <div class="rounded-md bg-neutral-800 p-4 text-neutral-500 col-span-1">[sensors]</div>
+
+                <!-- Card: Weather -->
+                <div class="rounded-md bg-neutral-800 p-4 text-neutral-500 col-span-1">[weather]</div>
+                <div class="rounded-md bg-neutral-800 p-4 text-neutral-500 col-span-1">[moon]
+
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi possimus modi inventore beatae consequuntur facilis, fugiat odit magnam enim officiis quae quisquam exercitationem vitae voluptas omnis, placeat, dignissimos rerum qui?
+                </div>
             </div>
 
-
-            <div v-if="tab === 2" class="grid grid-cols-3 grid-flow-row gap-2 w-full h-full p-1  mt-1">
-                <div class="rounded-md bg-neutral-800 col-span-3 row-span-1 lg:col-span-2 p-4 lg:mb-2 text-neutral-500">
+            <div v-if="tab === 2" class="grid grid-cols-1 lg:grid-cols-[1fr_12rem] grid-flow-row gap-2 w-full h-full p-1 mt-1">
+                <!-- Date selection -->
+                <div class="rounded-md col-span-1 bg-neutral-900 p-4 text-neutral-500 lg:order-last">
+                    <p>[<span class="material-symbols-outlined text-sm">
+                        calendar_month
+                    </span> date selection for past log entries]</p>
+                </div>
+                <!-- Log -->
+                <div class="rounded-md bg-neutral-800 col-span-1 row-span-1 p-4 lg:mb-2 text-neutral-500">
                     <UnitObservationLog />
                 </div>
-                <div class="rounded-md bg-neutral-900 p-4 text-neutral-500">[date selection]</div>
             </div>
 
 
