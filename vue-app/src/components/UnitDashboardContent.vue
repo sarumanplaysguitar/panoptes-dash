@@ -35,20 +35,20 @@ import UnitObservationLog from './UnitObservationLog.vue';
 
                 <!-- Card: Current Target -->
                 <!-- Display if observing; otherwise summarize last run and point to obs log page -->
-                <div class="rounded-md col-span-1 md:col-span-2 bg-neutral-800 p-4 text-neutral-500">
+                <div class="bg-[url('@/assets/mock_cmos_data.png')] opacity-30 rounded-md col-span-1 md:col-span-2 bg-neutral-800 px-4 pb-4 pt-2.5 text-neutral-500">
                     <!-- Current Target -->
                     <div class="flex w-full flex-row-reverse space-y-4 flex-wrap md:flex-nowrap justify-center md:justify-normal">
                         
 
                         <!-- Current target info -->
-                        <div class="text-neutral-500 text-center md:text-left w-full border-2 border-neutral-600">
-                            <p class="text-sm">
-                                <span class="material-symbols-outlined text-sm inline-block align-bottom pr-0.5">
+                        <div class="text-neutral-500 text-center md:text-left w-full">
+                            <p class="text-sm uppercase pb-0">
+                                <span class="material-symbols-outlined text-sm align-bottom">
                                     my_location
                                 </span>
-                                CURRENT TARGET
+                                Current Target
                             </p>
-                            <h2 class="text-neutral-300 py-2 text-2xl md:py-0 uppercase">TESS Sector 20</h2>
+                            <h2 class="text-neutral-300 text-2xl uppercase">TESS Sector 20</h2>
                             <p class="font-mono text-sm py-1">RA 00<span class="align-top text-xs">h</span> 00<span class="align-top text-xs">m</span> 00<span class="align-top text-xs">s</span>,<br> Dec ±00° 00' 00"</p>
                             <p class="text-sm">Observing for <span class="font-semibold text-neutral-400">1 hour</span></p>
 
@@ -61,8 +61,15 @@ import UnitObservationLog from './UnitObservationLog.vue';
                 <!-- Another idea- view objects in the scheduler file? (display the YAML neatly) -->
 
                 <!-- Card: Sky Overhead -->
-                <div class="rounded-md col-span-1 bg-neutral-800 p-4 text-neutral-500">
-                    <div class="font-semibold test-xs uppercase text-neutral-500">Sky Overhead</div>
+                <div class="rounded-md col-span-1 bg-neutral-800 px-4 pb-4 pt-2.5 text-neutral-500">
+                    <p class="text-sm uppercase pb-2">
+                        <span class="material-symbols-outlined text-sm align-bottom">
+                            <!-- arrow_circle_up -->
+                            blur_on
+                        </span>
+                        Sky Overhead
+                    </p>
+
                     <!-- Planisphere -->
                     <div class="aspect-square w-full rounded-full bg-neutral-700">
                         <!-- (Circle placeholder) -->
