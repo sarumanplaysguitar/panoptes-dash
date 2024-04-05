@@ -35,12 +35,32 @@ import UnitObservationLog from './UnitObservationLog.vue';
 
                 <!-- Card: Current Target -->
                 <!-- Display if observing; otherwise summarize last run and point to obs log page -->
-                <div class="bg-[url('@/assets/mock_cmos_data.png')] opacity-30 rounded-md col-span-1 md:col-span-2 bg-neutral-800 px-4 pb-4 pt-2.5 text-neutral-500">
-                    <!-- Current Target -->
-                    <div class="flex w-full flex-row-reverse space-y-4 flex-wrap md:flex-nowrap justify-center md:justify-normal">
-                        
+                <div class="grid grid-cols-1 md:grid-cols-[8rem_1fr] rounded-md col-span-1 md:col-span-2 bg-neutral-950 px-4 pb-4 pt-2.5 text-neutral-500">
 
-                        <!-- Current target info -->
+                    <!-- Recent image -->
+                    <div class="text-neutral-500 text-center md:text-left w-full md:mr-4 justify-center md:justify-normal">
+                        <!-- Header + Info -->
+                            <p class="text-sm uppercase pb-0">
+                                <span class="material-symbols-outlined text-sm align-bottom">
+                                    photo_camera
+                                </span>
+                                Preview
+                            </p>
+
+                            <div class="flex flex-col w-32 justify-center md:justify-normal">
+                                <div class="rounded-t bg-[url('@/assets/mock_cmos_data.png')] backdrop-blur-sm w-full aspect-square mr-4"></div>
+                                <div class="rounded-b bg-neutral-800 px-2 py-1 text-neutral-500 text-sm">
+                                    <span class="text-sm align-bottom material-symbols-outlined">
+                                        schedule
+                                    </span> 10 min ago
+                                </div>
+                            </div>
+                        </div>
+
+                    <!-- Current Target -->
+                    <div class="flex w-full space-y-4 flex-wrap md:flex-nowrap justify-center md:justify-normal">
+
+                        <!-- Header + Info -->
                         <div class="text-neutral-500 text-center md:text-left w-full">
                             <p class="text-sm uppercase pb-0">
                                 <span class="material-symbols-outlined text-sm align-bottom">
@@ -50,10 +70,7 @@ import UnitObservationLog from './UnitObservationLog.vue';
                             </p>
                             <h2 class="text-neutral-300 text-2xl uppercase">TESS Sector 20</h2>
                             <p class="font-mono text-sm py-1">RA 00<span class="align-top text-xs">h</span> 00<span class="align-top text-xs">m</span> 00<span class="align-top text-xs">s</span>,<br> Dec ±00° 00' 00"</p>
-                            <p class="text-sm">Observing for <span class="font-semibold text-neutral-400">1 hour</span></p>
-
-                            <div class="rounded-md bg-[url('@/assets/mock_cmos_data.png')] backdrop-blur-sm  w-full h-12 mr-4"></div>
-
+                            <p class="text-md">Observing for <span class="font-semibold text-neutral-400">1 hour</span></p>
                         </div>
                     </div>
                 </div>
