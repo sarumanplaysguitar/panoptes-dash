@@ -4,9 +4,31 @@
 <template>
     <div class="">
     <!-- <div class="overflow-y-auto h-full"> -->
-        <h1 class="text-xl text-neutral-300">February 13, 2024</h1>
-        <h3 class="italic">4.5 hrs on sky; 2 targets observed</h3>
-        <div class="flex-grow border-1 border-t border-neutral-500 pb-4"></div>
+        <!-- Header -->
+        <div class="grid grid-cols-1 grid-rows-2 lg:h-auto lg:grid-cols-[1fr_1fr] lg:grid-rows-1">
+            <h1 class="text-xl lg:text-2xl text-center border-0 lg:border-blue-500 text-neutral-300 rounded-md bg-neutral-700 lg:bg-transparent lg:p-0 lg:text-left p-2 opacity-50">
+                February 13, 2024
+                <span class="material-symbols-outlined text-md lg:hidden pl-4">
+                    calendar_month
+                </span>
+            </h1>
+            <span class="border-0 text-md lg:text-sm lg:col-span-1 inline-block lg:self-end m-auto lg:mx-0 lg:my-auto border-red-600">
+                <p class="lg:text-right uppercase">Waxing Crescent
+                    <span class="material-symbols-outlined align-middle lg:text-3xl text-neutral-300">
+                        brightness_3
+                    </span>
+                </p>
+            </span>
+            
+        </div>
+        
+        <!-- <div class="flex-grow border-1 border-t border-neutral-500 pb-4"></div> -->
+
+        <!-- <h3 class="text-md py-4"> -->
+        <h3 class="text-xs uppercase font-semibold lg:text-left lg:pb-4 pt-4 text-center">
+            4.5 hrs on sky; 2 targets observed
+        </h3>
+
         <div class="h-48 w-full bg-neutral-700 rounded-md opacity-50"></div>
         <div class="relative flex items-center py-2">
             <span class="mx-2 flex-shrink text-neutral-600">
