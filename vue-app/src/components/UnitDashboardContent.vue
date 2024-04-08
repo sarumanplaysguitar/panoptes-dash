@@ -1,8 +1,16 @@
 <script setup>
     import { ref } from 'vue';
     import UnitObservationLog from './UnitObservationLog.vue';
+    import placeholder_preview from '@/assets/mock_cmos_data.png';
 
     const tab = ref(1);
+
+    const previewThumbnail = {
+        backgroundImage:`url(${placeholder_preview})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'none',
+        backgroundPosition: 'center'
+    }
 </script>
 
 <template>
@@ -23,7 +31,7 @@
                         summarize
                         <!-- event_note -->
                     </span>
-                    Observation Log
+                    Observing Log
                 </button>
             </li>
         </ul>
@@ -35,21 +43,22 @@
 
                 <!-- Card: Current Target -->
                 <!-- Display if observing; otherwise summarize last run and point to obs log page -->
-                <div class="grid grid-cols-1 md:grid-cols-[8rem_1fr] auto-rows-min gap-y-8 md:gap-y-4 rounded-md col-span-1 md:col-span-2 bg-neutral-950 px-4 pb-4 pt-2.5 text-neutral-500">
+                <div class="grid grid-cols-1 md:grid-cols-[8rem_1fr] auto-rows-min gap-y-8 md:gap-y-4 rounded-md col-span-1 md:col-span-2 bg-neutral-800 px-4 pb-4 pt-3 text-neutral-500">
 
                     <!-- Recent image -->
                     <div class="flex flex-col col-span-1 text-neutral-500 text-center md:text-left w-full justify-center md:justify-normal">
                         <!-- Header + Info -->
-                            <p class="text-sm uppercase pb-0 content-center md:content-left">
+                            <!-- <p class="text-sm uppercase pb-0 content-center md:content-left">
                                 <span class="material-symbols-outlined text-sm align-bottom pr-1">
                                     photo_camera
                                 </span>
                                 Preview
-                            </p>
+                            </p> -->
 
                             <div class="flex flex-col w-full justify-center md:justify-normal">
-                                <div class="rounded-t bg-[url('@/assets/mock_cmos_data.png')] backdrop-blur-sm w-full aspect-square"></div>
-                                <div class="rounded-b bg-neutral-800 px-2 py-1 text-neutral-500 text-sm">
+                                <!-- <div class="rounded-t bg-[url('@/assets/mock_cmos_data.png')] backdrop-blur-sm w-full aspect-square"></div> -->
+                                <div class="rounded-t w-full aspect-square mt-1" :style="previewThumbnail"></div>
+                                <div class="rounded-b bg-neutral-700 px-2 py-1 text-neutral-500 text-sm">
                                     <span class="text-sm align-bottom material-symbols-outlined">
                                         schedule
                                     </span> 10 min ago
@@ -76,12 +85,12 @@
 
                                 <!-- RA -->
                                 <div class="flex justify-center">
-                                    <div class="border-2 border-neutral-800 rounded-l ml-0 outline outline-1 outline-neutral-800 py-0 px-2">
+                                    <div class="border-2 border-neutral-700 rounded-l ml-0 py-0 px-2">
                                         <p class="inline-block align-middle font-sans text-xs">
                                             RA
                                         </p>
                                     </div>
-                                    <div class="border-1 border-neutral-800 bg-neutral-800 rounded-r ml-0 outline outline-1 outline-neutral-800 py-0 px-2">
+                                    <div class="border-1 border-neutral-700 bg-neutral-700 rounded-r ml-0 outline outline-0 outline-neutral-800 py-0 px-2">
                                         <p class="inline-block align-middle font-mono text-xs">
                                             00<sup class="text-[0.5rem]">h</sup> 
                                             00<sup class="text-[0.5rem]">m</sup> 
@@ -94,12 +103,12 @@
                                 <!-- Dec -->
 
                                 <div class="flex justfify-center">
-                                    <div class="border-2 border-neutral-800 rounded-l ml-0 outline outline-1 outline-neutral-800 py-0 px-2">
+                                    <div class="border-2 border-neutral-700 rounded-l ml-0 py-0 px-2">
                                         <p class="inline-block align-middle font-sans text-xs">
                                             Dec
                                         </p>
                                     </div>
-                                    <div class="border-1 border-neutral-800 bg-neutral-800 rounded-r ml-0 outline outline-1 outline-neutral-800 py-0 px-2">
+                                    <div class="border-1 border-neutral-700 bg-neutral-700 rounded-r ml-0 outline outline-0 outline-neutral-800 py-0 px-2">
                                         <p class="inline-block align-middle font-mono text-xs">
                                             ±00° 00' 00"
                                         </p>
@@ -107,12 +116,12 @@
                                 </div>
                             </div>
 
-                            <p class="text-md">Observing for <span class="font-semibold text-neutral-400">1 hour</span></p>
+                            <p class="text-md md:pt-4">Observing for <span class="font-semibold text-neutral-400">1 hour</span></p>
                         </div>
                     </div>
 
                     <div class="md:col-span-2">
-                        <div class="bg-neutral-800 rounded p-2">metadata</div>
+                        <div class="bg-neutral-700 rounded p-2">metadata</div>
                     </div>
                 </div>
 
@@ -130,14 +139,21 @@
 
                     <!-- Planisphere -->
                     <div class="aspect-square w-full rounded-full bg-neutral-700">
-                        <!-- (Circle placeholder) -->
-                        <div class="aspect-square w-full rounded-full bg-neutral-700"></div>
                     </div>
                 </div>
 
                 <!-- Card: Sensors -->
-                <div class="rounded-md bg-neutral-800 p-4 text-neutral-500 col-span-1">[sensors]
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dignissimos excepturi, in labore adipisci molestias reprehenderit dolorem fuga iure eligendi, atque obcaecati natus perspiciatis repellat inventore quos dicta sint. Alias, sint!
+                <div class="rounded-md bg-neutral-800 p-4 text-neutral-500 col-span-1">
+                    <p class="text-sm uppercase pb-0">
+                        <span class="material-symbols-outlined text-sm align-bottom pr-1">
+                            timeline
+                        </span>
+                        TELEMETRY
+                    </p>
+                    <p>Power (AC, Weather station, Fan, Mount) - last updated</p>
+                    <p>Safety (AC Power, Weather, Storage, etc) - last updated</p>
+                    <p>State (ie. slewing)</p>
+                    <p>Exposure indicators, for primary/secondary cameras</p>
                 </div>
 
                 <!-- Card: Weather -->

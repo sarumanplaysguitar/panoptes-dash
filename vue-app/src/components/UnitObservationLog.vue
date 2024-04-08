@@ -12,14 +12,16 @@
                     calendar_month
                 </span>
             </h1>
-            <span class="border-0 text-md lg:text-sm lg:col-span-1 inline-block lg:self-end m-auto lg:mx-0 lg:my-auto border-red-600">
+            <!-- <span class="border-0 text-md lg:text-sm lg:col-span-1 inline-block lg:self-end m-auto lg:mx-0 lg:my-auto border-red-600">
                 <p class="lg:text-right uppercase">Waxing Crescent
                     <span class="material-symbols-outlined align-middle lg:text-3xl text-neutral-300">
                         brightness_3
                     </span>
-                </p>
-            </span>
-            
+                </p> -->
+
+                <div class="lg:text-right text-sm uppercase">Full Moon
+                    <div class="inline-block aspect-square rounded-full bg-neutral-300 w-8 align-middle ml-2"></div>
+                </div>
         </div>
         
         <!-- <div class="flex-grow border-1 border-t border-neutral-500 pb-4"></div> -->
