@@ -7,7 +7,7 @@
         <!-- Header -->
         <div class="grid grid-cols-1 grid-rows-2 lg:h-auto lg:grid-cols-[1fr_1fr] lg:grid-rows-1">
             <h1 class="text-xl lg:text-2xl text-center border-0 lg:border-blue-500 text-neutral-300 rounded-md bg-neutral-700 lg:bg-transparent lg:p-0 lg:text-left p-2 opacity-50">
-                February 13, 2024
+                February 24, 2024
                 <span class="material-symbols-outlined text-md lg:hidden pl-4">
                     calendar_month
                 </span>
@@ -19,7 +19,7 @@
                     </span>
                 </p> -->
 
-                <div class="lg:text-right text-sm uppercase">Full Moon
+                <div class="lg:text-right text-sm uppercase mt-5 lg:mt-0 text-center">Full Moon
                     <div class="inline-block aspect-square rounded-full bg-neutral-300 w-8 align-middle ml-2"></div>
                 </div>
         </div>
@@ -27,7 +27,10 @@
         <!-- <div class="flex-grow border-1 border-t border-neutral-500 pb-4"></div> -->
 
         <!-- <h3 class="text-md py-4"> -->
-        <h3 class="text-xs uppercase font-semibold lg:text-left lg:pb-4 pt-4 text-center">
+        <h3 class="text-md lg:text-left py-3 text-center">
+            <span class="inline-block align-top material-symbols-outlined text-[1.25rem] pr-0.5">
+                info
+            </span>
             4.5 hrs on sky; 2 targets observed
         </h3>
 
