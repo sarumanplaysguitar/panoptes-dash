@@ -87,7 +87,7 @@ Notable directories and files are listed below.
 │   │   │   └── (The Vue pages or larger components that are often routed to.)
 │   │   │
 │   │   ├── 📂 router
-│   │   │   └── 📄 index.js (Vue Router definitions, mapping URLs to components)
+│   │   │   └── 📄 router.js (Vue Router definitions, mapping URLs to components)
 │   │   │
 │   │   └── 📄 main.js (Bootstraps the Vue app: imports App.vue and other global dependencies)
 │   │
@@ -99,9 +99,9 @@ Notable directories and files are listed below.
 │   └── (Static assets like images, fonts, or external JS/CSS files)
 │
 ├── 📂 server
-│   └──  📄 index.js (The main Express server file.)
+│   └──  📄 router.js (The main Express server file.)
 │
-├── 📄 package.json (Lists dependencies; contains the start command that points to /server/index.js which GCP will look for.)
+├── 📄 package.json (Lists dependencies; contains the start command that points to /server/router.js which GCP will look for.)
 │
 └── ...
 ```
