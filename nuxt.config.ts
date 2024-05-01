@@ -1,5 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
+
+import path from "path";
+
 export default defineNuxtConfig({
     devtools: {enabled: true},
     postcss: {
@@ -29,6 +32,6 @@ export default defineNuxtConfig({
         options: {
             unstyled: true
         },
-        importPT: {from: '~/assets/css/presets/wind/'}      //import and apply preset
+         importPT: { from: path.resolve(__dirname, './assets/css/presets/lara/') }
     }
 })
