@@ -7,7 +7,7 @@ import {useCollection, useFirestore} from "vuefire";
 
 const db = useFirestore()
 const unitsRef = collection(db, 'units')
-const units = useCollection(unitsRef)
+const units = useCollection(unitsRef, {once: true})
 
 const plotOptions = ref({
   chart: {
@@ -56,7 +56,7 @@ const plotSeries = ref([{
       tableStyle="min-width: 50rem">
     <Column field="id" header="ID" sortable>
       <template #body="slotProps">
-        <router-link :to="slotProps.data.id"></router-link>
+        <NuxtLink :to="`/units/${slotProps.data.id}`">{{ slotProps.data.id }}</NuxtLink>
       </template>
     </Column>
     <Column field="name" header="Name" sortable></Column>
