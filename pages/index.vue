@@ -3,9 +3,7 @@
 </script>
 
 <template>
-  <h1 class="text-3xl font-bold underline">
-    PANOPTES Dashboard
-  </h1>
+
 </template>
 
 <style scoped>
