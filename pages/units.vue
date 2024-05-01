@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import {collection} from 'firebase/firestore'
 import DataView from 'primevue/dataview';
+import {useCollection, useFirestore} from "vuefire";
 
 const db = useFirestore()
-const units = useCollection(collection(db, 'units'))
-const metadata = useCollection(collection(db, 'metadata'))
-console.log(metadata)
+const unitsRef = collection(db, 'units')
+const units = useCollection(unitsRef, { once: true })
+
+
 </script>
 
 <template>
-  <ul>
-    <li v-for="md in metadata" :key="md.id">{{ md.id }}</li>
-  </ul>
   <DataView :value="units">
     <template #list="slotProps">
       <div class="flex flex-wrap">
         <div v-for="(unit, index) in slotProps.items" :key="unit.id" class="w-full p-3">
-          {{ unit.id }} {{ unit.name }} {{ unit.num_images }} {{ unit.metadata }}
+          {{ unit.id }} {{ unit.name }} {{ unit.latitude }}° {{ unit.longitude }}° {{ unit.elevation }}m
         </div>
       </div>
     </template>
