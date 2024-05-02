@@ -1,11 +1,6 @@
 <script>
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-    // for bloom effect:
-    import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-    import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-    import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-    import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass';
 
     export default {
         name: 'MoonThreeCanvas',
@@ -13,8 +8,8 @@
         data() {
             return {
                 zoom: 90,
-                lightAngle: Math.PI / 2,
-                // lightAngle: -Math.PI / 2, // radians
+                // lightAngle: Math.PI / 4,
+                lightAngle: -Math.PI, // radians
                 lightRadius: 10,
                 cameraTilt: 0 // radians, should come from latitude.
             }
@@ -61,35 +56,74 @@
                 this.renderer.setSize(width, height);
                 this.renderer.outputEncoding = THREE.sRGBEncoding;
                 this.$refs.moonThreeCanvas.appendChild(this.renderer.domElement);
-                
-                this.renderScene = new RenderPass(this.scene, this.camera);
-                this.bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 5, -1, 0.5);
-                // (resolution, strength, radius, threshold)
-
-                this.outputPass = new OutputPass();
-
-                this.composer = new EffectComposer(this.renderer);
-                this.composer.addPass(this.renderScene);
-                this.composer.addPass(this.bloomPass);
-                this.composer.addPass(this.outputPass);
-                // When using post-processing fx (ie. bloom) you call this.composer.render(); everywhere,
-                // as opposed to this.renderScene().
 
                 // Lighting 💡
                 this.addSunlight();
 
                 // Objects 🌒
-                // this.addMoon();
+                const gltfLoader = new GLTFLoader();
+
+                // const addModel = async () => {
+                //     const gltf = await gltfLoader.loadAsync('/moon.glb');
+                //     const model = gltf.scene.children[0];
+
+                //     const texture = await new THREE.TextureLoader().loadAsync('/two-tone.jpg');
+                //     texture.minFilter = texture.magFilter = THREE.NearestFilter;
+
+                //     model.texture = new THREE.MeshToonMaterial({
+                //         map: model.material.map,
+                //         gradientMap: texture
+                //     });
+
+                //     scene.add(model);
+                //     this.renderScene();
+                // }
+                this.addMoon();
                 // this.addTestToonSphere();
-                this.addPhongSphere();
+                // this.addPhongSphere();
 
                 // Resize canvas with window ↗
                 window.addEventListener('resize', this.onWindowResize, false);
 
                 // Render! 🎬
-                // this.renderScene();
-                this.composer.render();
+                this.renderScene();
             },
+
+
+            // addMoon() {
+            //     console.log('i want to die')
+            //     const loader = new GLTFLoader();
+            //     loader.load('/moon2.glb', (gltf) => {
+            //         console.log("Loaded model:", gltf.scene);
+
+            //         gltf.scene.traverse((child) => {
+            //             if (child.isMesh) {
+            //                 console.log("Original material for mesh:", child.material);
+
+            //                 const gradientMap = new THREE.TextureLoader().load('/two-tone-gradient-map.jpg');
+            //                 gradientMap.minFilter = THREE.NearestFilter;
+            //                 gradientMap.magFilter = THREE.NearestFilter;
+
+            //                 // Create a new toon material
+            //                 const toonMaterial = new THREE.MeshToonMaterial({
+            //                     map: child.material.map, // Preserving any existing diffuse map
+            //                     gradientMap: gradientMap
+            //                 });
+
+            //                 // Assign the new material
+            //                 child.material = toonMaterial;
+
+            //                 console.log("New material for mesh:", child.material);
+            //             }
+            //         });
+
+            //         this.scene.add(gltf.scene);
+            //         this.renderScene();
+            //     }, undefined, (error) => {
+            //         console.error('Error loading the model:', error);
+            //     });
+            // },
+
 
             addPhongSphere() {
                 const geometry = new THREE.SphereGeometry(1, 32, 32); // Radius, widthSegments, heightSegments
@@ -103,14 +137,73 @@
                 sphere.position.set(0, 0, 0);  // Positioned at the origin for visibility
                 this.scene.add(sphere);
 
-                // this.renderScene();
-                this.composer.render();
+                this.renderScene();
             },
+
+            // WORKED?
+            addMoon() {
+                const loader = new GLTFLoader();
+                loader.load('/moon2.glb', (gltf) => {
+                    gltf.scene.traverse((child) => {
+                        if (child.isMesh && child.material.map) {
+                            // Create a new Phong material using the existing texture map from the model
+                            child.material = new THREE.MeshPhongMaterial({
+                                map: child.material.map,  // Use the existing map
+                                specular: 0x222222,       // Specular color to give it a bit of a shine
+                                shininess: 25             // Shininess level
+                            });
+                        }
+                    });
+                    this.scene.add(gltf.scene);
+                    this.renderScene();
+                }, undefined, (error) => {
+                    console.error('Error loading the model:', error);
+                });
+            },
+
+
+
+            // addMoon() {
+            //     this.loader = new GLTFLoader();
+            //     this.loader.load('/moon.glb', onLoad);
+            //     this.renderScene();
+            // },
+
+            // onLoad(gltf) {
+            //     const mesh = gltf.scene;
+            //     this.scene.add(mesh);
+            //     this.renderScene();
+            // },
+
+            // addMoon() {
+            //     const loader = new GLTFLoader();
+            //     loader.load('/moon.glb', (gltf) => {
+            //         gltf.scene.traverse((child) => {
+            //             if (child.isMesh) {
+            //                 const gradientMap = new THREE.TextureLoader().load('/two-tone.jpg');
+            //                 gradientMap.minFilter = THREE.NearestFilter;
+            //                 gradientMap.magFilter = THREE.NearestFilter;
+
+            //                 child.material = new THREE.MeshToonMaterial({
+            //                     map: child.material.map,
+            //                     gradientMap: gradientMap
+            //                 });
+            //             }
+            //         });
+            //         this.scene.add(gltf.scene);
+            //         // render scene here? or out in the init...? eh.
+            //         this.renderScene();
+            //     }, undefined, (error) => {
+            //         console.error('Red alert red alert: ', error);
+            //     });
+            // },
 
             addTestToonSphere() {
                 const geometry = new THREE.SphereGeometry(1, 32, 32); // Same sphere geometry
-                const gradientMap = new THREE.TextureLoader().load('https://threejs.org/examples/textures/gradientMaps/threeTone.jpg');
+                // const gradientMap = new THREE.TextureLoader().load('/two-tone-gradient-map.jpg');
+                const gradientMap = new THREE.TextureLoader().load('/two-tone.jpg');
                 gradientMap.minFilter = THREE.NearestFilter;
+                gradientMap.magFilter = THREE.NearestFilter;
 
                 const material = new THREE.MeshToonMaterial({
                     color: 0xffffff,  // Set to white for maximum contrast
@@ -121,19 +214,17 @@
                 sphere.position.set(0, 0, 0);
                 this.scene.add(sphere);
 
-                // this.renderScene();
-                this.composer.render();
+                this.renderScene();
             },
 
             addSunlight() {
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
                 this.scene.add(ambientLight);
 
-                this.sunlight = new THREE.DirectionalLight(0xffffff, 1.5);
+                this.sunlight = new THREE.DirectionalLight(0xffffff, 0.9);
                 this.sunlight.position.set(this.lightRadius * Math.cos(this.lightAngle), 0, this.lightRadius * Math.sin(this.lightAngle)); // initialize to aim at world origin, from +x direction
                 this.scene.add(this.sunlight);
-                // this.renderScene();
-                this.composer.render();
+                this.renderScene();
             },
 
             handleKeyDown(event) {
@@ -165,43 +256,39 @@
                 // hella trig 📐
                 this.sunlight.position.x = this.lightRadius * Math.cos(this.lightAngle);
                 this.sunlight.position.z = this.lightRadius * Math.sin(this.lightAngle);
-                // this.renderScene();
-                this.composer.render();
+                this.renderScene();
             },
 
             tiltCamera() {
                 this.camera.rotation.z = this.cameraTilt; // rotate about z axis
                 this.camera.updateProjectionMatrix();
-                // this.renderScene();
-                this.composer.render();
+                this.renderScene();
             },
 
-            addMoon() {
-                const loader = new GLTFLoader();
-                loader.load('/moon.glb', (gltf) => {
-                    gltf.scene.traverse((child) => {
-                        if (child.isMesh) {
-                            const gradientMap = new THREE.TextureLoader().load('/two-tone-gradient-map.png');
-                            gradientMap.minFilter = THREE.NearestFilter;
-                            child.material = new THREE.MeshToonMaterial({
-                                map: child.material.map,
-                                gradientMap: gradientMap
-                            });
-                        }
-                    });
-                    this.scene.add(gltf.scene);
-                    // render scene here? or out in the init...? eh.
-                    // this.renderScene();
-                    this.composer.render();
-                }, undefined, (error) => {
-                    console.error('Red alert red alert: ', error);
-                });
-            },
-
-            // renderScene() {
-            //     // this.renderer.render(this.scene, this.camera);
-            //     new RenderPass(this.scene, this.camera);
+            // addMoon() {
+            //     const loader = new GLTFLoader();
+            //     loader.load('/moon2.glb', (gltf) => {
+            //         gltf.scene.traverse((child) => {
+            //             if (child.isMesh) {
+            //                 const gradientMap = new THREE.TextureLoader().load('/two-tone-gradient-map.png');
+            //                 gradientMap.minFilter = THREE.NearestFilter;
+            //                 child.material = new THREE.MeshToonMaterial({
+            //                     map: child.material.map,
+            //                     gradientMap: gradientMap
+            //                 });
+            //             }
+            //         });
+            //         this.scene.add(gltf.scene);
+            //         // render scene here? or out in the init...? eh.
+            //         this.renderScene();
+            //     }, undefined, (error) => {
+            //         console.error('Red alert red alert: ', error);
+            //     });
             // },
+
+            renderScene() {
+                this.renderer.render(this.scene, this.camera);
+            },
 
             onWindowResize() {
                 // BROKEN BUT NOT PRIORITY RN CUZ IM NOT RESIZING THIS COMPONENT? IDK....
@@ -217,8 +304,7 @@
                 this.camera.updateProjectionMatrix();
                 this.renderer.setSize(width, height);
 
-                // this.renderScene();
-                this.composer.render();
+                this.renderScene();
             }
         }
     }
