@@ -1,15 +1,5 @@
 <script setup>
-import {collection} from "firebase/firestore";
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
-
 const route = useRoute()
-const db = useFirestore()
-
-const metadataRef = collection(db, 'units', route.params.id, 'metadata')
-const metadata = useCollection(metadataRef, {wait: true})
-
-
 </script>
 
 <template>
@@ -24,17 +14,21 @@ const metadata = useCollection(metadataRef, {wait: true})
   <Card>
     <template #title>Safety</template>
     <template #content>
-      <LazyUnitSafety />
+      <LazyUnitSafety/>
     </template>
   </Card>
 
-  <Accordion :multiple="true">
-    <AccordionTab v-for="md in metadata" :header="md.id">
-      <pre>{{ md }}</pre>
-    </AccordionTab>
-  </Accordion>
+  <Card>
+    <template #content>
+      <Inplace :closable="true">
+        <template #display>
+          <Button severity="secondary">Show records</Button>
+        </template>
+        <template #content>
+          <LazyShowRecords/>
+        </template>
+      </Inplace>
+    </template>
+  </Card>
+
 </template>
-
-<style scoped>
-
-</style>
