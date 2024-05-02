@@ -1,6 +1,11 @@
 <script>
     import * as THREE from 'three';
-    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+    // for bloom effect:
+    import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+    import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+    import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
+    import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass';
 
     export default {
         name: 'MoonThreeCanvas',
@@ -8,7 +13,8 @@
         data() {
             return {
                 zoom: 90,
-                lightAngle: -Math.PI / 2, // radians
+                lightAngle: Math.PI / 2,
+                // lightAngle: -Math.PI / 2, // radians
                 lightRadius: 10,
                 cameraTilt: 0 // radians, should come from latitude.
             }
@@ -53,8 +59,21 @@
 
                 this.renderer = new THREE.WebGLRenderer({ antialias: true });
                 this.renderer.setSize(width, height);
-                this.renderer.outputEncoding = THREE.sRRBEncoding;
+                this.renderer.outputEncoding = THREE.sRGBEncoding;
                 this.$refs.moonThreeCanvas.appendChild(this.renderer.domElement);
+                
+                this.renderScene = new RenderPass(this.scene, this.camera);
+                this.bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 5, -1, 0.5);
+                // (resolution, strength, radius, threshold)
+
+                this.outputPass = new OutputPass();
+
+                this.composer = new EffectComposer(this.renderer);
+                this.composer.addPass(this.renderScene);
+                this.composer.addPass(this.bloomPass);
+                this.composer.addPass(this.outputPass);
+                // When using post-processing fx (ie. bloom) you call this.composer.render(); everywhere,
+                // as opposed to this.renderScene().
 
                 // Lighting 💡
                 this.addSunlight();
@@ -68,7 +87,8 @@
                 window.addEventListener('resize', this.onWindowResize, false);
 
                 // Render! 🎬
-                this.renderScene();
+                // this.renderScene();
+                this.composer.render();
             },
 
             addPhongSphere() {
@@ -83,7 +103,8 @@
                 sphere.position.set(0, 0, 0);  // Positioned at the origin for visibility
                 this.scene.add(sphere);
 
-                this.renderScene();
+                // this.renderScene();
+                this.composer.render();
             },
 
             addTestToonSphere() {
@@ -100,7 +121,8 @@
                 sphere.position.set(0, 0, 0);
                 this.scene.add(sphere);
 
-                this.renderScene();
+                // this.renderScene();
+                this.composer.render();
             },
 
             addSunlight() {
@@ -110,7 +132,8 @@
                 this.sunlight = new THREE.DirectionalLight(0xffffff, 1.5);
                 this.sunlight.position.set(this.lightRadius * Math.cos(this.lightAngle), 0, this.lightRadius * Math.sin(this.lightAngle)); // initialize to aim at world origin, from +x direction
                 this.scene.add(this.sunlight);
-                this.renderScene();
+                // this.renderScene();
+                this.composer.render();
             },
 
             handleKeyDown(event) {
@@ -142,13 +165,15 @@
                 // hella trig 📐
                 this.sunlight.position.x = this.lightRadius * Math.cos(this.lightAngle);
                 this.sunlight.position.z = this.lightRadius * Math.sin(this.lightAngle);
-                this.renderScene(); // Manually re-render frame 🎬
+                // this.renderScene();
+                this.composer.render();
             },
 
             tiltCamera() {
                 this.camera.rotation.z = this.cameraTilt; // rotate about z axis
                 this.camera.updateProjectionMatrix();
-                this.renderScene();
+                // this.renderScene();
+                this.composer.render();
             },
 
             addMoon() {
@@ -166,15 +191,17 @@
                     });
                     this.scene.add(gltf.scene);
                     // render scene here? or out in the init...? eh.
-                    this.renderScene();
+                    // this.renderScene();
+                    this.composer.render();
                 }, undefined, (error) => {
                     console.error('Red alert red alert: ', error);
                 });
             },
 
-            renderScene() {
-                this.renderer.render(this.scene, this.camera);
-            },
+            // renderScene() {
+            //     // this.renderer.render(this.scene, this.camera);
+            //     new RenderPass(this.scene, this.camera);
+            // },
 
             onWindowResize() {
                 // BROKEN BUT NOT PRIORITY RN CUZ IM NOT RESIZING THIS COMPONENT? IDK....
@@ -190,8 +217,8 @@
                 this.camera.updateProjectionMatrix();
                 this.renderer.setSize(width, height);
 
-                // Manually draw a new frame.
-                this.renderScene();
+                // this.renderScene();
+                this.composer.render();
             }
         }
     }
