@@ -11,10 +11,13 @@ const metadata = useCollection(metadataRef, {wait: true})
 
 function getMetadataAsArray(collectionName, fieldName) {
   const colRef = collection(db, 'units', route.params.id, 'metadata', collectionName, 'records')
-  const colQuery = useCollection(query(colRef, orderBy('received_time', 'desc'), limit(25)), {wait: true})
+  const colQuery = useCollection(query(colRef, orderBy('received_time', 'desc'), limit(25)), {
+    wait: true,
+    ssrKey: fieldName
+  })
 
   const data = computed(() => {
-    return colQuery.value.map(u => u[fieldName] ? [u.received_time.toDate(), u[fieldName]] : [u.received_time.toDate(), null])
+    return colQuery.value.map(u => u[fieldName] != undefined ? [u.received_time.toDate(), u[fieldName]] : [u.received_time.toDate(), 0])
   })
 
   return {name: fieldName, data: data, otherData: data}
