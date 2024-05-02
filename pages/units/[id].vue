@@ -14,30 +14,11 @@ function getMetadataAsArray(collectionName, fieldName) {
   const colQuery = useCollection(query(colRef, orderBy('received_time', 'desc'), limit(25)), {wait: true})
 
   const data = computed(() => {
-    return colQuery.value.map(u => u[fieldName] ? [u.received_time.toDate(), parseFloat(u[fieldName])] : [u.received_time.toDate(), null])
+    return colQuery.value.map(u => u[fieldName] ? [u.received_time.toDate(), u[fieldName]] : [u.received_time.toDate(), null])
   })
 
-  return {name: fieldName, data: data}
+  return {name: fieldName, data: data, otherData: data}
 }
-
-const plotOptions = ref({
-  chart: {
-    id: 'power-plot'
-  },
-  title: {
-    text: 'Power readings'
-  },
-  animations: {
-    enabled: true,
-    easing: 'linear',
-    dynamicAnimation: {
-      speed: 500
-    }
-  },
-  xaxis: {
-    type: 'datetime'
-  },
-})
 
 const plotData = ref([
   getMetadataAsArray('power', 'fans'),
@@ -46,6 +27,39 @@ const plotData = ref([
   getMetadataAsArray('power', 'unused1'),
   getMetadataAsArray('power', 'unused3'),
 ])
+
+const stateLabelData = ref(getMetadataAsArray('state', 'dest'))
+
+const annotations = computed(() => {
+  const labels = stateLabelData.value.data.map((rec) => {
+    return rec ? {'x': new Date(rec[0]).getTime(), 'label': {'text': rec[1]}} : {}
+  })
+  return labels
+})
+
+const plotOptions = computed(() => {
+  return {
+    chart: {
+      id: 'power-plot'
+    },
+    title: {
+      text: 'Power readings'
+    },
+    animations: {
+      enabled: true,
+      easing: 'linear',
+      dynamicAnimation: {
+        speed: 500
+      }
+    },
+    xaxis: {
+      type: 'datetime'
+    },
+    annotations: {
+      xaxis: annotations.value
+    }
+  }
+})
 </script>
 
 <template>
