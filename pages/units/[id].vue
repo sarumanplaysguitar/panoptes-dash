@@ -19,6 +19,13 @@ const route = useRoute()
   </Card>
 
   <Card>
+    <template #title>Observation</template>
+    <template #content>
+      <LazyUnitObservationMeta/>
+    </template>
+  </Card>
+
+  <Card>
     <template #content>
       <Inplace :closable="true">
         <template #display>
