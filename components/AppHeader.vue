@@ -12,6 +12,10 @@ const items = [
     route: '/units'
   },
   {
+    label: 'Unit Working',
+    route: '/unit'
+  },
+  {
     label: 'Observations',
     route: '/observations'
   },
