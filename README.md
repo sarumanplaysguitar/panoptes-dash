@@ -47,7 +47,7 @@ To wrap things up, I will be focusing on the exciting data visualization aspects
 **JavaScript and related web technologies** were chosen to create this dashboard, as they are well-suited for the following requirements:
 
 - Continuous, **real-time** (or periodic) unit telemetry updates
-- **Responsiveness and compatibility** across different screen sizes and devices (phone, tablets, computer-sized screens)
+- **Responsiveness and compatibility** across different screen sizes and devices (phone, tablets, and computers)
 - Strong **2D/3D data visualization tools,** namely the **[D3](https://d3js.org/)** and **[Three.js](https://threejs.org/)** JavaScript libraries
 
 (Additionally, in the future, a tool like **[Electron.js](https://www.electronjs.org/)** can be used to modify this web app to run locally as a **standalone computer program,** perhaps bundled with control software to support offline units or those with bandwidth restrictions.)
@@ -106,7 +106,7 @@ Notable directories and files are listed below.
 └── ...
 ```
 
-A note regarding the `public` and `src/assets` directories: while both are for storing assets, files in the `public` directory don't get processed/optimized by Webpack (usually things like favicons, logos, etc.).
+A note regarding the `public` and `src/assets` directories: while both are for storing assets, files in the `public` directory don't get processed/optimized at all by Vite and are pushed to the website as-is. This is suitable for assets such as our favicons, logos, and 3D models (.glb files).
 
 ## Setup Instructions
 
