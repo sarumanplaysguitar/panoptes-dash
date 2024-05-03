@@ -3,6 +3,7 @@
 
 import path from "path";
 
+
 export default defineNuxtConfig({
     devtools: {enabled: true},
     postcss: {
@@ -16,6 +17,7 @@ export default defineNuxtConfig({
         "nuxt-primevue",
         "@nuxtjs/tailwindcss",
         "nuxt-vuefire",
+        "dayjs-nuxt"
     ],
     vuefire: {
         config: {
@@ -32,6 +34,9 @@ export default defineNuxtConfig({
         options: {
             unstyled: true
         },
-         importPT: { from: path.resolve(__dirname, './assets/css/presets/lara/') }
+        importPT: {from: path.resolve(__dirname, './assets/css/presets/lara/')}
+    },
+    dayjs: {
+        plugins: ['relativeTime', 'utc', 'timezone']
     }
 })
