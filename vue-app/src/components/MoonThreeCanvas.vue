@@ -9,9 +9,9 @@
             return {
                 zoom: 90,
                 // lightAngle: Math.PI / 4,
-                lightAngle: -Math.PI, // radians
+                lightAngle: -0.4 * Math.PI, // radians
                 lightRadius: 10,
-                cameraTilt: 0 // radians, should come from latitude.
+                cameraTilt: 0.3 * Math.PI // radians, should come from latitude.
             }
         },
 
@@ -50,7 +50,10 @@
                     100          // Far
                 );
 
+
                 this.camera.position.z = 5;
+                this.camera.rotation.z = this.cameraTilt; // rotate about z axis
+                this.camera.updateProjectionMatrix();
 
                 this.renderer = new THREE.WebGLRenderer({ antialias: true });
                 this.renderer.setSize(width, height);
@@ -78,7 +81,8 @@
                 //     scene.add(model);
                 //     this.renderScene();
                 // }
-                this.addMoon();
+                this.addPhongMoon();
+                // this.addToonMoon();
                 // this.addTestToonSphere();
                 // this.addPhongSphere();
 
@@ -87,6 +91,10 @@
 
                 // Render! 🎬
                 this.renderScene();
+
+                // const axesHelper = new THREE.AxesHelper( 5 );
+                // this.scene.add( axesHelper );
+                // this.renderScene();
             },
 
 
@@ -141,7 +149,37 @@
             },
 
             // WORKED?
-            addMoon() {
+            addToonMoon() {
+                const loader = new GLTFLoader();
+                loader.load('/moon2.glb', (gltf) => {
+                    gltf.scene.traverse((child) => {
+                        if (child.isMesh && child.material.map) {
+                            // Create a new Phong material using the existing texture map from the model
+                            // child.material = new THREE.MeshPhongMaterial({
+                            //     map: child.material.map,  // Use the existing map
+                            //     specular: 0x222222,       // Specular color to give it a bit of a shine
+                            //     shininess: 25             // Shininess level
+                            // });
+
+
+                            const gradientMap = new THREE.TextureLoader().load('/two-tone.jpg');
+                            gradientMap.minFilter = THREE.NearestFilter;
+                            gradientMap.magFilter = THREE.NearestFilter;
+
+                            child.material = new THREE.MeshToonMaterial({
+                                        map: child.material.map,
+                                        gradientMap: gradientMap
+                            });
+                        }
+                    });
+                    this.scene.add(gltf.scene);
+                    this.renderScene();
+                }, undefined, (error) => {
+                    console.error('Error loading the model:', error);
+                });
+            },
+
+            addPhongMoon() {
                 const loader = new GLTFLoader();
                 loader.load('/moon2.glb', (gltf) => {
                     gltf.scene.traverse((child) => {
@@ -150,8 +188,22 @@
                             child.material = new THREE.MeshPhongMaterial({
                                 map: child.material.map,  // Use the existing map
                                 specular: 0x222222,       // Specular color to give it a bit of a shine
-                                shininess: 25             // Shininess level
+                                shininess: 10             // Shininess level
+
+                                // map: child.material.map,  // Use the existing map
+                                // specular: 0x222222,       // Specular color to give it a bit of a shine
+                                // shininess: 25             // Shininess level
                             });
+
+
+                            // const gradientMap = new THREE.TextureLoader().load('/two-tone.jpg');
+                            // gradientMap.minFilter = THREE.NearestFilter;
+                            // gradientMap.magFilter = THREE.NearestFilter;
+
+                            // child.material = new THREE.MeshToonMaterial({
+                            //             map: child.material.map,
+                            //             gradientMap: gradientMap
+                            // });
                         }
                     });
                     this.scene.add(gltf.scene);
@@ -163,17 +215,17 @@
 
 
 
-            // addMoon() {
-            //     this.loader = new GLTFLoader();
-            //     this.loader.load('/moon.glb', onLoad);
-            //     this.renderScene();
-            // },
+            addMoon() {
+                this.loader = new GLTFLoader();
+                this.loader.load('/moon2.glb', this.onLoad);
+                this.renderScene();
+            },
 
-            // onLoad(gltf) {
-            //     const mesh = gltf.scene;
-            //     this.scene.add(mesh);
-            //     this.renderScene();
-            // },
+            onLoad(gltf) {
+                const mesh = gltf.scene;
+                this.scene.add(mesh);
+                this.renderScene();
+            },
 
             // addMoon() {
             //     const loader = new GLTFLoader();
@@ -221,41 +273,39 @@
                 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
                 this.scene.add(ambientLight);
 
-                this.sunlight = new THREE.DirectionalLight(0xffffff, 0.9);
-                this.sunlight.position.set(this.lightRadius * Math.cos(this.lightAngle), 0, this.lightRadius * Math.sin(this.lightAngle)); // initialize to aim at world origin, from +x direction
+                this.sunlight = new THREE.DirectionalLight(0xffffff, 2);
+                this.sunlight.position.set(0, this.lightRadius * Math.sin(this.lightAngle), -this.lightRadius * Math.cos(this.lightAngle)); // rotate about x-axis; start from the sun aiming from -z axis (new moon)
+                this.sunlight.position.z = -this.lightRadius * Math.cos(this.lightAngle);
+                this.sunlight.position.y = this.lightRadius * Math.sin(this.lightAngle);
                 this.scene.add(this.sunlight);
                 this.renderScene();
             },
 
             handleKeyDown(event) {
                 switch(event.key) {
-                    case 'd':
+                    case 'w':
                         this.lightAngle -= Math.PI / 36; // -5 deg
                         this.updateSunlightPosition();
-                        console.log('A');
-                        break;
-                    case 'a':
-                        this.lightAngle += Math.PI / 36; // +5 deg
-                        this.updateSunlightPosition();
-                        console.log('D');
                         break;
                     case 's':
+                        this.lightAngle += Math.PI / 36; // +5 deg
+                        this.updateSunlightPosition();
+                        break;
+                    case 'd':
                         this.cameraTilt += Math.PI / 36; // +5 deg
                         this.tiltCamera();
-                        console.log('S');
                         break;
-                    case 'w':
+                    case 'a':
                         this.cameraTilt -= Math.PI / 36; // -5 deg
                         this.tiltCamera();
-                        console.log('W');
                         break;
                 }
             },
 
             updateSunlightPosition() {
                 // hella trig 📐
-                this.sunlight.position.x = this.lightRadius * Math.cos(this.lightAngle);
-                this.sunlight.position.z = this.lightRadius * Math.sin(this.lightAngle);
+                this.sunlight.position.z = -this.lightRadius * Math.cos(this.lightAngle);
+                this.sunlight.position.y = this.lightRadius * Math.sin(this.lightAngle);
                 this.renderScene();
             },
 
