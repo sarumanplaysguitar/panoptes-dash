@@ -6,6 +6,12 @@ import path from "path";
 
 export default defineNuxtConfig({
     devtools: {enabled: true},
+    nitro: {
+        preset: 'firebase',
+        firebase: {
+            gen: 2
+        }
+    },
     postcss: {
         plugins: {
             tailwindcss: {},
@@ -16,6 +22,7 @@ export default defineNuxtConfig({
     modules: [
         "nuxt-primevue",
         "@nuxtjs/tailwindcss",
+        '@nuxtjs/color-mode',
         "nuxt-vuefire",
         "dayjs-nuxt"
     ],
