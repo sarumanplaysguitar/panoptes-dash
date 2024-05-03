@@ -6,7 +6,7 @@ const db = useFirestore()
 
 function getMetadataAsArray(collectionName: string, fieldName: string) {
   const colRef = collection(db, 'units', route.params.id, 'metadata', collectionName, 'records')
-  const colQuery = useCollection(query(colRef, orderBy('received_time', 'desc'), limit(25)), {
+  const colQuery = useCollection(query(colRef, orderBy('received_time', 'desc'), limit(60)), {
     wait: true,
     ssrKey: fieldName
   })
