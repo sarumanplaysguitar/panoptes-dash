@@ -23,9 +23,10 @@ const plotOptions = ref({
     title: {
       text: 'Number of images (log)'
     },
-    logarithmic: true
   },
-
+  dataLabels: {
+    enabled: false
+  }
 })
 const unitImages = computed(() => {
   return units.value.map(u => u.num_images ? parseFloat(u.num_images) : 0)
