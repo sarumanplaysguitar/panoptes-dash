@@ -10,7 +10,11 @@ const items = [
   {
     label: 'Units',
     route: '/units'
-  }
+  },
+  {
+    label: 'Observations',
+    route: '/observations'
+  },
 ]
 
 </script>
