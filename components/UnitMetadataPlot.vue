@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import {collection, limit, orderBy, query} from "firebase/firestore";
+import {collection, limit, orderBy, query, where} from "firebase/firestore";
 
 const route = useRoute()
 const db = useFirestore()
 
+const dayjs = useDayjs()
+
+const yesterday = dayjs().subtract(1, 'day').toDate()
+
 function getMetadataAsArray(collectionName: string, fieldName: string) {
   const colRef = collection(db, 'units', route.params.id, 'metadata', collectionName, 'records')
-  const colQuery = useCollection(query(colRef, orderBy('received_time', 'desc'), limit(60)), {
+  const colQuery = useCollection(query(colRef, where('received_time', '>=', yesterday), orderBy('received_time', 'desc'), limit(60)), {
     wait: true,
     ssrKey: fieldName
   })
