@@ -22,7 +22,6 @@ export default defineNuxtConfig({
     modules: [
         "nuxt-primevue",
         "@nuxtjs/tailwindcss",
-        '@nuxtjs/color-mode',
         "nuxt-vuefire",
         "dayjs-nuxt"
     ],
