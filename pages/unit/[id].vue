@@ -19,7 +19,7 @@ const unitDoc = useDocument(doc(db, 'units', route.params.id), { wait: true})
     </div>
 
     <div class="md:col-span-1 md:row-span-1 overflow-auto">
-      <UnitDashboardContent/>
+      <UnitDashboardContent :unit="unitDoc"/>
     </div>
 
     <RouterView/>
