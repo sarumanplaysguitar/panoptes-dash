@@ -12,7 +12,7 @@ export const useUnitsStore = defineStore('units', () => {
     )
 
     const unitIDs = computed(() =>
-        units.value.map(u => u.unit_id > '' ? parseFloat(u.unit_id) : '')
+        units.value.map(u => u.unit_id > '' ? u.unit_id : '')
     )
 
     function getUnitDoc(unitId) {
