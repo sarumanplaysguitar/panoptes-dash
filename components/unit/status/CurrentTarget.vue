@@ -1,5 +1,14 @@
 <script lang="ts" setup>
+const route = useRoute()
+const metadataStore = useMetadataStore()
+import {useDayjs} from '#dayjs' // not need if you are using auto import
+const dayjs = useDayjs()
 
+const obsDoc = useDocument(
+    metadataStore.getMetadataDoc(route.params.id, 'observations'), {wait: true}
+)
+
+console.log(obsDoc)
 </script>
 
 <template>
@@ -19,9 +28,7 @@
           <div class="flex flex-col w-full justify-center md:justify-normal">
             <div class="rounded-t backdrop-blur-sm w-full aspect-square"></div>
             <div class="rounded-b px-2 py-1 text-neutral-500 text-sm">
-                                    <span class="text-sm align-bottom material-symbols-outlined">
-                                        schedule
-                                    </span> 10 min ago
+              10 min ago
             </div>
           </div>
         </div>
@@ -30,7 +37,7 @@
           <p class="text-sm uppercase pb-0">
             Current Target
           </p>
-          <h2 class="text-neutral-300 text-2xl uppercase">TESS Sector 20</h2>
+          <h2 class="text-neutral-300 text-2xl uppercase">{{ obsDoc.field_name }}</h2>
 
           <!-- Coords -->
           <!-- TODO: Copy-paste (convenient formatting) button? -->
@@ -40,40 +47,40 @@
             <div class="flex justify-center">
               <div class="border-2 border-neutral-700 rounded-l ml-0 py-0 px-2">
                 <p class="inline-block align-middle font-sans text-xs">
-                  RA
+                  Mount Coords
                 </p>
               </div>
               <div
                   class="border-1 border-neutral-700 rounded-r ml-0 outline outline-0 outline-neutral-800 py-0 px-2">
                 <p class="inline-block align-middle font-mono text-xs">
-                  00<sup class="text-[0.5rem]">h</sup>
-                  00<sup class="text-[0.5rem]">m</sup>
-                  00<sup class="text-[0.5rem]">s</sup>
-                  <!-- ^ that is the hackiest thing ever. make your own superscript class later -->
+                  {{ obsDoc?.field_ra }}° {{ obsDoc?.field_dec }}° <br/>
                 </p>
               </div>
             </div>
 
             <!-- Dec -->
 
-            <div class="flex justfify-center">
+            <div class="flex justfify-center" v-if="obsDoc.CRVAL1 != undefined">
               <div class="border-2 border-neutral-700 rounded-l ml-0 py-0 px-2">
                 <p class="inline-block align-middle font-sans text-xs">
-                  Dec
+                  Solved Coords
                 </p>
               </div>
               <div
                   class="border-1 border-neutral-700 rounded-r ml-0 outline outline-0 outline-neutral-800 py-0 px-2">
                 <p class="inline-block align-middle font-mono text-xs">
-                  ±00° 00' 00"
+                  {{ obsDoc?.CRVAL1?.toPrecision(5) }}° {{ obsDoc?.CRVAL2?.toPrecision(5) }}°
                 </p>
               </div>
             </div>
           </div>
 
-          <p class="text-md md:pt-4">Observing for <span class="font-semibold text-neutral-400">1 hour</span></p>
+          <p class="text-md md:pt-4">Observing for <span class="font-semibold text-neutral-400">{{
+              $dayjs().to($dayjs(obsDoc?.received_time.toDate()).utc(), true)
+            }}</span></p>
         </div>
       </div>
+      <LazyUnitObservationMeta/>
     </template>
   </Card>
 

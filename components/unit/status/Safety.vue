@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import {useMetadataStore} from "~/stores/metadata";
-import Listbox from 'primevue/listbox';
-
 
 const route = useRoute()
-
 const metadataStore = useMetadataStore()
 
 const safetyDoc = useDocument(
@@ -18,18 +15,23 @@ function getSeverity(val: boolean) {
 </script>
 
 <template>
-  <br/>
-  <Tag :severity="getSeverity(safetyDoc?.ac_power)">AC_OK</Tag>
-  <br/>
-  <Tag :severity="getSeverity(safetyDoc?.is_dark)">Dark</Tag>
-  <br/>
-  <Tag :severity="getSeverity(safetyDoc?.free_space_root)">Free Space (/)</Tag>
-  <br/>
-  <Tag :severity="getSeverity(safetyDoc?.free_space_images)">Free Space (images)</Tag>
-  <br/>
-  <Tag :severity="getSeverity(safetyDoc?.good_weather)">Weather</Tag>
-  <br/>
-  {{ $dayjs().to($dayjs(safetyDoc?.received_time.toDate()).utc()) }}
+  <Card class="status-card">
+    <template #header>Safety</template>
+    <template #content>
+      <br/>
+      <Tag :severity="getSeverity(safetyDoc?.ac_power)">AC_OK</Tag>
+      <br/>
+      <Tag :severity="getSeverity(safetyDoc?.is_dark)">Dark</Tag>
+      <br/>
+      <Tag :severity="getSeverity(safetyDoc?.free_space_root)">Free Space (/)</Tag>
+      <br/>
+      <Tag :severity="getSeverity(safetyDoc?.free_space_images)">Free Space (images)</Tag>
+      <br/>
+      <Tag :severity="getSeverity(safetyDoc?.good_weather)">Weather</Tag>
+      <br/>
+      Last updated: {{ $dayjs().to($dayjs(safetyDoc?.received_time.toDate()).utc()) }}
+    </template>
+  </Card>
 </template>
 
 <style scoped>

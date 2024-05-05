@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import Menubar from 'primevue/menubar';
-import ColorMode from "~/components/ColorMode.vue";
 
 const items = [
   {

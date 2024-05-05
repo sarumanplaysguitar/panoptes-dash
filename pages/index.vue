@@ -3,6 +3,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import {useUnitsStore} from "~/stores/units";
 
+const colorMode = useColorMode()
 
 const unitsStore = useUnitsStore()
 const units = unitsStore.units
@@ -24,6 +25,9 @@ const plotOptions = ref({
   },
   dataLabels: {
     enabled: false
+  },
+  theme: {
+    mode: colorMode.preference
   }
 })
 

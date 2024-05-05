@@ -2,6 +2,7 @@
 
 const route = useRoute()
 const metadataStore = useMetadataStore()
+const colorMode = useColorMode()
 
 const plotData = ref([
   metadataStore.getMetadataAsArray(route.params.id, 'power', 'fans'),
@@ -39,6 +40,9 @@ const plotOptions = computed(() => {
     },
     annotations: {
       xaxis: stateLabels.value
+    },
+    theme: {
+      mode: colorMode.preference
     }
   }
 })

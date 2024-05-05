@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import Safety from "~/components/unit/status/Safety.vue";
 </script>
 
 <template>
@@ -10,7 +9,6 @@ import Safety from "~/components/unit/status/Safety.vue";
     </template>
     <template #content>
       <UnitMetadataPlot/>
-      <LazyUnitStatusSafety />
     </template>
   </Card>
 

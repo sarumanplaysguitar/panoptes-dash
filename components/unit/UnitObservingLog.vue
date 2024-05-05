@@ -12,7 +12,7 @@ const unitObservations = useCollection(recentObsQuery, {wait: true, ssrKey: 'rec
 </script>
 
 <template>
-  <RecentTable :observations="unitObservations"/>
+    <RecentTable :observations="unitObservations"/>
 </template>
 
 <style scoped>

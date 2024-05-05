@@ -11,10 +11,11 @@ import Safety from "~/components/unit/status/Safety.vue";
 <template>
   <div class="flex">
     <div class="status-layout">
-      <CurrentTarget />
-      <Telemetry />
-      <Weather />
-      <Moon />
+      <CurrentTarget/>
+      <Telemetry/>
+      <Safety />
+      <Weather/>
+      <Moon/>
       <OverheadSky/>
     </div>
   </div>

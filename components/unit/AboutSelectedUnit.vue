@@ -7,7 +7,7 @@ console.log(unit)
 <template>
   <Card>
     <template #content>
-      <div class="background">
+      <div class="background-col">
         <div class="z-10 row-start-1 col-start-1 bg-opacity-0">
           <div class="flex flex-col place-items-center justify-end h-full">
             <div class="mt-auto flex flex-rows">
@@ -53,7 +53,7 @@ console.log(unit)
 </template>
 
 <style scoped>
-.background {
+.background-col {
   @apply h-[calc(100vh_-_3.5rem)] grid grid-cols-1 grid-rows-1 md:py-3 md:h-screen
 }
 </style>
