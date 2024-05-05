@@ -1,12 +1,19 @@
 <script setup lang="ts">
 
+import Safety from "~/components/unit/status/Safety.vue";
 </script>
 
 <template>
-  <div class="rounded-md bg-neutral-800 p-4 text-neutral-500 col-span-1 md:col-span-2">
-    <p class="text-sm uppercase pb-0">TELEMETRY</p>
-    <UnitMetadataPlot/>
-  </div>
+  <Card class="status-card">
+    <template #header>
+      <p class="status-header">Telemetry</p>
+    </template>
+    <template #content>
+      <UnitMetadataPlot/>
+      <LazyUnitStatusSafety />
+    </template>
+  </Card>
+
 </template>
 
 <style scoped>

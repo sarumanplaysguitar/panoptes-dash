@@ -5,22 +5,31 @@ import OverheadSky from "~/components/unit/status/OverheadSky.vue";
 import Telemetry from "~/components/unit/status/Telemetry.vue";
 import Weather from "~/components/unit/status/Weather.vue";
 import Moon from "~/components/unit/status/Moon.vue";
+import Safety from "~/components/unit/status/Safety.vue";
 </script>
 
 <template>
   <div class="flex">
     <div class="status-layout">
-      <CurrentTarget/>
-      <OverheadSky/>
-      <Telemetry/>
-      <Weather/>
-      <Moon/>
+      <CurrentTarget />
+      <Telemetry />
+      <Weather />
+<!--      <OverheadSky/>-->
+      <Moon />
     </div>
   </div>
 </template>
 
-<style scoped>
+<style>
 .status-layout {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 w-full p-1 pb-2 mt-1
+  @apply grid grid-cols-4
+}
+
+.status-card {
+  @apply rounded-md p-4
+}
+
+.status-header {
+  @apply text-sm uppercase pb-2
 }
 </style>

@@ -1,13 +1,24 @@
 <script setup lang="ts">
+const route = useRoute()
 
+const metadataStore = useMetadataStore()
+
+const weatherDoc = useDocument(
+    metadataStore.getMetadataDoc(route.params.id, 'weather'), {wait: true}
+)
 </script>
 
 <template>
-  <div class="rounded-md bg-neutral-800 p-4 text-neutral-500 col-span-1 md:col-span-2">[weather]
-    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit nesciunt, tenetur earum placeat explicabo harum
-    doloremque eveniet aliquam assumenda in quae repudiandae corporis voluptatum eum consectetur incidunt eligendi cum
-    architecto?
-  </div>
+  <Card class="status-card">
+    <template #header>
+      <p class="status-header">Weather</p>
+    </template>
+    <template #content>
+      <pre class="text-xs">
+        {{ weatherDoc }}
+      </pre>
+    </template>
+  </Card>
 </template>
 
 <style scoped>

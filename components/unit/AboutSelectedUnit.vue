@@ -5,11 +5,11 @@ console.log(unit)
 </script>
 
 <template>
-  <div class="background">
+  <div class="">
     <div class="z-10 row-start-1 col-start-1 bg-opacity-0">
       <div class="flex flex-col place-items-center justify-end h-full">
         <div class="mt-auto flex flex-rows">
-          <div class="w-14 h-14 rounded-full bg-neutral-600"></div>
+          <div class="w-14 h-14 rounded-full"></div>
           <div class="ml-2 pb-2">
             <div class="font-light text-4xl text-neutral-300">{{ unit.unit_id }}</div>
             <div

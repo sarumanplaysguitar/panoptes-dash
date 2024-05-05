@@ -1,16 +1,14 @@
 <script lang="ts" setup>
-import {doc} from "firebase/firestore";
 
 const route = useRoute()
-const db = useFirestore()
+const unitsStore = useUnitsStore()
 
-const unitRef = doc(db, 'units', route.params.id)
-const unitDoc = useDocument(unitRef, {wait: true})
+const unitDoc = useDocument(() => unitsStore.getUnitDoc(route.params.id))
 </script>
 
 <template>
   <!-- Main Layout -->
-  <div class="min-h-screen flex flex-col md:grid md:grid-cols-[3.6rem_18rem_1fr] md:grid-rows-1 bg-neutral-900">
+  <div class="min-h-screen flex flex-col md:grid md:grid-cols-[3.6rem_18rem_1fr] md:grid-rows-1">
     <div class="h-14 md:h-auto md:col-span-1 md:row-span-1">
       <UnitSelector/>
     </div>

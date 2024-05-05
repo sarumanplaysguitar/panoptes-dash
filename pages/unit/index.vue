@@ -4,8 +4,8 @@ import Column from 'primevue/column';
 import {useUnitsStore} from "~/stores/units";
 
 
-const units_store = useUnitsStore()
-const units = units_store.units
+const unitsStore = useUnitsStore()
+const units = unitsStore.units
 
 const plotOptions = ref({
   chart: {
@@ -15,7 +15,7 @@ const plotOptions = ref({
     text: 'Number of images per units'
   },
   xaxis: {
-    categories: units.value.map(u => u.id)
+    categories: unitsStore.unitIDs
   },
   yaxis: {
     title: {
@@ -26,13 +26,10 @@ const plotOptions = ref({
     enabled: false
   }
 })
-const unitImages = computed(() => {
-  return units.value.map(u => u.num_images ? parseFloat(u.num_images) : 0)
-})
 
 const plotSeries = ref([{
   name: 'numImages',
-  data: unitImages
+  data: unitsStore.unitImages
 }])
 </script>
 
