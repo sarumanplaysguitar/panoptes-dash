@@ -11,14 +11,10 @@ const unit = slotProps?.unit
 <template>
   <TabView>
     <TabPanel header="Status">
-      <p class="m-0">
-        <LazyUnitStatus></LazyUnitStatus>
-      </p>
+      <LazyUnitStatus/>
     </TabPanel>
     <TabPanel header="Observing Log">
-      <p class="m-0">
-        <LazyUnitObservingLog></LazyUnitObservingLog>
-      </p>
+      <LazyUnitObservingLog />
     </TabPanel>
   </TabView>
 </template>

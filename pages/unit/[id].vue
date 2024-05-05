@@ -16,11 +16,11 @@ const unitDoc = useDocument(doc(db, 'units', route.params.id), {wait: true})
     </div>
 
     <div class="md:h-auto md:col-span-1 md:row-span-1">
-      <AboutSelectedUnit :unit="unitDoc" />
+      <LazyUnitAboutSelectedUnit :unit="unitDoc" />
     </div>
 
     <div class="md:col-span-1 md:row-span-1 overflow-auto">
-      <UnitDashboardContent :unit="unitDoc"/>
+      <LazyUnitDashboardContent :unit="unitDoc"/>
     </div>
 
     <RouterView/>

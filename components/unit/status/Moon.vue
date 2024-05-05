@@ -11,7 +11,7 @@
                                 </span>
         Moon
       </p>
-      <MoonThreeCanvas/>
+
     </div>
     <div class="col-span-1">
 
