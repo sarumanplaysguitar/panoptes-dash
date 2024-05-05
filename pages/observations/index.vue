@@ -7,9 +7,8 @@ const observationsStore = useObservationsStore()
 </script>
 
 <template>
-  Observations
-
   <Card>
+    <template #header>Observations</template>
     <template #content>
       <RecentTable :observations="observationsStore.observations"/>
     </template>

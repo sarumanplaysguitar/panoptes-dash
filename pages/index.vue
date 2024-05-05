@@ -34,7 +34,8 @@ const plotSeries = ref([{
 </script>
 
 <template>
-  <div>
+  <Card>
+    <template #content>
     <ClientOnly> <!-- Cannot use SSR for apexcharts -->
       <apexchart
           :series="plotSeries"
@@ -43,7 +44,8 @@ const plotSeries = ref([{
           type="bar"
       ></apexchart>
     </ClientOnly>
-  </div>
+    </template>
+  </Card>
   <DataTable
       stripedRows
       showGridlines
