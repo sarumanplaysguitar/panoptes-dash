@@ -25,6 +25,7 @@
     "vue3-apexcharts": "^1.5.2"
   },
   "devDependencies": {
+    "@nuxtjs/color-mode": "^3.4.1",
     "dayjs-nuxt": "^2.1.9",
     "nuxt-primevue": "^0.3.1"
   }

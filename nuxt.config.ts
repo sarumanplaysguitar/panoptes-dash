@@ -16,10 +16,11 @@ export default defineNuxtConfig({
     },
     css: ['~/assets/css/main.css'],
     modules: [
+        "dayjs-nuxt",
+        '@nuxtjs/color-mode',
         "nuxt-primevue",
         "@nuxtjs/tailwindcss",
         "nuxt-vuefire",
-        "dayjs-nuxt",
         "@pinia/nuxt"
     ],
     vuefire: {
