@@ -1,6 +1,10 @@
 <script setup lang="ts">
 
 import Menubar from 'primevue/menubar';
+import Sidebar from 'primevue/sidebar';
+import {ref} from "vue";
+
+const visible = ref(false);
 
 const items = [
   {
@@ -13,7 +17,7 @@ const items = [
   },
   {
     label: 'Unit Working',
-    route: '/unit'
+    route: '/unit/PAN000'
   },
   {
     label: 'Observations',

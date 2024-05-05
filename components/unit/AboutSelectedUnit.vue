@@ -1,6 +1,7 @@
 <script setup>
 const slotProps = defineProps(['unit'])
 const unit = slotProps?.unit
+console.log(unit)
 </script>
 
 <template>
@@ -27,6 +28,7 @@ const unit = slotProps?.unit
         </div>
         <div class="text-neutral-600 text-sm mt-2">
           <p class="flex items-center text-neutral-300 text-sm text-center">
+            {{ unit.name }}
             Wilson, California, USA</p>
           <p class="text-center font-mono font-normal pb-4">
             {{ unit.latitude }}° {{ unit.longitude }}°

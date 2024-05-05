@@ -1,10 +1,11 @@
-<script setup lang="ts">
-import {collectionGroup, doc} from "firebase/firestore";
+<script lang="ts" setup>
+import {doc} from "firebase/firestore";
+import AboutSelectedUnit from "~/components/unit/AboutSelectedUnit.vue";
 
 const route = useRoute()
 const db = useFirestore()
 
-const unitDoc = useDocument(doc(db, 'units', route.params.id), { wait: true})
+const unitDoc = useDocument(doc(db, 'units', route.params.id), {wait: true})
 </script>
 
 <template>
@@ -15,7 +16,7 @@ const unitDoc = useDocument(doc(db, 'units', route.params.id), { wait: true})
     </div>
 
     <div class="md:h-auto md:col-span-1 md:row-span-1">
-      <AboutSelectedUnit :unit="unitDoc"/>
+      <AboutSelectedUnit :unit="unitDoc" />
     </div>
 
     <div class="md:col-span-1 md:row-span-1 overflow-auto">

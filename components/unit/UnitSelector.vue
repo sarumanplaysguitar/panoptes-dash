@@ -4,7 +4,7 @@ import Avatar from 'primevue/avatar';
 
 const db = useFirestore()
 
-const units = useCollection(collection(db, 'units'), {once: true})
+const units = useCollection(collection(db, 'units'))
 
 </script>
 
