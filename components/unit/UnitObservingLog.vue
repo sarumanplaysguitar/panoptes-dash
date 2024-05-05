@@ -1,9 +1,9 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 
 </script>
 
 <template>
-Observation Log
+Observing Log
 </template>
 
 <style scoped>
