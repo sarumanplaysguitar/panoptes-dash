@@ -69,7 +69,7 @@ const plotOptions = computed(() => {
     <apexchart
         :series="plotData"
         :options="plotOptions"
-        width="500"
+        width="100%"
         type="line"
     ></apexchart>
   </ClientOnly>
