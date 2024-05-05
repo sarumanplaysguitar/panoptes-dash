@@ -8,28 +8,31 @@ const colorMode = useColorMode()
 const unitsStore = useUnitsStore()
 const units = unitsStore.units
 
-const plotOptions = ref({
-  chart: {
-    id: 'num-images-plot'
-  },
-  title: {
-    text: 'Number of images per units'
-  },
-  xaxis: {
-    categories: unitsStore.unitIDs
-  },
-  yaxis: {
-    title: {
-      text: 'Number of images (log)'
-    },
-  },
-  dataLabels: {
-    enabled: false
-  },
-  theme: {
-    mode: colorMode.preference
-  }
-})
+const plotOptions = computed(() => {
+      return {
+        chart: {
+          id: 'num-images-plot'
+        },
+        title: {
+          text: 'Number of images per units'
+        },
+        xaxis: {
+          categories: unitsStore.unitIDs
+        },
+        yaxis: {
+          title: {
+            text: 'Number of images (log)'
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        theme: {
+          mode: colorMode.preference
+        }
+      }
+    }
+)
 
 const plotSeries = ref([{
   name: 'numImages',
@@ -40,37 +43,43 @@ const plotSeries = ref([{
 <template>
   <Card>
     <template #content>
-    <ClientOnly> <!-- Cannot use SSR for apexcharts -->
-      <apexchart
-          :series="plotSeries"
-          :options="plotOptions"
-          width="500"
-          type="bar"
-      ></apexchart>
-    </ClientOnly>
+      <ClientOnly> <!-- Cannot use SSR for apexcharts -->
+        <apexchart
+            :series="plotSeries"
+            :options="plotOptions"
+            width="500"
+            type="bar"
+        ></apexchart>
+      </ClientOnly>
     </template>
   </Card>
-  <DataTable
-      stripedRows
-      showGridlines
-      size="small"
-      :value="units"
-      tableStyle="min-width: 50rem">
-    <Column field="id" header="ID" sortable>
-      <template #body="slotProps">
-        <NuxtLink :to="`/unit/${slotProps.data.id}`">{{ slotProps.data.id }}</NuxtLink>
-      </template>
-    </Column>
-    <Column field="name" header="Name" sortable></Column>
-    <Column field="latitude" header="Lat (deg)">
-      <template #body="slotProps">
-        {{ slotProps.data.latitude.toPrecision(5) }}°
-        {{ slotProps.data.longitude.toPrecision(5) }}°
-        {{ slotProps.data.elevation }}m
-      </template>
-    </Column>
-    <Column field="num_images" header="# Images" sortable></Column>
-  </DataTable>
+
+  <Card>
+    <template #header>Recent Observations</template>
+    <template #content>
+      <DataTable
+          stripedRows
+          showGridlines
+          size="small"
+          :value="units"
+          tableStyle="min-width: 50rem">
+        <Column field="id" header="ID" sortable>
+          <template #body="slotProps">
+            <NuxtLink :to="`/unit/${slotProps.data.id}`">{{ slotProps.data.id }}</NuxtLink>
+          </template>
+        </Column>
+        <Column field="name" header="Name" sortable></Column>
+        <Column field="latitude" header="Lat (deg)">
+          <template #body="slotProps">
+            {{ slotProps.data.latitude.toPrecision(5) }}°
+            {{ slotProps.data.longitude.toPrecision(5) }}°
+            {{ slotProps.data.elevation }}m
+          </template>
+        </Column>
+        <Column field="num_images" header="# Images" sortable></Column>
+      </DataTable>
+    </template>
+  </Card>
 </template>
 
 <style scoped>

@@ -16,6 +16,9 @@ const unit = slotProps?.unit
     <TabPanel header="Observing Log">
       <LazyUnitObservingLog />
     </TabPanel>
+    <TabPanel header="Raw Metadata Records">
+      <LazyShowRawFirestoreRecords />
+    </TabPanel>
   </TabView>
 </template>
 
