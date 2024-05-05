@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import {collection} from 'firebase/firestore'
-
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import {useCollection, useFirestore} from "vuefire";
+import {useUnitsStore} from "~/stores/units";
 
-const db = useFirestore()
-const unitsRef = collection(db, 'units')
-const units = useCollection(unitsRef, {once: true})
+
+const units_store = useUnitsStore()
+const units = units_store.units
 
 const plotOptions = ref({
   chart: {

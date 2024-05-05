@@ -1,9 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-
-import path from "path";
-
-
 export default defineNuxtConfig({
     devtools: {enabled: true},
     nitro: {
@@ -23,7 +19,8 @@ export default defineNuxtConfig({
         "nuxt-primevue",
         "@nuxtjs/tailwindcss",
         "nuxt-vuefire",
-        "dayjs-nuxt"
+        "dayjs-nuxt",
+        "@pinia/nuxt"
     ],
     vuefire: {
         config: {
@@ -40,7 +37,7 @@ export default defineNuxtConfig({
         options: {
             unstyled: true
         },
-        importPT: {from: path.resolve(__dirname, './assets/css/presets/lara/')}
+        importPT: {from: '~/assets/css/presets/lara/'}
     },
     dayjs: {
         plugins: ['relativeTime', 'utc', 'timezone']
