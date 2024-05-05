@@ -6,7 +6,7 @@ import ColorMode from "~/components/ColorMode.vue";
 const items = [
   {
     label: 'Units',
-    route: '/unit/'
+    route: '/'
   },
   {
     label: 'Observations',
@@ -19,7 +19,7 @@ const items = [
 <template>
   <Menubar :model="items">
     <template #start>
-      <NuxtLink to="/">PANOPTES</NuxtLink>
+
     </template>
     <template #item="{ item, props, hasSubmenu }">
       <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>

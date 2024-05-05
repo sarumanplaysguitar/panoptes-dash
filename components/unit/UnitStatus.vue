@@ -14,19 +14,19 @@ import Safety from "~/components/unit/status/Safety.vue";
       <CurrentTarget />
       <Telemetry />
       <Weather />
-<!--      <OverheadSky/>-->
       <Moon />
+      <OverheadSky/>
     </div>
   </div>
 </template>
 
 <style>
 .status-layout {
-  @apply grid grid-cols-4
+  @apply grid grid-cols-4 gap-2
 }
 
 .status-card {
-  @apply rounded-md p-4
+  @apply col-span-2 rounded-md p-4
 }
 
 .status-header {

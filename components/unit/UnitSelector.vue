@@ -7,17 +7,21 @@ const units = unitsStore.units
 </script>
 
 <template>
-  <div class="avatar_bg">
-    <div class="relative inline-block" v-for="unit in units">
-      <Avatar :label="unit.unit_id.slice(3)" shape="circle">
-        <NuxtLink :to="`/unit/${unit.unit_id}`">{{ unit.unit_id.slice(3) }}</NuxtLink>
-      </Avatar>
-    </div>
-  </div>
+  <Card>
+    <template #content>
+      <div class="avatar_bg">
+        <div v-for="unit in units">
+          <Avatar :label="unit.unit_id.slice(3)" shape="circle">
+            <NuxtLink :to="`/unit/${unit.unit_id}`">{{ unit.unit_id.slice(3) }}</NuxtLink>
+          </Avatar>
+        </div>
+      </div>
+    </template>
+  </Card>
 </template>
 
 <style scoped>
 .avatar_bg {
-  @apply flex flex-row gap-3 p-2 h-[3.5m] md:flex-col md:h-screen md:w-[3.6rem] items-center overflow-y-auto
+  @apply flex flex-row gap-3 p-1 h-[3.5m] md:flex-col md:h-screen md:w-[3rem] overflow-y-auto
 }
 </style>
