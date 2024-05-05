@@ -1,10 +1,8 @@
 <script setup>
-import {ref} from 'vue';
-
-const tab = ref(1);
-
-
+const slotProps = defineProps(['unit'])
+const unit = slotProps?.unit
 </script>
+
 
 <template>
   <div class="bg-neutral-900 flex flex-col py-2 px-1 md:h-screen">
@@ -56,7 +54,7 @@ const tab = ref(1);
             </p> -->
 
             <div class="flex flex-col w-full justify-center md:justify-normal">
-              <!-- <div class="rounded-t bg-[url('@/assets/mock_cmos_data.png')] backdrop-blur-sm w-full aspect-square"></div> -->
+              <div class="rounded-t backdrop-blur-sm w-full aspect-square"></div>
               <!--              <div class="rounded-t w-full aspect-square mt-1" :style="previewThumbnail"></div>-->
               <div class="rounded-b bg-neutral-700 px-2 py-1 text-neutral-500 text-sm">
                                     <span class="text-sm align-bottom material-symbols-outlined">
