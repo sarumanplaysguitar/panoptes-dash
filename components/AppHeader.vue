@@ -1,10 +1,6 @@
 <script setup lang="ts">
 
 import Menubar from 'primevue/menubar';
-import Sidebar from 'primevue/sidebar';
-import {ref} from "vue";
-
-const visible = ref(false);
 
 const items = [
   {
