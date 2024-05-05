@@ -13,11 +13,7 @@ const items = [
   },
   {
     label: 'Units',
-    route: '/units'
-  },
-  {
-    label: 'Unit Working',
-    route: '/unit/PAN000'
+    route: '/unit/'
   },
   {
     label: 'Observations',
