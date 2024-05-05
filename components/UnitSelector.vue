@@ -5,13 +5,14 @@ import Avatar from 'primevue/avatar';
 const db = useFirestore()
 
 const units = useCollection(collection(db, 'units'), {once: true})
+
 </script>
 
 <template>
   <div class="avatar_bg">
     <div class="relative inline-block" v-for="unit in units">
       <Avatar :label="unit.unit_id.slice(3)" class="avatar" shape="circle">
-        {{ unit.unit_id.slice(3) }}
+        <NuxtLink :to="`/unit/${unit.unit_id}`">{{ unit.unit_id.slice(3) }}</NuxtLink>
         <span class="avatar_active"></span>
       </Avatar>
     </div>
