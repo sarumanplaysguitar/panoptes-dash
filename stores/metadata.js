@@ -33,5 +33,10 @@ export const useMetadataStore = defineStore('metadata', () => {
         return {name: fieldName, data: data, otherData: data}
     }
 
-    return {getMetadataDoc, getMetadataAsArray}
+    function getSeverity(val) {
+        console.log(val, val ? 'success' : 'danger')
+        return val ? 'success' : 'danger'
+    }
+
+    return {getMetadataDoc, getMetadataAsArray, getSeverity}
 })
