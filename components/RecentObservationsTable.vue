@@ -12,7 +12,7 @@ const slotProps = defineProps(['observations'])
       tableStyle="min-width: 50rem">
     <Column field="unit_id" header="ID" sortable>
       <template #body="slotProps">
-        <NuxtLink :to="`/units/${slotProps.data.unit_id}`">{{ slotProps.data.unit_id }}</NuxtLink>
+        <NuxtLink :to="`/unit/${slotProps.data.unit_id}`">{{ slotProps.data.unit_id }}</NuxtLink>
       </template>
     </Column>
     <Column field="sequence_id" header="Sequence ID" sortable></Column>
