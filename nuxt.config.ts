@@ -41,6 +41,6 @@ export default defineNuxtConfig({
         importPT: {from: '~/assets/css/presets/lara/'}
     },
     dayjs: {
-        plugins: ['relativeTime', 'utc', 'timezone']
+        plugins: ['relativeTime', 'utc', 'timezone', 'advancedFormat']
     }
 })

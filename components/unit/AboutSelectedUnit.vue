@@ -1,7 +1,10 @@
 <script setup>
 const slotProps = defineProps(['unit'])
 const unit = slotProps?.unit
-console.log(unit)
+
+const dayjs = useDayjs()
+
+const now = computed(() => dayjs())
 </script>
 
 <template>
@@ -14,6 +17,7 @@ console.log(unit)
               <div class="w-14 h-14 rounded-full"></div>
               <div class="ml-2 pb-2">
                 <div class="font-light text-4xl text-neutral-300">{{ unit.unit_id }}</div>
+                <div class="font-light text-1xl text-neutral-300">{{ unit.name }}</div>
                 <div
                     class="animate-avg-pulse flex font-semibold tracking-widest text-xs uppercase text-neutral-300 leading-3 items-center">
               <span
@@ -25,13 +29,15 @@ console.log(unit)
               </div>
             </div>
             <div class="flex flex-col space-y-1 text-neutral-600 text-xs font-semibold leading-3 py-2 martian-mono-300">
-              <p>UTC <span class="text-neutral-300">05:05:37</span> FEB 24</p>
-              <p>PDT <span class="text-neutral-300">10:05:37</span> FEB 24</p>
+              <p>UTC <span class="text-neutral-300">{{ now.utc().format('HH:mm:ss') }}</span>
+                {{ now.utc().format('MMM DD') }}</p>
+              <p>{{ now.format('z') }} <span class="text-neutral-300">{{ now.format('HH:mm:ss') }}</span>
+                {{ now.format('MMM DD') }}</p>
             </div>
             <div class="text-neutral-600 text-sm mt-2">
               <p class="flex items-center text-neutral-300 text-sm text-center">
-                {{ unit.name }}
-                Wilson, California, USA</p>
+                Unit Location
+              </p>
               <p class="text-center font-mono font-normal pb-4">
                 {{ unit.latitude }}° {{ unit.longitude }}°
               </p>
