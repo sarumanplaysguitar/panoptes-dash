@@ -34,7 +34,6 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
 
     function getSeverity(val) {
-        console.log(val, val ? 'success' : 'danger')
         return val ? 'success' : 'danger'
     }
 
