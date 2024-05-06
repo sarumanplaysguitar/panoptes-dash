@@ -55,7 +55,6 @@ const plotSeries = ref([{
   </Card>
 
   <Card>
-    <template #header>Recent Observations</template>
     <template #content>
       <DataTable
           stripedRows
