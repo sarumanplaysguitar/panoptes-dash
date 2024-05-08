@@ -12,7 +12,7 @@ const metadata = useCollection(metadataRef, {wait: true})
 <template>
   <Accordion :multiple="true">
     <AccordionTab v-for="md in metadata" :header="md.id">
-      <pre>{{ md }}</pre>
+      <pre class="text-xs">{{ md }}</pre>
     </AccordionTab>
   </Accordion>
 </template>

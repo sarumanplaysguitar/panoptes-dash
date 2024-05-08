@@ -38,6 +38,11 @@ const plotOptions = computed(() => {
     xaxis: {
       type: 'datetime'
     },
+    markers: {
+      size: 3,
+      strokeColors: '#000',
+      strokeWidth: 1,
+    },
     annotations: {
       xaxis: stateLabels.value
     },

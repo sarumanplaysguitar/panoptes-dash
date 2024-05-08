@@ -28,7 +28,7 @@ console.log(obsDoc)
           <div class="flex flex-col w-full justify-center md:justify-normal">
             <div class="rounded-t backdrop-blur-sm w-full aspect-square"></div>
             <div class="rounded-b px-2 py-1 text-neutral-500 text-sm">
-              10 min ago
+              {{ dayjs(obsDoc.received_time.toDate().toLocaleString()).from(dayjs()) }}
             </div>
           </div>
         </div>
@@ -37,14 +37,14 @@ console.log(obsDoc)
           <p class="text-sm uppercase pb-0">
             Current Target
           </p>
-          <h2 class="text-neutral-300 text-2xl uppercase">{{ obsDoc.field_name }}</h2>
+          <h2 class="text-neutral-300 text-2xl uppercase">{{ obsDoc?.field_name }}</h2>
 
           <!-- Coords -->
           <!-- TODO: Copy-paste (convenient formatting) button? -->
           <div class="flex flex-col md:flex-row flex-wrap items-center p-1 gap-2 md:justify-normal">
 
             <!-- RA -->
-            <div class="flex justify-center">
+            <div class="flex justify-center" v-if="obsDoc.field_ra != undefined">
               <div class="border-2 border-neutral-700 rounded-l ml-0 py-0 px-2">
                 <p class="inline-block align-middle font-sans text-xs">
                   Mount Coords
