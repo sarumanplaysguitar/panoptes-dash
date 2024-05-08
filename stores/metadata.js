@@ -8,18 +8,24 @@ export const useMetadataStore = defineStore('metadata', () => {
         return doc(useFirestore(), 'units', unitId, 'metadata', docName)
     }
 
-    function getMetadataAsArray(unitId, collectionName, fieldName) {
+    function getMetadata(unitId, collectionName) {
         const colRef = collection(useFirestore(), 'units', unitId, 'metadata', collectionName, 'records')
         const colQuery = useCollection(
             query(
                 colRef,
-                where('received_time', '>=', dayjs().subtract(1, 'day').toDate()),
+                where('received_time', '>=', dayjs().subtract(24, 'hour').toDate()),
                 orderBy('received_time', 'desc'),
-                limit(60)
+                limit(100)
             ), {
                 wait: true,
-                ssrKey: fieldName
+                ssrKey: collectionName
             })
+
+        return colQuery
+    }
+
+    function getMetadataAsArray(unitId, collectionName, fieldName) {
+        const colQuery = getMetadata(unitId, collectionName)
 
         const data = computed(() => {
             return colQuery.value.map(u =>
@@ -37,5 +43,5 @@ export const useMetadataStore = defineStore('metadata', () => {
         return val ? 'success' : 'danger'
     }
 
-    return {getMetadataDoc, getMetadataAsArray, getSeverity}
+    return {getMetadataDoc, getMetadata, getMetadataAsArray, getSeverity}
 })

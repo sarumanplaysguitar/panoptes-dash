@@ -3,8 +3,10 @@ const slotProps = defineProps(['unit'])
 const unit = slotProps?.unit
 
 const dayjs = useDayjs()
+const metadataStore = useMetadataStore()
 
-const now = computed(() => dayjs())
+const configDoc = useDocument(metadataStore.getMetadataDoc(unit.unit_id, 'config'))
+const now = computed(() => dayjs().tz(configDoc.value.location.timezone))
 </script>
 
 <template>
@@ -31,15 +33,17 @@ const now = computed(() => dayjs())
             <div class="flex flex-col space-y-1 text-neutral-600 text-xs font-semibold leading-3 py-2 martian-mono-300">
               <p>UTC <span class="text-neutral-300">{{ now.utc().format('HH:mm:ss') }}</span>
                 {{ now.utc().format('MMM DD') }}</p>
-              <p>{{ now.format('z') }} <span class="text-neutral-300">{{ now.format('HH:mm:ss') }}</span>
+              <p>{{ now.format('zzz') }} <span class="text-neutral-300">{{ now.format('HH:mm:ss') }}</span>
                 {{ now.format('MMM DD') }}</p>
             </div>
             <div class="text-neutral-600 text-sm mt-2">
               <p class="flex items-center text-neutral-300 text-sm text-center">
-                Unit Location
+                {{ configDoc.location.name }}
               </p>
               <p class="text-center font-mono font-normal pb-4">
-                {{ unit.latitude }}° {{ unit.longitude }}°
+                {{ configDoc.location.latitude }}° {{ configDoc.location.longitude }}°
+                <br />
+                {{ configDoc.location.elevation }}m
               </p>
               <div class="w-48 h-24 rounded-full ring-neutral-700 ring-2"></div>
             </div>
