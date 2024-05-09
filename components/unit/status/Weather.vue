@@ -57,8 +57,8 @@ const plotOptions = computed(() => {
       type: 'datetime'
     },
     yaxis: {
-      max: 20,
-      min: -30,
+      max: 45,
+      min: -45,
       title: {
         text: 'Temp (C)'
       }
