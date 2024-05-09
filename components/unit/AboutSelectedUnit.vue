@@ -5,7 +5,7 @@ const unit = slotProps?.unit
 const dayjs = useDayjs()
 const metadataStore = useMetadataStore()
 
-const configDoc = useDocument(metadataStore.getMetadataDoc(unit.unit_id, 'config'))
+const configDoc = useDocument(metadataStore.getMetadataDoc(unit.unit_id, 'config'), {wait: true})
 const now = computed(() => dayjs().tz(configDoc.value.location.timezone))
 </script>
 
@@ -38,12 +38,12 @@ const now = computed(() => dayjs().tz(configDoc.value.location.timezone))
             </div>
             <div class="text-neutral-600 text-sm mt-2">
               <p class="flex items-center text-neutral-300 text-sm text-center">
-                {{ configDoc.location.name }}
+                {{ configDoc?.location?.name }}
               </p>
               <p class="text-center font-mono font-normal pb-4">
-                {{ configDoc.location.latitude }}° {{ configDoc.location.longitude }}°
+                {{ configDoc?.location?.latitude }}° {{ configDoc?.location?.longitude }}°
                 <br />
-                {{ configDoc.location.elevation }}m
+                {{ configDoc?.location?.elevation }}m
               </p>
               <div class="w-48 h-24 rounded-full ring-neutral-700 ring-2"></div>
             </div>

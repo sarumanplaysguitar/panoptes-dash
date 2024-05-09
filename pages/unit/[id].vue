@@ -3,7 +3,7 @@
 const route = useRoute()
 const unitsStore = useUnitsStore()
 
-const unitDoc = useDocument(() => unitsStore.getUnitDoc(route.params.id))
+const unitDoc = useDocument(() => unitsStore.getUnitDoc(route.params.id), {wait: true})
 </script>
 
 <template>
