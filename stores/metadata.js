@@ -5,21 +5,24 @@ const dayjs = useDayjs()
 export const useMetadataStore = defineStore('metadata', () => {
 
     function getMetadataDoc(unitId, docName) {
-        return doc(useFirestore(), 'units', unitId, 'metadata', docName)
+        return useDocument(doc(useFirestore(), 'units', unitId, 'metadata', docName), {
+            wait: true,
+            ssrKey: 'metadata-doc'
+        })
     }
 
-    function getMetadata(unitId, collectionName) {
-        const colRef = collection(useFirestore(), 'units', unitId, 'metadata', collectionName, 'records')
+    function getMetadata(unitId, collectionName, sinceValue = 24, sinceUnit = 'hour') {
+        const colRef = collection(
+            useFirestore(),
+            'units', unitId, 'metadata', collectionName, 'records'
+        )
         const colQuery = useCollection(
             query(
                 colRef,
-                where('received_time', '>=', dayjs().subtract(24, 'hour').toDate()),
+                where('received_time', '>=', dayjs().subtract(sinceValue, sinceUnit).toDate()),
                 orderBy('received_time', 'desc'),
                 limit(100)
-            ), {
-                wait: true,
-                ssrKey: collectionName
-            })
+            ), {wait: true, ssrKey: 'metadata-collection'})
 
         return colQuery
     }
@@ -29,7 +32,7 @@ export const useMetadataStore = defineStore('metadata', () => {
 
         const data = computed(() => {
             return colQuery.value.map(u =>
-                u[fieldName] != undefined
+                u[fieldName] != null
                     ?
                     [u.received_time.toDate(), u[fieldName]]
                     :
@@ -40,7 +43,7 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
 
     function getSeverity(val) {
-        return val ? 'success' : 'danger'
+        return val != null & val ? 'success' : 'danger'
     }
 
     return {getMetadataDoc, getMetadata, getMetadataAsArray, getSeverity}

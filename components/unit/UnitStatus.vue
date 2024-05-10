@@ -1,22 +1,16 @@
 <script setup lang="ts">
 
-import CurrentTarget from "~/components/unit/status/CurrentTarget.vue";
-import OverheadSky from "~/components/unit/status/OverheadSky.vue";
-import Telemetry from "~/components/unit/status/Telemetry.vue";
-import Weather from "~/components/unit/status/Weather.vue";
-import Moon from "~/components/unit/status/Moon.vue";
-import Safety from "~/components/unit/status/Safety.vue";
 </script>
 
 <template>
   <div class="flex">
     <div class="status-layout">
-      <CurrentTarget/>
-      <Telemetry/>
-      <Safety />
-      <Weather/>
-      <Moon/>
-      <OverheadSky/>
+      <LazyUnitStatusCurrentTarget/>
+      <LazyUnitStatusTelemetry/>
+      <LazyUnitStatusSafety/>
+      <LazyUnitStatusWeather/>
+      <LazyUnitStatusMoon/>
+      <LazyUnitStatusOverheadSky/>
     </div>
   </div>
 </template>

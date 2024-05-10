@@ -5,7 +5,7 @@ import {useCollection} from "vuefire";
 
 export const useUnitsStore = defineStore('units', () => {
     const unitsRef = collection(useFirestore(), 'units')
-    const units = useCollection(unitsRef, {wait: true})
+    const units = useCollection(unitsRef, {wait: true, ssrKey: 'units-collection'})
 
     const unitImages = computed(() =>
         units.value.map(u => u.num_images ? parseFloat(u.num_images) : 0)
@@ -16,7 +16,7 @@ export const useUnitsStore = defineStore('units', () => {
     )
 
     function getUnitDoc(unitId) {
-        return doc(unitsRef, unitId)
+        return useDocument(doc(unitsRef, unitId))
     }
 
     return {unitsRef, units, unitImages, unitIDs, getUnitDoc}

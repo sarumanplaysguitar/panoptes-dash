@@ -2,9 +2,6 @@
 
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
-
-const slotProps = defineProps(['unit'])
-const unit = slotProps?.unit
 </script>
 
 
@@ -14,10 +11,10 @@ const unit = slotProps?.unit
       <LazyUnitStatus/>
     </TabPanel>
     <TabPanel header="Observing Log">
-      <LazyUnitObservingLog />
+      <LazyUnitObservingLog/>
     </TabPanel>
     <TabPanel header="Raw Metadata Records">
-      <LazyShowRawFirestoreRecords />
+      <LazyShowRawFirestoreRecords/>
     </TabPanel>
   </TabView>
 </template>

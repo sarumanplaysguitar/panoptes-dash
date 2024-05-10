@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import {useMetadataStore} from "~/stores/metadata";
+import {usePendingPromises} from 'vuefire'
 
 const route = useRoute()
 const metadataStore = useMetadataStore()
 
-const safetyDoc = useDocument(
-    metadataStore.getMetadataDoc(route.params.id, 'safety'), {wait: true}
-)
-
-
-
+const safetyDoc = metadataStore.getMetadataDoc(route.params.id, 'safety')
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>

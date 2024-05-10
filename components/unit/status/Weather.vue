@@ -1,17 +1,14 @@
 <script setup lang="ts">
+import {usePendingPromises} from 'vuefire'
+
 const route = useRoute()
 const colorMode = useColorMode()
 const dayjs = useDayjs()
 
 const metadataStore = useMetadataStore()
 
-const weatherDoc = useDocument(() => {
-  const doc = metadataStore.getMetadataDoc(route.params.id, 'weather')
-  return doc != undefined ? doc : null
-})
-
-const configDoc = useDocument(metadataStore.getMetadataDoc(route.params.id, 'config'))
-
+const configDoc = metadataStore.getMetadataDoc(route.params.id, 'config')
+const weatherDoc = metadataStore.getMetadataDoc(route.params.id, 'weather')
 const weatherDocs = metadataStore.getMetadata(route.params.id, 'weather')
 
 
@@ -95,6 +92,7 @@ const plotOptions = computed(() => {
     }
   }
 })
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>

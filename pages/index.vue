@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import {useUnitsStore} from "~/stores/units";
+import { usePendingPromises } from 'vuefire'
 
 const colorMode = useColorMode()
 
@@ -38,6 +38,8 @@ const plotSeries = ref([{
   name: 'numImages',
   data: unitsStore.unitImages
 }])
+
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>

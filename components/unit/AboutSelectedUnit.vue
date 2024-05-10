@@ -1,12 +1,21 @@
 <script setup>
-const slotProps = defineProps(['unit'])
-const unit = slotProps?.unit
+import {usePendingPromises} from 'vuefire'
+
+const route = useRoute()
 
 const dayjs = useDayjs()
 const metadataStore = useMetadataStore()
+const unitStore = useUnitsStore()
 
-const configDoc = useDocument(metadataStore.getMetadataDoc(unit.unit_id, 'config'), {wait: true})
-const now = computed(() => dayjs().tz(configDoc.value.location.timezone))
+const configDoc = metadataStore.getMetadataDoc(route.params.id, 'config')
+const unitDoc = unitStore.getUnitDoc(route.params.id)
+const now = computed(() =>
+    configDoc.value != null ?
+        dayjs().tz(configDoc.value.location.timezone) :
+        'UTC'
+)
+
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
@@ -18,8 +27,8 @@ const now = computed(() => dayjs().tz(configDoc.value.location.timezone))
             <div class="mt-auto flex flex-rows">
               <div class="w-14 h-14 rounded-full"></div>
               <div class="ml-2 pb-2">
-                <div class="font-light text-4xl text-neutral-300">{{ unit.unit_id }}</div>
-                <div class="font-light text-1xl text-neutral-300">{{ unit.name }}</div>
+                <div class="font-light text-4xl text-neutral-300">{{ unitDoc.unit_id }}</div>
+                <div class="font-light text-1xl text-neutral-300">{{ unitDoc.name }}</div>
                 <div
                     class="animate-avg-pulse flex font-semibold tracking-widest text-xs uppercase text-neutral-300 leading-3 items-center">
               <span
@@ -42,7 +51,7 @@ const now = computed(() => dayjs().tz(configDoc.value.location.timezone))
               </p>
               <p class="text-center font-mono font-normal pb-4">
                 {{ configDoc?.location?.latitude }}° {{ configDoc?.location?.longitude }}°
-                <br />
+                <br/>
                 {{ configDoc?.location?.elevation }}m
               </p>
               <div class="w-48 h-24 rounded-full ring-neutral-700 ring-2"></div>

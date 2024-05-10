@@ -1,9 +1,11 @@
 <script setup>
+import {usePendingPromises} from 'vuefire'
+
 import Avatar from 'primevue/avatar';
-import {useUnitsStore} from "~/stores/units.js";
 
 const unitsStore = useUnitsStore()
 const units = unitsStore.units
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>

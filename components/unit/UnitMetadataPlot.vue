@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {usePendingPromises} from 'vuefire'
 
 const route = useRoute()
 const metadataStore = useMetadataStore()
@@ -51,6 +52,7 @@ const plotOptions = computed(() => {
     }
   }
 })
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>

@@ -1,18 +1,15 @@
 <script lang="ts" setup>
-import {collection, limit, orderBy, query} from "firebase/firestore";
-import RecentTable from "~/components/RecentObservationsTable.vue";
+import {usePendingPromises} from 'vuefire'
 
 const route = useRoute()
-const db = useFirestore()
 
-const unitRef = collection(db, 'units', route.params.id, 'observations')
-const recentObsQuery = query(unitRef, orderBy('time', 'desc'), limit(25))
-
-const unitObservations = useCollection(recentObsQuery, {wait: true, ssrKey: 'recent-unit-observations'})
+const observationsStore = useObservationsStore()
+const unitObservations = observationsStore.getRecentUnitObservations(route.params.id)
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
-    <RecentTable :observations="unitObservations"/>
+  <LazyRecentObservationsTable :observations="unitObservations"/>
 </template>
 
 <style scoped>

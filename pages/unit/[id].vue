@@ -1,9 +1,5 @@
 <script lang="ts" setup>
 
-const route = useRoute()
-const unitsStore = useUnitsStore()
-
-const unitDoc = useDocument(() => unitsStore.getUnitDoc(route.params.id), {wait: true})
 </script>
 
 <template>
@@ -14,11 +10,11 @@ const unitDoc = useDocument(() => unitsStore.getUnitDoc(route.params.id), {wait:
     </div>
 
     <div class="basis-3/16">
-      <LazyUnitAboutSelectedUnit :unit="unitDoc"/>
+      <UnitAboutSelectedUnit/>
     </div>
 
     <div class="basis-3/4">
-      <LazyUnitDashboardContent :unit="unitDoc"/>
+<!--      <LazyUnitDashboardContent/>-->
     </div>
 
     <RouterView/>

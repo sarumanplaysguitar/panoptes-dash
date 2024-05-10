@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import Card from 'primevue/card'
-import RecentTable from "~/components/RecentObservationsTable.vue";
+import {usePendingPromises} from 'vuefire'
 
 const observationsStore = useObservationsStore()
 
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
   <Card>
     <template #header>Observations</template>
     <template #content>
-      <RecentTable :observations="observationsStore.observations"/>
+      <LazyRecentObservationsTable :observations="observationsStore.observations"/>
     </template>
   </Card>
 </template>

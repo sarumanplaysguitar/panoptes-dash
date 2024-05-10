@@ -1,14 +1,13 @@
 <script lang="ts" setup>
+import {usePendingPromises} from 'vuefire'
+import {useDayjs} from '#dayjs' // not need if you are using auto import
+
 const route = useRoute()
 const metadataStore = useMetadataStore()
-import {useDayjs} from '#dayjs' // not need if you are using auto import
 const dayjs = useDayjs()
 
-const obsDoc = useDocument(
-    metadataStore.getMetadataDoc(route.params.id, 'observations'), {wait: true}
-)
-
-console.log(obsDoc)
+const obsDoc = metadataStore.getMetadataDoc(route.params.id, 'observations')
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
