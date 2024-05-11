@@ -1,21 +1,13 @@
 <script setup>
-import {usePendingPromises} from 'vuefire'
-
-const route = useRoute()
+const slotProps = defineProps(['unitDoc', 'configDoc'])
 
 const dayjs = useDayjs()
-const metadataStore = useMetadataStore()
-const unitStore = useUnitsStore()
 
-const configDoc = metadataStore.getMetadataDoc(route.params.id, 'config')
-const unitDoc = unitStore.getUnitDoc(route.params.id)
 const now = computed(() =>
-    configDoc.value != null ?
-        dayjs().tz(configDoc.value.location.timezone) :
-        'UTC'
+    slotProps.configDoc != null ?
+        dayjs().tz(slotProps.configDoc.location.timezone) :
+        dayjs().tz('UTC')
 )
-
-onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
@@ -40,10 +32,16 @@ onServerPrefetch(() => usePendingPromises())
               </div>
             </div>
             <div class="flex flex-col space-y-1 text-neutral-600 text-xs font-semibold leading-3 py-2 martian-mono-300">
-              <p>UTC <span class="text-neutral-300">{{ now.utc().format('HH:mm:ss') }}</span>
-                {{ now.utc().format('MMM DD') }}</p>
-              <p>{{ now.format('zzz') }} <span class="text-neutral-300">{{ now.format('HH:mm:ss') }}</span>
-                {{ now.format('MMM DD') }}</p>
+              <p>
+                {{ now.utc().format('MMM DD') }}
+                <span class="text-neutral-300">{{ now.utc().format('HH:mm:ss') }}</span>
+                UTC
+              </p>
+              <p>
+                {{ now.format('MMM DD') }}
+                <span class="text-neutral-300">{{ now.format('HH:mm:ss') }}</span>
+                {{ now.format('z') }}
+              </p>
             </div>
             <div class="text-neutral-600 text-sm mt-2">
               <p class="flex items-center text-neutral-300 text-sm text-center">

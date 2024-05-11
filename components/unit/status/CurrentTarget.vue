@@ -1,13 +1,12 @@
 <script lang="ts" setup>
-import {usePendingPromises} from 'vuefire'
-import {useDayjs} from '#dayjs' // not need if you are using auto import
+import {useDayjs} from '#dayjs'
+import {doc} from "firebase/firestore"
 
 const route = useRoute()
-const metadataStore = useMetadataStore()
+const db = useFirestore()
 const dayjs = useDayjs()
 
-const obsDoc = metadataStore.getMetadataDoc(route.params.id, 'observations')
-onServerPrefetch(() => usePendingPromises())
+const obsDoc = useDocument(doc(db, 'units', route.params.id, 'metadata', 'observations'), {wait: true})
 </script>
 
 <template>
@@ -16,19 +15,12 @@ onServerPrefetch(() => usePendingPromises())
       <p class="status-header">Current Target</p>
     </template>
     <template #content>
-
-
       <div class="col-span-1 md:col-span-2 grid grid-cols-[8rem_1fr] rounded-md py-2 px-4 text-neutral-500">
         <div
             class="flex flex-col col-span-1 text-neutral-500 text-center md:text-left w-full justify-center md:justify-normal">
           <!-- Header + Info -->
-
-
           <div class="flex flex-col w-full justify-center md:justify-normal">
             <div class="rounded-t backdrop-blur-sm w-full aspect-square"></div>
-            <div class="rounded-b px-2 py-1 text-neutral-500 text-sm">
-              {{ dayjs(obsDoc.received_time.toDate().toLocaleString()).from(dayjs()) }}
-            </div>
           </div>
         </div>
 
@@ -36,14 +28,14 @@ onServerPrefetch(() => usePendingPromises())
           <p class="text-sm uppercase pb-0">
             Current Target
           </p>
-          <h2 class="text-neutral-300 text-2xl uppercase">{{ obsDoc?.field_name }}</h2>
+          <h2 class="text-neutral-300 text-2xl uppercase">{{ obsDoc?.FIELD }}</h2>
 
           <!-- Coords -->
           <!-- TODO: Copy-paste (convenient formatting) button? -->
           <div class="flex flex-col md:flex-row flex-wrap items-center p-1 gap-2 md:justify-normal">
 
             <!-- RA -->
-            <div class="flex justify-center" v-if="obsDoc.field_ra != undefined">
+            <div class="flex justify-center" v-if="obsDoc.RA_MNT != undefined">
               <div class="border-2 border-neutral-700 rounded-l ml-0 py-0 px-2">
                 <p class="inline-block align-middle font-sans text-xs">
                   Mount Coords
@@ -52,7 +44,7 @@ onServerPrefetch(() => usePendingPromises())
               <div
                   class="border-1 border-neutral-700 rounded-r ml-0 outline outline-0 outline-neutral-800 py-0 px-2">
                 <p class="inline-block align-middle font-mono text-xs">
-                  {{ obsDoc?.field_ra }}° {{ obsDoc?.field_dec }}° <br/>
+                  {{ obsDoc?.RAMNT }}° {{ obsDoc?.DECMNT }}° <br/>
                 </p>
               </div>
             </div>
@@ -79,7 +71,10 @@ onServerPrefetch(() => usePendingPromises())
             }}</span></p>
         </div>
       </div>
-      <LazyUnitObservationMeta/>
+      <!--      <LazyUnitObservationMeta/>-->
+    </template>
+    <template #footer>
+      Last updated: {{ dayjs(obsDoc.received_time.toDate().toLocaleString()).from(dayjs()) }}
     </template>
   </Card>
 

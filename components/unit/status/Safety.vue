@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import {usePendingPromises} from 'vuefire'
+
+import {doc} from "firebase/firestore";
 
 const route = useRoute()
-const metadataStore = useMetadataStore()
+const db = useFirestore()
 
-const safetyDoc = metadataStore.getMetadataDoc(route.params.id, 'safety')
-onServerPrefetch(() => usePendingPromises())
+const safetyDoc = useDocument(doc(db, 'units', route.params.id, 'metadata', 'safety'), {wait: true})
+
+function getSeverity(val) {
+  return val != null & val ? 'success' : 'danger'
+}
+
 </script>
 
 <template>
@@ -13,16 +18,18 @@ onServerPrefetch(() => usePendingPromises())
     <template #header>Safety</template>
     <template #content>
       <br/>
-      <Tag :severity="metadataStore.getSeverity(safetyDoc?.ac_power)">AC_OK</Tag>
+      <Tag :severity="getSeverity(safetyDoc?.ac_power)">AC_OK</Tag>
       <br/>
-      <Tag :severity="metadataStore.getSeverity(safetyDoc?.is_dark)">Dark</Tag>
+      <Tag :severity="getSeverity(safetyDoc?.is_dark)">Dark</Tag>
       <br/>
-      <Tag :severity="metadataStore.getSeverity(safetyDoc?.free_space_root)">Free Space (/)</Tag>
+      <Tag :severity="getSeverity(safetyDoc?.free_space_root)">Free Space (/)</Tag>
       <br/>
-      <Tag :severity="metadataStore.getSeverity(safetyDoc?.free_space_images)">Free Space (images)</Tag>
+      <Tag :severity="getSeverity(safetyDoc?.free_space_images)">Free Space (images)</Tag>
       <br/>
-      <Tag :severity="metadataStore.getSeverity(safetyDoc?.good_weather)">Weather</Tag>
+      <Tag :severity="getSeverity(safetyDoc?.good_weather)">Weather</Tag>
       <br/>
+    </template>
+    <template #footer>
       Last updated: {{ $dayjs().to($dayjs(safetyDoc?.received_time.toDate()).utc()) }}
     </template>
   </Card>

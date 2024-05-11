@@ -1,10 +1,13 @@
 <script setup>
 import {usePendingPromises} from 'vuefire'
+import {collection} from "firebase/firestore";
 
 import Avatar from 'primevue/avatar';
 
-const unitsStore = useUnitsStore()
-const units = unitsStore.units
+const db = useFirestore()
+const unitsRef = collection(db, 'units')
+const units = useCollection(unitsRef, {wait: true})
+
 onServerPrefetch(() => usePendingPromises())
 </script>
 

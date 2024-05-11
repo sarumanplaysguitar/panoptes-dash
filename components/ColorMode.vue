@@ -2,11 +2,11 @@
 
 const colorMode = useColorMode()
 
-const colorOptions = ref(['system', 'light', 'dark'])
+const colorOptions: Ref<UnwrapRef<string[]>> = ref(['system', 'light', 'dark'])
 
 </script>
 <template>
-  <Dropdown v-model="colorMode.preference" :options="colorOptions" value="system"></Dropdown>
+  <Dropdown v-model="colorMode.preference" :options="colorOptions" :value="colorMode.preference"></Dropdown>
 </template>
 
 
