@@ -23,7 +23,7 @@
 
         beforeDestroy() {
             // For cleanup
-            window.removeEventListener('resize', this.onWindowResize);
+            // window.removeEventListener('resize', this.onWindowResize);
             window.removeEventListener('keydown', this.handleKeyDown);
             this.stopAnimation();
             this.renderer.dispose();
@@ -87,7 +87,7 @@
                 // this.addPhongSphere();
 
                 // Resize canvas with window ↗
-                window.addEventListener('resize', this.onWindowResize, false);
+                // window.addEventListener('resize', this.onWindowResize, false);
 
                 // Render! 🎬
                 this.renderScene();
@@ -340,22 +340,22 @@
                 this.renderer.render(this.scene, this.camera);
             },
 
-            onWindowResize() {
-                // BROKEN BUT NOT PRIORITY RN CUZ IM NOT RESIZING THIS COMPONENT? IDK....
-                const width = this.$refs.moonThreeCanvas.offsetWidth;
-                const height = this.$refs.moonThreeCanvas.offsetHeight;
-                const viewSize = Math.min(width, height); // for square aspect ratio
+            // onWindowResize() {
+            //     // BROKEN BUT NOT PRIORITY RN CUZ IM NOT RESIZING THIS COMPONENT? IDK....
+            //     const width = this.$refs.moonThreeCanvas.offsetWidth;
+            //     const height = this.$refs.moonThreeCanvas.offsetHeight;
+            //     const viewSize = Math.min(width, height); // for square aspect ratio
 
-                // Update the ortho camera & renderer size 🎥
-                this.camera.left = -viewSize / this.zoom;
-                this.camera.right = viewSize / this.zoom;
-                this.camera.top = viewSize / this.zoom;
-                this.camera.bottom = -viewSize / this.zoom;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(width, height);
+            //     // Update the ortho camera & renderer size 🎥
+            //     this.camera.left = -viewSize / this.zoom;
+            //     this.camera.right = viewSize / this.zoom;
+            //     this.camera.top = viewSize / this.zoom;
+            //     this.camera.bottom = -viewSize / this.zoom;
+            //     this.camera.updateProjectionMatrix();
+            //     this.renderer.setSize(width, height);
 
-                this.renderScene();
-            }
+            //     this.renderScene();
+            // }
         }
     }
 </script>
@@ -366,7 +366,7 @@
 
 <style>
     .moon-three-canvas {
-        width: 8rem;
-        height: 8rem;
+        width: 6rem;
+        height: 6rem;
     }
 </style>

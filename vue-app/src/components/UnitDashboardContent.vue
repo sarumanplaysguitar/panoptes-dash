@@ -163,33 +163,37 @@
                 </div>
 
                 <!-- Card: Moon -->
-                <div class="col-span-1 md:col-span-2 grid grid-cols-[8rem_1fr] rounded-md bg-neutral-800 py-2 px-4 text-neutral-500">
-                    <div class="col-span-1">
-                        <p class="text-sm uppercase pt-1 pb-0">
-                                <span class="material-symbols-outlined text-sm align-top pr-1">
-                                    circle
-                                </span>
-                                Moon
-                            </p>
-                        <MoonThreeCanvas />
+                <div class="col-span-1 grid-rows-[2rem_1fr] md:col-span-2 grid grid-cols-[6rem_1fr] md:grid-cols-[8rem_1fr] rounded-md bg-neutral-800 py-2 px-3 md:px-4 text-neutral-500">
+                    
+                    <div class="row-start-1 col-span-2 text-sm uppercase pt-1 pb-0">
+                        <span class="material-symbols-outlined text-sm align-top pr-1">
+                            circle
+                        </span>
+                        New Moon
                     </div>
-                    <div class="col-span-1">
-                        
-                        <!-- Moon panel -->
+
+                    <div class="row-start-2 col-span-1">
+                        <div class="md:pl-2 pt-0 pb-3">
+                            <MoonThreeCanvas />
+                        </div>
+                    </div>
+
+                    <div class="col-span-1 row-start-2">
+                        <!-- Moon data table -->
                         <div class="text-neutral-500 pl-2 text-left w-full">
-                            <h2 class="text-neutral-300 text-[1.4rem] pt-11 pl-1">New Moon</h2>
+                            <!-- <span class="sm:hidden md:block text-neutral-300 text-[1.4rem] pl-1">New Moon</span> -->
                             <div class="grid grid-cols-3">
-                                <div class="p-1 col-span-1">
+                                <div class="p-1 col-span-1 text-center">
                                     <p class="text-xs uppercase semibold">Illumination</p>
                                     <p class="text-neutral-300 text-lg">54%</p>
                                 </div>
-                                <div class="p-1 col-span-1">
+                                <div class="p-1 col-span-1 text-center">
                                     <p class="text-xs uppercase semibold">Moonset</p>
-                                    <p class="text-neutral-300 text-lg">2:10 AM</p>
+                                    <p class="text-neutral-300 text-lg">2:10<span class="text-sm pl-0.5">AM</span></p>
                                 </div>
-                                <div class="p-1 col-span-1">
+                                <div class="p-1 col-span-1 text-center">
                                     <p class="text-xs uppercase semibold">Moonrise</p>
-                                    <p class="text-neutral-300 text-lg">11:53 AM</p>
+                                    <p class="text-neutral-300 text-lg">11:53<span class="text-sm pl-0.5">AM</span></p>
                                 </div>
                             </div>
                         </div>
