@@ -1,20 +1,18 @@
 <script setup>
-
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
+const slots = defineProps(['unit']);
+const activeTab = ref(0);
 </script>
 
-
 <template>
-  <TabView>
+  <TabView v-model:activeIndex="activeTab">
     <TabPanel header="Status">
-      <LazyUnitStatus/>
+      <UnitStatus :unit="slots.unit"/>
     </TabPanel>
     <TabPanel header="Observing Log">
-      <LazyUnitObservingLog/>
+      <UnitObservingLog />
     </TabPanel>
     <TabPanel header="Raw Metadata Records">
-      <LazyShowRawFirestoreRecords/>
+      <ShowRawFirestoreRecords/>
     </TabPanel>
   </TabView>
 </template>

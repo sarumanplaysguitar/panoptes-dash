@@ -1,13 +1,14 @@
 <script setup>
-const slotProps = defineProps(['unitDoc', 'configDoc'])
+import {usePendingPromises} from 'vuefire'
 
+const slots = defineProps(['unit'])
 const dayjs = useDayjs()
 
-const now = computed(() =>
-    slotProps.configDoc != null ?
-        dayjs().tz(slotProps.configDoc.location.timezone) :
-        dayjs().tz('UTC')
-)
+const tz = computed(() => slots.unit?.config?.location.timezone)
+const now = computed(() => dayjs())
+const now_local = computed(() => now.value.tz(tz.value))
+
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
@@ -19,38 +20,38 @@ const now = computed(() =>
             <div class="mt-auto flex flex-rows">
               <div class="w-14 h-14 rounded-full"></div>
               <div class="ml-2 pb-2">
-                <div class="font-light text-4xl text-neutral-300">{{ unitDoc.unit_id }}</div>
-                <div class="font-light text-1xl text-neutral-300">{{ unitDoc.name }}</div>
+                <div class="font-light text-4xl text-neutral-300">{{ unit.unit_id }}</div>
+                <div class="font-light text-1xl text-neutral-300">{{ unit.name }}</div>
                 <div
                     class="animate-avg-pulse flex font-semibold tracking-widest text-xs uppercase text-neutral-300 leading-3 items-center">
               <span
                   class="align-self-center animate-avg-ping absolute inline-flex bg-neutral-100 h-[0.57rem] w-[0.57rem] me-[0.4rem] rounded-full"></span>
                   <span
                       class="align-self-center flex bg-neutral-100 animate-modified-ping h-[0.57rem] w-[0.57rem] me-[0.4rem] rounded-full"></span>
-                  Observing
+                  {{ unit.status?.from_state }}
                 </div>
               </div>
             </div>
-            <div class="flex flex-col space-y-1 text-neutral-600 text-xs font-semibold leading-3 py-2 martian-mono-300">
+            <div class="flex flex-col space-y-1 text-neutral-300 text-xs font-semibold leading-3 py-2 martian-mono-300">
               <p>
                 {{ now.utc().format('MMM DD') }}
-                <span class="text-neutral-300">{{ now.utc().format('HH:mm:ss') }}</span>
+                <span class="text-neutral-600">{{ now.utc().format('HH:mm:ss') }}</span>
                 UTC
               </p>
               <p>
-                {{ now.format('MMM DD') }}
-                <span class="text-neutral-300">{{ now.format('HH:mm:ss') }}</span>
-                {{ now.format('z') }}
+                {{ now_local.format('MMM DD') }}
+                <span class="text-neutral-600">{{ now_local.format('HH:mm:ss') }}</span>
+                {{ now_local.format('z') }}
               </p>
             </div>
             <div class="text-neutral-600 text-sm mt-2">
               <p class="flex items-center text-neutral-300 text-sm text-center">
-                {{ configDoc?.location?.name }}
+                {{ unit.config?.location?.name }}
               </p>
               <p class="text-center font-mono font-normal pb-4">
-                {{ configDoc?.location?.latitude }}° {{ configDoc?.location?.longitude }}°
+                {{ unit.config?.location?.latitude }} {{ unit.config?.location?.longitude }}
                 <br/>
-                {{ configDoc?.location?.elevation }}m
+                {{ unit.config?.location?.elevation }}
               </p>
               <div class="w-48 h-24 rounded-full ring-neutral-700 ring-2"></div>
             </div>

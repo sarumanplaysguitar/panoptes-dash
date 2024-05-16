@@ -1,27 +1,40 @@
 <script lang="ts" setup>
-import {collection, doc} from "firebase/firestore";
+import {collection} from "firebase/firestore";
 
-const db = useFirestore()
 const route = useRoute()
+const db = useFirestore()
 
-const unitsRef = collection(db, 'units')
-const unitDoc = ref(useDocument(doc(unitsRef, route.params.id), {wait: true}))
-const configDoc = ref(useDocument(doc(unitsRef, route.params.id, 'metadata', 'config'), {wait: true}))
+const unitId: Ref<UnwrapRef<string | RouteParamValue[]>> = ref(route.params.id)
+
+const units = useCollection(collection(db, 'units'))
+
+const unitDoc = computed(() => units.value.find((unit) => unit.id === unitId.value))
+const unitMetadata = useCollection(collection(db, 'units', unitId.value, 'metadata'))
+
+const unit: Ref<UnwrapRef<{}>> = ref({})
+
+// Watch the unitDoc for changes and update the unit ref, including metadata.
+watch(unitDoc, (newVal) => {
+  unit.value = newVal
+  unitMetadata.value.forEach((doc) => {
+    unit.value[doc.id] = doc
+  })
+})
 </script>
 
 <template>
   <!-- Main Layout -->
   <div class="flex flex-row min-h-screen">
     <div class="basis-1/16">
-      <UnitSelector/>
+      <UnitSelector :units="units"/>
     </div>
 
     <div class="basis-3/16">
-      <UnitAboutSelectedUnit :unitDoc="unitDoc" :configDoc="configDoc"/>
+      <UnitAboutSelectedUnit :unit="unit"/>
     </div>
 
     <div class="basis-3/4">
-      <LazyUnitDashboardContent/>
+      <UnitDashboardContent :unit="unit"/>
     </div>
 
     <RouterView/>

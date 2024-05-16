@@ -1,14 +1,9 @@
 <script setup>
-import {usePendingPromises} from 'vuefire'
-import {collection} from "firebase/firestore";
-
 import Avatar from 'primevue/avatar';
 
-const db = useFirestore()
-const unitsRef = collection(db, 'units')
-const units = useCollection(unitsRef, {wait: true})
+const unitsStore = useUnitsStore()
+const units = computed(() => unitsStore.units)
 
-onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
@@ -16,8 +11,8 @@ onServerPrefetch(() => usePendingPromises())
     <template #content>
       <div class="avatar_bg">
         <div v-for="unit in units">
-          <Avatar :label="unit.unit_id.slice(3)" shape="circle">
-            <NuxtLink :to="`/unit/${unit.unit_id}`">{{ unit.unit_id.slice(3) }}</NuxtLink>
+          <Avatar :label="unit?.unit_id.slice(3)" shape="circle">
+            <NuxtLink :to="`${unit?.unit_id}`">{{ unit?.unit_id.slice(3) }}</NuxtLink>
           </Avatar>
         </div>
       </div>

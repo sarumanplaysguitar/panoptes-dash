@@ -1,13 +1,17 @@
 <script setup lang="ts">
-const slotProps = defineProps(['observations'])
+const slots = defineProps(['observations'])
+const observations = ref(slots.observations)
 </script>
 
 <template>
   <DataTable
       stripedRows
       showGridlines
+      paginator
+      :rows="10"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
       size="small"
-      :value="slotProps.observations"
+      :value="observations"
       sortField="time"
       tableStyle="min-width: 50rem">
     <Column field="unit_id" header="ID" sortable>

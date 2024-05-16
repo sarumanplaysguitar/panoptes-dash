@@ -1,11 +1,11 @@
 <script setup lang="ts">
-
+const slots = defineProps(['unit'])
 </script>
 
 <template>
   <div class="flex">
     <div class="status-layout">
-      <LazyUnitStatusCurrentTarget/>
+<!--      <LazyUnitStatusCurrentTarget/>-->
       <LazyUnitStatusTelemetry/>
       <LazyUnitStatusSafety/>
       <LazyUnitStatusWeather/>
