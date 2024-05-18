@@ -1,12 +1,17 @@
 import {useRoute} from "vue-router";
 import {defineStore} from "pinia";
-import {collection} from "firebase/firestore";
+import {collection, limit, orderBy, query, where} from "firebase/firestore";
 import {firestoreDefaultConverter, useCollection} from "vuefire";
 
 
 export const useUnitsStore = defineStore('units', () => {
     const route = useRoute()
-    const timePeriod = 24 // hours
+    const dayjs = useDayjs()
+
+    const previousHours = ref(24)
+    const timePeriod = computed(() => dayjs().subtract(previousHours.value, 'hours'))
+    const docLimit = ref(25)
+
 
     // A reference to the 'units' collection.
     const unitsRef =
@@ -20,9 +25,19 @@ export const useUnitsStore = defineStore('units', () => {
             }
         )
 
+    const unitObsRef = (unitId) => {
+        return query(
+            collection(useFirestore(), 'units', unitId, 'observations'),
+            where('time', '>=', timePeriod.value.toDate()),
+            orderBy('time', 'desc'),
+            limit(docLimit.value)
+        )
+    }
+
     // All units in the 'units' collection.
     const unitsSource = useCollection(() =>
-        unitsRef, {wait: true})
+        unitsRef, {wait: true}
+    )
 
     // Make a PanUnit object from the unit document.
     const units = computed(() =>
@@ -40,7 +55,6 @@ export const useUnitsStore = defineStore('units', () => {
             : []
     )
 
-
     // The currently active unit document.
     const currentUnit = computed(() => {
             return route.params.id
@@ -49,37 +63,11 @@ export const useUnitsStore = defineStore('units', () => {
         }
     )
 
-    const metadataSource = useCollection(() => {
-            return currentUnit.value
-                ? collection(
-                    useFirestore(),
-                    'units', currentUnit.value.id, 'metadata'
-                ).withConverter({
-                    toFirestore: firestoreDefaultConverter.toFirestore,
-                    fromFirestore: (snapshot) => {
-                        const data = firestoreDefaultConverter.fromFirestore(snapshot)
-                        if (!data) return null
-
-                        data.received_time = data.received_time.toDate()
-
-                        return data
-                    }
-                })
-                : null
-        }
+    const unitObservationsSource = useCollection(() => {
+            if (!currentUnit.value) return null
+            return unitObsRef(currentUnit.value.id)
+        }, {wait: true}
     )
 
-    const currentMetadata = computed(() => {
-        return currentUnit.value
-            ? {
-                config: metadataSource.value.find((doc) => doc.id === 'config'),
-                power: metadataSource.value.find((doc) => doc.id === 'power'),
-                safety: metadataSource.value.find((doc) => doc.id === 'safety'),
-                status: metadataSource.value.find((doc) => doc.id === 'status'),
-                weather: metadataSource.value.find((doc) => doc.id === 'weather')
-            }
-            : null
-    })
-
-    return {timePeriod, unitsSource, metadataSource, units, currentUnit, currentMetadata}
+    return {unitsSource, units, currentUnit, unitObservationsSource, previousHours, timePeriod, docLimit}
 })

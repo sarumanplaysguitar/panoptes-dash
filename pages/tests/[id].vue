@@ -1,22 +1,11 @@
 <script setup lang="ts">
 import {usePendingPromises} from 'vuefire'
-import {PanUnit} from '~/composables/panUnit'
 
+const dayjs = useDayjs()
 const unitsStore = useUnitsStore()
 
-const unit = computed(() => {
-  const u = unitsStore.currentUnit
-  if (!u) return null
-  const metadata = unitsStore.currentMetadata
-  let pan_unit = new PanUnit(u.id)
-  pan_unit.config = metadata.config
-  pan_unit.status = metadata.status
-  pan_unit.safety = metadata.safety
-  pan_unit.power = metadata.power
-  pan_unit.weather = metadata.weather
-
-  return pan_unit
-})
+const unit = computed(() => unitsStore.currentUnit)
+const unitObservations = computed(() => unitsStore.unitObservationsSource)
 
 onServerPrefetch(() => usePendingPromises())
 </script>
@@ -25,7 +14,6 @@ onServerPrefetch(() => usePendingPromises())
     <div class="basis-1/16">
       <UnitSelector/>
     </div>
-
     <div class="basis-3/16">
       <Card>
         <template #header>
@@ -42,9 +30,14 @@ onServerPrefetch(() => usePendingPromises())
       <Card>
         <template #header>Observations</template>
         <template #content>
-          <pre>
-            Hi
-          </pre>
+          <ul>
+            <li v-for="observation in unitObservations">
+              <pre>
+              {{ dayjs(observation.time.toDate()).format('lll') }}
+              {{ observation.sequence_id }}
+              </pre>
+            </li>
+          </ul>
         </template>
       </Card>
     </div>
