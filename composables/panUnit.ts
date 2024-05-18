@@ -1,18 +1,23 @@
-import type {ConfigI, LocationI, MetadataI} from "~/composables/interfaces";
+import type {ConfigI, LocationI, MetadataI, MetadataRecordI, ObservationI} from "~/composables/interfaces";
 
 const dayjs = useDayjs()
 
 export class PanUnit {
     id: string;
     name?: string;
-    config?: ConfigI;
-    status?: MetadataI
-    safety?: MetadataI
-    power?: MetadataI
-    weather?: MetadataI
+    metadata?: MetadataI;
+    observations?: ObservationI[]
 
     constructor(unitId: string) {
         this.id = unitId
+    }
+
+    get config(): ConfigI | undefined {
+        return this.metadata?.config
+    }
+
+    get status(): MetadataRecordI | undefined {
+        return this.metadata?.status
     }
 
     get location(): LocationI | undefined {
@@ -30,11 +35,11 @@ export class PanUnit {
     }
 
     get last_status_time(): any {
-        return dayjs(this.status?.received_time.toDate()).tz(this.timezone).format('lll')
+        return dayjs(this.status?.received_time).tz(this.timezone).format('lll')
     }
 
     get last_status_time_relative(): any {
-        return dayjs(this.status?.received_time.toDate()).fromNow()
+        return dayjs(this.status?.received_time).fromNow()
     }
 
     get state(): string {
@@ -49,7 +54,7 @@ export class PanUnit {
         return <MoonI>{
             phase: this.status?.observatory?.observer?.local_moon_phase,
             altitude: this.status?.observatory?.observer?.local_moon_alt,
-            altitude: this.status?.observatory?.observer?.local_moon_alt,
+            azimuth: this.status?.observatory?.observer?.local_moon_az,
             illumination: this.status?.observatory?.observer?.local_moon_illumination
         }
     }

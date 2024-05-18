@@ -1,12 +1,21 @@
-export interface MetadataI {
+export interface MetadataRecordI {
     received_time: Date;
 }
 
-export interface ConfigI extends MetadataI {
+export interface ConfigI extends MetadataRecordI {
     unit_id?: string;
     name?: string;
     location?: LocationI;
 }
+
+export interface MetadataI {
+    config?: ConfigI;
+    status?: MetadataRecordI
+    safety?: MetadataRecordI
+    power?: MetadataRecordI
+    weather?: MetadataRecordI
+}
+
 
 export interface LocationI {
     latitude: number;

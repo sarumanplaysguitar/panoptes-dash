@@ -1,31 +1,25 @@
-import {collection, doc, limit, orderBy, query, where} from "firebase/firestore";
+import {defineStore} from "pinia";
+import {collection} from "firebase/firestore";
+import {firestoreDefaultConverter} from "vuefire";
+import {useRoute} from "vue-router";
 
 const dayjs = useDayjs()
 
 export const useMetadataStore = defineStore('metadata', () => {
+    const route = useRoute()
 
-    function getMetadataDoc(unitId, docName) {
-        return useDocument(doc(useFirestore(), 'units', unitId, 'metadata', docName), {
-            wait: true,
-            ssrKey: 'metadata-doc'
-        })
-    }
-
-    function getMetadata(unitId, collectionName, sinceValue = 24, sinceUnit = 'hour') {
-        const colRef = collection(
+    const metadataRef = computed(() =>
+        collection(
             useFirestore(),
-            'units', unitId, 'metadata', collectionName, 'records'
-        )
-        const colQuery = useCollection(
-            query(
-                colRef,
-                where('received_time', '>=', dayjs().subtract(sinceValue, sinceUnit).toDate()),
-                orderBy('received_time', 'desc'),
-                limit(100)
-            ), {wait: true, ssrKey: 'metadata-collection'})
-
-        return colQuery
-    }
+            'units', route.params.id, 'metadata'
+        ).withConverter({
+            toFirestore: firestoreDefaultConverter.toFirestore,
+            fromFirestore: (snapshot) => {
+                const data = firestoreDefaultConverter.fromFirestore(snapshot)
+                if (!data) return null
+                return data
+            }
+        }))
 
     function getMetadataAsArray(unitId, collectionName, fieldName) {
         const colQuery = getMetadata(unitId, collectionName)
@@ -46,5 +40,5 @@ export const useMetadataStore = defineStore('metadata', () => {
         return val != null & val ? 'success' : 'danger'
     }
 
-    return {getMetadataDoc, getMetadata, getMetadataAsArray, getSeverity}
+    return {metadataRef, getMetadataAsArray, getSeverity}
 })

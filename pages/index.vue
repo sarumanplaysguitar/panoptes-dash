@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
-import { usePendingPromises } from 'vuefire'
+import {usePendingPromises} from 'vuefire'
 
 const colorMode = useColorMode()
+const whichColor = computed(() => colorMode.preference)
 
 const unitsStore = useUnitsStore()
-const units = unitsStore.units
+const units = computed(() => unitsStore.units)
+const unitIds = computed(() => units.value.map(unit => unit.id))
+const numImages = computed(() => units.value.map(unit => unit.num_images ? unit.num_images : 0))
 
 const plotOptions = computed(() => {
       return {
@@ -17,7 +20,7 @@ const plotOptions = computed(() => {
           text: 'Number of images per units'
         },
         xaxis: {
-          categories: unitsStore.unitIDs
+          categories: unitIds.value
         },
         yaxis: {
           title: {
@@ -28,16 +31,18 @@ const plotOptions = computed(() => {
           enabled: false
         },
         theme: {
-          mode: colorMode.preference
+          mode: whichColor.value
         }
       }
     }
 )
 
-const plotSeries = ref([{
-  name: 'numImages',
-  data: unitsStore.unitImages
-}])
+const plotSeries = computed(() => {
+  return [{
+    name: 'numImages',
+    data: numImages.value ? numImages.value : []
+  }]
+})
 
 onServerPrefetch(() => usePendingPromises())
 </script>
