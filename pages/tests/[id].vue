@@ -5,7 +5,7 @@ const dayjs = useDayjs()
 const unitsStore = useUnitsStore()
 
 const unit = computed(() => unitsStore.currentUnit)
-const unitObservations = computed(() => unitsStore.unitObservationsSource)
+const observations = computed(() => unitsStore.currentObservations)
 
 onServerPrefetch(() => usePendingPromises())
 </script>
@@ -25,19 +25,22 @@ onServerPrefetch(() => usePendingPromises())
           </pre>
         </template>
       </Card>
+      <Card>
+        <template #header>
+          <p class="status-header">{{ unit?.id }}</p>
+        </template>
+        <template #content>
+          <pre class="text-xs">
+<!--            {{ unit?.status?.received_time.toDate() }}-->
+          </pre>
+        </template>
+      </Card>
     </div>
     <div>
       <Card>
         <template #header>Observations</template>
         <template #content>
-          <ul>
-            <li v-for="observation in unitObservations">
-              <pre>
-              {{ dayjs(observation.time.toDate()).format('lll') }}
-              {{ observation.sequence_id }}
-              </pre>
-            </li>
-          </ul>
+          <RecentObservationsTable :observations="observations"/>
         </template>
       </Card>
     </div>

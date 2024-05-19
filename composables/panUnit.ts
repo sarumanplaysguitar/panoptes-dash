@@ -13,20 +13,29 @@ export class PanUnit {
     }
 
     get config(): ConfigI | undefined {
-        return this.metadata?.config
+        // Check if metadata is defined
+        if (this.metadata == undefined) return undefined
+        return this.metadata.config
     }
 
     get status(): MetadataRecordI | undefined {
-        return this.metadata?.status
+        if (this.metadata == undefined) return undefined
+        return this.metadata.status ?? undefined
+    }
+
+    get observatory(): MetadataRecordI | undefined {
+        if (this.status == undefined) return undefined
+        return this.status.observatory ?? undefined
     }
 
     get location(): LocationI | undefined {
-        return this.config?.location
+        if (this.config == undefined) return undefined
+        return this.config.location ?? undefined
     }
 
-
     get timezone(): string {
-        return this.location?.timezone ?? 'UTC'
+        if (this.location == undefined) return 'UTC'
+        return this.location.timezone ?? 'UTC'
     }
 
     get local_time(): any {
@@ -35,19 +44,22 @@ export class PanUnit {
     }
 
     get last_status_time(): any {
-        return dayjs(this.status?.received_time).tz(this.timezone).format('lll')
+        // Check the received_time on the status entry and format locally.
+        if (this.status == undefined) return null
+        return dayjs(this.status.received_time.toDate()).tz(this.timezone).format('lll')
     }
 
     get last_status_time_relative(): any {
-        return dayjs(this.status?.received_time).fromNow()
+        if (this.last_status_time == undefined) return null
+        return dayjs(this.last_status_time).from(this.local_time)
     }
 
     get state(): string {
-        return this.status?.from_state
+        return this.status?.observatory?.state ?? 'unknown'
     }
 
     get hardware_ready(): boolean {
-        return this.status?.observatory.can_observe ? true : false
+        return this.observatory?.can_observe
     }
 
     get moon(): MoonI {

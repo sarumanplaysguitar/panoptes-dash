@@ -25,14 +25,26 @@ export const useUnitsStore = defineStore('units', () => {
             }
         )
 
-    const unitObsRef = (unitId) => {
+    const unitObsRef = computed(() =>
+        collection(useFirestore(), 'units', route.params.id, 'observations').withConverter({
+                toFirestore: firestoreDefaultConverter.toFirestore,
+                fromFirestore: (snapshot) => {
+                    const data = firestoreDefaultConverter.fromFirestore(snapshot)
+                    if (!data) return null
+                    return data
+                }
+            }
+        )
+    )
+
+    const unitObsQuery = computed(() => {
         return query(
-            collection(useFirestore(), 'units', unitId, 'observations'),
+            unitObsRef.value,
             where('time', '>=', timePeriod.value.toDate()),
             orderBy('time', 'desc'),
             limit(docLimit.value)
         )
-    }
+    })
 
     // All units in the 'units' collection.
     const unitsSource = useCollection(() =>
@@ -63,11 +75,10 @@ export const useUnitsStore = defineStore('units', () => {
         }
     )
 
-    const unitObservationsSource = useCollection(() => {
-            if (!currentUnit.value) return null
-            return unitObsRef(currentUnit.value.id)
-        }, {wait: true}
-    )
+    const currentObservations = computed(() => useCollection(
+        unitObsQuery
+    ))
 
-    return {unitsSource, units, currentUnit, unitObservationsSource, previousHours, timePeriod, docLimit}
+
+    return {unitsSource, units, currentUnit, unitObsRef, unitObsQuery, currentObservations, previousHours, timePeriod, docLimit}
 })
