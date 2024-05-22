@@ -1,16 +1,20 @@
 <script setup lang="ts">
+import {usePendingPromises} from 'vuefire'
 
-import {doc} from "firebase/firestore";
+const unitsStore = useUnitsStore()
+const unit = computed(() => unitsStore.currentUnit ? unitsStore.currentUnit : {})
+const safetyDoc = computed(() => unit.value?.safety ? unit.value?.safety : {})
 
-const route = useRoute()
-const db = useFirestore()
+const lastUpdated = computed(() =>
+    safetyDoc.value?.received_time
+        ? safetyDoc.value?.received_time.toDate()
+        : null)
 
-const safetyDoc = useDocument(doc(db, 'units', route.params.id, 'metadata', 'safety'), {wait: true})
-
-function getSeverity(val) {
-  return val != null & val ? 'success' : 'danger'
+function getSeverity(val: string | null) {
+  return (val != null & val) ? 'success' : 'danger'
 }
 
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
@@ -30,7 +34,7 @@ function getSeverity(val) {
       <br/>
     </template>
     <template #footer>
-      Last updated: {{ $dayjs().to($dayjs(safetyDoc?.received_time.toDate()).utc()) }}
+      Last updated: {{ lastUpdated ? $dayjs().to($dayjs(lastUpdated).utc()) : 'N/A' }}
     </template>
   </Card>
 </template>

@@ -1,11 +1,27 @@
 <script setup lang="ts">
+import {usePendingPromises} from 'vuefire'
+
 const route = useRoute()
-const props = defineProps(['observations'])
-const observations = computed(() => props.observations)
+
+const unitsStore = useUnitsStore()
+const observations = computed(() => unitsStore.currentObservations ? unitsStore.currentObservations : [])
+const images = computed(() => unitsStore.currentImages ? unitsStore.currentImages : [])
+
+observations.value.forEach((observation) => {
+  observation.images = images.value.filter((image) => {
+    return image.uid.startsWith(observation.sequence_id)
+  })
+})
+
 const expandedRows = ref([]);
+
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
+  <div v-if="observations.length">
+<!--    {{ observations[0] }}-->
+  </div>
   <DataTable
       v-model:expandedRows="expandedRows"
       dataKey="sequence_id"
@@ -31,10 +47,10 @@ const expandedRows = ref([]);
     <Column header="Mount Coordinates">
       <template #body="slotProps">
         <div v-if="slotProps.data.coordinates">
-        {{ slotProps.data.coordinates?.mount_ra?.toFixed(3) }}°
-        {{ slotProps.data.coordinates?.mount_dec?.toFixed(3) }}°
+          {{ slotProps.data.coordinates?.mount_ra?.toFixed(3) }}°
+          {{ slotProps.data.coordinates?.mount_dec?.toFixed(3) }}°
         </div>
-       </template>
+      </template>
     </Column>
     <Column field="image_type" header="Type" sortable></Column>
     <Column header="Image count">

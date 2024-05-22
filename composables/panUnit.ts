@@ -6,6 +6,7 @@ export class PanUnit {
     id: string;
     name?: string;
     metadata?: MetadataI;
+    metadata_records?: MetadataRecordI[];
     observations?: ObservationI[]
 
     constructor(unitId: string) {
@@ -31,6 +32,11 @@ export class PanUnit {
     get status(): MetadataRecordI | null {
         if (this.metadata == null) return null
         return this.metadata.status ?? null
+    }
+
+    get safety(): MetadataRecordI | null {
+        if (this.metadata == null) return null
+        return this.metadata.safety ?? null
     }
 
     get observatory(): MetadataRecordI | null {
@@ -86,13 +92,13 @@ export class PanUnit {
 
     get local_time(): any {
         if (this.location == null) return null
-        return dayjs().tz(this.timezone).format('llll')
+        return dayjs().tz(this.timezone)
     }
 
     get last_status_time(): any {
         // Check the received_time on the status entry and format locally.
         if (this.status == null) return null
-        return dayjs(this.status.received_time.toDate()).tz(this.timezone).format('lll')
+        return dayjs(this.status.received_time.toDate()).tz(this.timezone)
     }
 
     get last_status_time_relative(): any {
@@ -147,7 +153,7 @@ export class PanUnit {
         
         Time:
           Timezone   : ${this.timezone} (${this.location?.gmt_offset})
-          Observatory: ${this.local_time}
+          Observatory: ${this.local_time.format('lll')}
           UTC        : ${dayjs().utc().format('llll')}
           Browser    : ${dayjs().format('llll')}
           

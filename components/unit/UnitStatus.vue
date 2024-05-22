@@ -1,16 +1,16 @@
 <script setup lang="ts">
-const slots = defineProps(['unit'])
+
 </script>
 
 <template>
   <div class="flex">
     <div class="status-layout">
-<!--      <LazyUnitStatusCurrentTarget/>-->
-      <LazyUnitStatusTelemetry/>
+      <!--      <LazyUnitStatusCurrentTarget/>-->
+      <!--      <LazyUnitStatusTelemetry/>-->
       <LazyUnitStatusSafety/>
       <LazyUnitStatusWeather/>
-      <LazyUnitStatusMoon/>
-      <LazyUnitStatusOverheadSky/>
+      <!--      <LazyUnitStatusMoon/>-->
+      <!--      <LazyUnitStatusOverheadSky/>-->
     </div>
   </div>
 </template>
@@ -21,7 +21,7 @@ const slots = defineProps(['unit'])
 }
 
 .status-card {
-  @apply col-span-2 rounded-md p-4
+  @apply col-span-1 rounded-md p-4
 }
 
 .status-header {

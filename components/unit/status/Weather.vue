@@ -1,44 +1,36 @@
 <script setup lang="ts">
-import {collection, doc, limit, orderBy, query, where} from "firebase/firestore";
+import {usePendingPromises} from 'vuefire'
 
-const db = useFirestore()
-const route = useRoute()
 const colorMode = useColorMode()
 const dayjs = useDayjs()
 
-const sinceValue = 1
-const sinceUnit = 'hour'
-const docLimit = 100
+const unitsStore = useUnitsStore()
+const unit = computed(() => unitsStore.currentUnit ? unitsStore.currentUnit : {})
 
-const unitsRef = collection(db, 'units')
-const metadataRef = collection(unitsRef, route.params.id, 'metadata')
-
-const configDoc = useDocument(doc(metadataRef, 'config'), {wait: true})
-const weatherDoc = useDocument(doc(metadataRef, 'weather'), {wait: true})
-const weatherRecords = useCollection(
-    query(
-        collection(metadataRef, 'weather', 'records'),
-        where('received_time', '>=', dayjs().subtract(sinceValue, sinceUnit).toDate()),
-        orderBy('received_time', 'desc'),
-        limit(docLimit)
-    ), {wait: true})
+const weatherThresholds = computed(() => unit.value.weather_thresholds ? unit.value.weather_thresholds : {})
+const weatherRecords = computed(() => {
+  if (!unit.value.metadata_records) {
+    return []
+  }
+  return unit.value.metadata_records.filter((doc) => doc.record_type === 'weather')
+})
 
 const plotData = computed(() => {
   return [{
     name: 'Ambient Temp',
     data: weatherRecords.value.map((record) => {
-      return {x: dayjs(record.date).unix(), y: record.ambient_temp}
+      return {x: dayjs(record.received_time).format('lll'), y: record.ambient_temp}
     })
   }, {
     name: 'Sky Temp',
     data: weatherRecords.value.map((record) => {
-      return {x: dayjs(record.date).unix(), y: record.sky_temp}
+      return {x: dayjs(record.received_time).format('lll'), y: record.sky_temp}
     })
   }, {
     name: 'Sky - Ambient Temp',
     data: weatherRecords.value.map((record) => {
       return {
-        x: dayjs(record.date).unix(),
+        x: dayjs(record.received_time).format('lll'),
         y: (parseFloat(record.sky_temp) - parseFloat(record.ambient_temp)).toFixed(2)
       }
     })
@@ -62,7 +54,13 @@ const plotOptions = computed(() => {
       }
     },
     xaxis: {
-      type: 'datetime'
+      type: 'datetime',
+      labels: {
+        datetimeUTC: false
+      },
+      title: {
+        text: 'Time (browser local time)'
+      }
     },
     yaxis: {
       max: 45,
@@ -81,10 +79,10 @@ const plotOptions = computed(() => {
     },
     annotations: {
       yaxis: [{
-        y: configDoc.value.environment.weather.thresholds.cloudy,
-        borderColor: 'danger',
+        y: weatherThresholds.value.cloudy,
+        borderColor: '#c95569',
         label: {
-          text: 'Cloudy',
+          text: 'Cloudy (' + weatherThresholds.value.cloudy + '°)',
           position: 'left',
           offsetX: 60,
           style: {
@@ -92,11 +90,11 @@ const plotOptions = computed(() => {
           }
         }
       }, {
-        y: configDoc.value.environment.weather.thresholds.very_cloudy,
+        y: weatherThresholds.value.very_cloudy,
         borderColor: '#c95569',
         opacity: 1,
         label: {
-          text: 'Very cloudy',
+          text: 'Very cloudy (' + weatherThresholds.value.very_cloudy + '°)',
           position: 'left',
           offsetX: 60,
           style: {
@@ -113,6 +111,7 @@ function getSeverity(val) {
   return val != null & val ? 'success' : 'danger'
 }
 
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
@@ -120,37 +119,42 @@ function getSeverity(val) {
     <template #header>
       <p class="status-header">Weather</p>
     </template>
-    <template #content>
-      <ClientOnly>
-        <apexchart :series="plotData" :options="plotOptions" width="100%"></apexchart>
-      </ClientOnly>
-      <br/>
-      <Tag :severity="getSeverity(weatherDoc.is_safe)">Is Safe</Tag>
-      <br />
-      <Tag :severity="getSeverity(weatherDoc.cloud_safe)">
-        Temp:
-        <br/>
-        Ambient: {{ weatherDoc.ambient_temp }}°
-        <br/>
-        Sky: {{ weatherDoc.sky_temp }}°
-      </Tag>
-      <br/>
-      <Tag :severity="getSeverity(weatherDoc.cloud_safe)">Clouds:
-        <br/>{{ weatherDoc.cloud_condition }}
-      </Tag>
-      <br/>
-      <Tag :severity="getSeverity(weatherDoc.rain_safe)">Rain:
-        <br/> {{ weatherDoc.rain_condition }}
-      </Tag>
-      <br/>
-      <Tag :severity="getSeverity(weatherDoc.wind_safe)">Wind:
-        <br/> {{ weatherDoc.wind_condition }}
-        {{ weatherDoc.wind_speed }} kph
-      </Tag>
-      <br/>
-    </template>
     <template #footer>
-      Last updated: {{ $dayjs().to($dayjs(weatherDoc?.received_time.toDate()).utc()) }}
+      Last updated: {{ $dayjs().to($dayjs(unit.weather?.received_time.toDate()).utc()) }}
+    </template>
+    <template #content>
+      <div class="flex flex-row gap-2">
+        <div class="basis-3/4">
+          <ClientOnly>
+            <apexchart :series="plotData" :options="plotOptions" width="600"></apexchart>
+          </ClientOnly>
+        </div>
+        <div class="basis-1/4">
+          <Tag :severity="getSeverity(unit.weather?.is_safe)">Is Safe</Tag>
+          <br/>
+          <Tag :severity="getSeverity(unit.weather?.cloud_safe)">
+            Temp:
+            <br/>
+            Ambient: {{ unit.weather?.ambient_temp }}°
+            <br/>
+            Sky: {{ unit.weather?.sky_temp }}°
+          </Tag>
+          <br/>
+          <Tag :severity="getSeverity(unit.weather?.cloud_safe)">Clouds:
+            <br/>{{ unit.weather?.cloud_condition }}
+          </Tag>
+          <br/>
+          <Tag :severity="getSeverity(unit.weather?.rain_safe)">Rain:
+            <br/> {{ unit.weather?.rain_condition }}
+          </Tag>
+          <br/>
+          <Tag :severity="getSeverity(unit.weather?.wind_safe)">Wind:
+            <br/> {{ unit.weather?.wind_condition }}
+            {{ unit.weather?.wind_speed }} kph
+          </Tag>
+          <br/>
+        </div>
+      </div>
     </template>
   </Card>
 </template>

@@ -32,6 +32,12 @@ export const useUnitsStore = defineStore('units', () => {
                 fromFirestore: (snapshot) => {
                     const data = firestoreDefaultConverter.fromFirestore(snapshot)
                     if (!data) return null
+
+                    // Create an observation_id that doesn't include the camera id.
+                    let sequence_parts = data.sequence_id.split('_')
+                    data.observation_id = sequence_parts[0] + '_' + sequence_parts[2]
+                    data.sequence_time = dayjs.utc(sequence_parts[2], 'YYYYMMDDHHmmss')
+
                     return data
                 }
             }
@@ -57,12 +63,40 @@ export const useUnitsStore = defineStore('units', () => {
         )
     )
 
+    const unitMetadataRef = computed(() =>
+        !route.params.id ? null :
+            collection(useFirestore(), 'units', route.params.id, 'metadata').withConverter({
+                    toFirestore: firestoreDefaultConverter.toFirestore,
+                    fromFirestore: (snapshot) => {
+                        const data = firestoreDefaultConverter.fromFirestore(snapshot)
+                        if (!data) return null
+
+                        // Change the date string into a dayjs object.
+                        data.received_time = data.received_time.toDate()
+                        // data.date = dayjs.utc(data.date)
+
+                        return data
+                    }
+                }
+            )
+    )
+
     // The query for the observations.
     const observationsQuery = computed(() => {
         return query(
             route.params.id ? unitObsRef.value : allObsRef.value,
             where('time', '>=', timePeriod.value.toDate()),
             orderBy('time', 'desc'),
+            limit(docLimit.value)
+        )
+    })
+
+    const metadataQuery = computed(() => {
+        if (!unitMetadataRef.value) return null
+        return query(
+            unitMetadataRef.value,
+            where('received_time', '>=', timePeriod.value.toDate()),
+            orderBy('received_time', 'desc'),
             limit(docLimit.value)
         )
     })
@@ -117,8 +151,12 @@ export const useUnitsStore = defineStore('units', () => {
             : []
     )
 
-    const currentUnitObservations = useCollection(() =>
+    const currentObservations = useCollection(() =>
         observationsQuery.value, {wait: true}
+    )
+
+    const currentUnitMetadata = useCollection(() =>
+        metadataQuery.value, {wait: true}
     )
 
     const currentImages = useCollection(() =>
@@ -133,16 +171,20 @@ export const useUnitsStore = defineStore('units', () => {
 
     // The currently active unit document.
     const currentUnit = computed(() => {
+            if (!units.value) return null
+            if (!route.params.id) return null
+
             // Get the active unit and assign observations and images.
             let unit = units.value.find((unit) => unit.id === route.params.id)
             if (unit) {
-                unit.observations = currentUnitObservations.value
+                unit.observations = currentObservations.value
                 // Assign images to each observation based on the observation_id.
                 unit.observations.forEach((observation) => {
                     observation.images = currentUnitImages.value.filter((image) => {
                         return image.uid.startsWith(observation.sequence_id)
                     })
                 })
+                unit.metadata_records = currentUnitMetadata.value
             }
             return unit
         }
@@ -156,7 +198,8 @@ export const useUnitsStore = defineStore('units', () => {
         allObsRef,
         allImagesRef,
         observationsQuery,
-        currentUnitObservations,
+        currentObservations,
+        currentUnitMetadata,
         currentUnitImages,
         currentImages,
         previousHours,

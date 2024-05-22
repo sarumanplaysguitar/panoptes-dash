@@ -1,20 +1,14 @@
 <script setup>
-const slots = defineProps(['unit']);
-const activeTab = ref(0);
+
 </script>
 
 <template>
-  <TabView v-model:activeIndex="activeTab">
-    <TabPanel header="Status">
-      <UnitStatus :unit="slots.unit"/>
-    </TabPanel>
-    <TabPanel header="Observing Log">
-      <UnitObservingLog />
-    </TabPanel>
-    <TabPanel header="Raw Metadata Records">
-      <ShowRawFirestoreRecords/>
-    </TabPanel>
-  </TabView>
+  <Panel header="Observing Log">
+    <UnitObservingLog/>
+  </Panel>
+  <Panel header="Status">
+    <UnitStatus/>
+  </Panel>
 </template>
 
 <style scoped>

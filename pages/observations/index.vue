@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Card from 'primevue/card'
 import {usePendingPromises} from 'vuefire'
 
-const observationsStore = useObservationsStore()
+const unitsStore = useUnitsStore()
+const observations = computed(() => unitsStore.currentObservations ? unitsStore.currentObservations : [])
 
 onServerPrefetch(() => usePendingPromises())
 </script>
@@ -11,7 +11,7 @@ onServerPrefetch(() => usePendingPromises())
   <Card>
     <template #header>Observations</template>
     <template #content>
-      <LazyRecentObservationsTable :observations="observationsStore.observations"/>
+      <RecentObservationsTable :observations="observations"/>
     </template>
   </Card>
 </template>
