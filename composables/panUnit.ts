@@ -1,4 +1,4 @@
-import type {ConfigI, LocationI, MetadataI, MetadataRecordI, ObservationI} from "~/composables/interfaces";
+import type {ConfigI, ImageI, LocationI, MetadataI, MetadataRecordI, ObservationI} from "~/composables/interfaces";
 
 const dayjs = useDayjs()
 
@@ -12,50 +12,96 @@ export class PanUnit {
         this.id = unitId
     }
 
-    get config(): ConfigI | undefined {
+    get config(): ConfigI | null {
         // Check if metadata is defined
-        if (this.metadata == undefined) return undefined
-        return this.metadata.config
+        if (this.metadata == null) return null
+        return this.metadata.config ?? null
     }
 
-    get status(): MetadataRecordI | undefined {
-        if (this.metadata == undefined) return undefined
-        return this.metadata.status ?? undefined
+    get weather(): MetadataRecordI | null {
+        if (this.metadata == null) return null
+        return this.metadata.weather ?? null
     }
 
-    get observatory(): MetadataRecordI | undefined {
-        if (this.status == undefined) return undefined
-        return this.status.observatory ?? undefined
+    get weather_thresholds(): any {
+        if (this.config == null) return null
+        return this.config.environment.weather.thresholds ?? null
     }
 
-    get location(): LocationI | undefined {
-        if (this.config == undefined) return undefined
-        return this.config.location ?? undefined
+    get status(): MetadataRecordI | null {
+        if (this.metadata == null) return null
+        return this.metadata.status ?? null
+    }
+
+    get observatory(): MetadataRecordI | null {
+        if (this.status == null) return null
+        return this.status.observatory ?? null
+    }
+
+    get image(): string[] | null {
+        if (this.metadata == null) return null
+        // Sort the image keys.
+        let image = this.metadata.images
+        if (image == null) return null
+        return Object.keys(image).sort().map(key => `${key}                     ${image[key]}`)
+    }
+
+    get image_metadata(): ImageI[] | null {
+        if (this.metadata == null) return null
+        let image = this.metadata.images ?? null
+
+        return {
+            id: image?.image_id,
+            sequence_id: image?.sequence_id,
+            public_url: image?.fits_public_url,
+            pretty_public_url: image?.pretty_image_url,
+            exptime: image?.exptime,
+            field_ra: image?.field_ra,
+            field_dec: image?.field_dec,
+            mount_ra: image.ra_mnt,
+            mount_dec: image.dec_mnt,
+            mount_ha: image.ha_mnt,
+            airmass: image?.airmass,
+            field: image?.field_name,
+            cam_id: image?.camera_id,
+            current_exp: image?.current_exp,
+            exp_set_size: image?.exp_set_size,
+            min_nexp: image?.min_nexp,
+            moon_fraction: image?.moon_fraction,
+            moon_separation: image?.moon_separation,
+            received_time: image?.received_time.toDate(),
+            status: image?.status,
+        }
+    }
+
+    get location(): LocationI | null {
+        if (this.config == null) return null
+        return this.config.location ?? null
     }
 
     get timezone(): string {
-        if (this.location == undefined) return 'UTC'
+        if (this.location == null) return 'UTC'
         return this.location.timezone ?? 'UTC'
     }
 
     get local_time(): any {
-        if (this.location == undefined) return null
+        if (this.location == null) return null
         return dayjs().tz(this.timezone).format('llll')
     }
 
     get last_status_time(): any {
         // Check the received_time on the status entry and format locally.
-        if (this.status == undefined) return null
+        if (this.status == null) return null
         return dayjs(this.status.received_time.toDate()).tz(this.timezone).format('lll')
     }
 
     get last_status_time_relative(): any {
-        if (this.last_status_time == undefined) return null
+        if (this.last_status_time == null) return null
         return dayjs(this.last_status_time).from(this.local_time)
     }
 
     get state(): string {
-        return this.status?.observatory?.state ?? 'unknown'
+        return this.status?.state ?? 'unknown'
     }
 
     get hardware_ready(): boolean {
@@ -82,10 +128,13 @@ export class PanUnit {
     }
 
     about(): string {
-        let mount_time_local = dayjs(this.status?.observatory?.mount?.time_local)
+        let mount_time_local = dayjs(this.status?.observatory?.mount?.time_local) // in obs time
+        let weather_time_local = dayjs(this.weather?.received_time.toDate())  // in UTC
 
         return `
         Hello ${this.name} (${this.id}), how are you?
+
+        State       : ${this.state}
 
         Mount:
             State   : ${this.status?.observatory?.mount?.state}
@@ -102,6 +151,18 @@ export class PanUnit {
           UTC        : ${dayjs().utc().format('llll')}
           Browser    : ${dayjs().format('llll')}
           
+        Weather:
+            Safe       : ${this.weather?.is_safe}
+            Temp       : ${this.weather?.ambient_temp}
+            Sky Temp   : ${this.weather?.sky_temp}
+            Temp Diff  : ${(this.weather?.sky_temp - this.weather?.ambient_temp).toFixed(2)}
+            Wind Speed : ${this.weather?.wind_speed}
+            Wind Safe  : ${this.weather?.wind_safe} (${this.weather?.wind_condition})
+            Cloud Safe : ${this.weather?.cloud_safe} (${this.weather?.cloud_condition})            
+            Rain Safe  : ${this.weather?.rain_safe} (${this.weather?.rain_condition})
+            Updated    : ${weather_time_local.format('lll')} 
+                        (${weather_time_local.fromNow()})            
+          
         Moon:
             Phase        : ${this.moon?.phase?.toFixed(2)}
             Illumination : ${this.moon?.illumination?.toFixed(2)}
@@ -109,12 +170,6 @@ export class PanUnit {
         
         Sun:
             Position     : ${this.sun?.position?.toFixed(2)}°
-            Rise:
-                Civil: ${this.sun?.sunrise.format('lll')}
-                Astro: ${this.sun?.astro_sunrise.format('lll')}
-            Set:
-                Civil: ${this.sun?.sunset.format('lll')}
-                Astro: ${this.sun?.astro_sunset.format('lll')}
             
         Observatory:
             Name     : ${this.location?.name}
@@ -122,7 +177,6 @@ export class PanUnit {
             Longitude: ${this.location?.longitude}
             Elevation: ${this.location?.elevation}        
         
-        Machine State: ${this.state}
         Hardware ready: ${this.hardware_ready}
         
         Last status update: ${this.last_status_time} 

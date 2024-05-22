@@ -1,6 +1,6 @@
 import {useRoute} from "vue-router";
 import {defineStore} from "pinia";
-import {collection, limit, orderBy, query, where} from "firebase/firestore";
+import {collection, collectionGroup, limit, orderBy, query, where} from "firebase/firestore";
 import {firestoreDefaultConverter, useCollection} from "vuefire";
 
 
@@ -10,7 +10,7 @@ export const useUnitsStore = defineStore('units', () => {
 
     const previousHours = ref(24)
     const timePeriod = computed(() => dayjs().subtract(previousHours.value, 'hours'))
-    const docLimit = ref(25)
+    const docLimit = ref(250)
 
 
     // A reference to the 'units' collection.
@@ -25,8 +25,9 @@ export const useUnitsStore = defineStore('units', () => {
             }
         )
 
-    const unitObsRef = computed(() =>
-        collection(useFirestore(), 'units', route.params.id, 'observations').withConverter({
+    // All the observations as a collectionGroup.
+    const allObsRef = computed(() =>
+        collectionGroup(useFirestore(), 'observations').withConverter({
                 toFirestore: firestoreDefaultConverter.toFirestore,
                 fromFirestore: (snapshot) => {
                     const data = firestoreDefaultConverter.fromFirestore(snapshot)
@@ -37,12 +38,61 @@ export const useUnitsStore = defineStore('units', () => {
         )
     )
 
-    const unitObsQuery = computed(() => {
+    // A reference to the 'observations' subcollection of the current unit.
+    const unitObsRef = computed(() =>
+        collection(useFirestore(), 'units', route.params.id, 'observations').withConverter({
+                toFirestore: firestoreDefaultConverter.toFirestore,
+                fromFirestore: (snapshot) => {
+                    const data = firestoreDefaultConverter.fromFirestore(snapshot)
+                    if (!data) return null
+
+                    // Create an observation_id that doesn't include the camera id.
+                    let sequence_parts = data.sequence_id.split('_')
+                    data.observation_id = sequence_parts[0] + '_' + sequence_parts[2]
+                    data.sequence_time = dayjs.utc(sequence_parts[2], 'YYYYMMDDHHmmss')
+
+                    return data
+                }
+            }
+        )
+    )
+
+    // The query for the observations.
+    const observationsQuery = computed(() => {
         return query(
-            unitObsRef.value,
+            route.params.id ? unitObsRef.value : allObsRef.value,
             where('time', '>=', timePeriod.value.toDate()),
             orderBy('time', 'desc'),
             limit(docLimit.value)
+        )
+    })
+
+    // A reference to the 'images' collectionGroup.
+    const allImagesRef = computed(() =>
+        collectionGroup(useFirestore(), 'images').withConverter({
+                toFirestore: firestoreDefaultConverter.toFirestore,
+                fromFirestore: (snapshot) => {
+                    const data = firestoreDefaultConverter.fromFirestore(snapshot)
+                    if (!data) return null
+
+                    // Create an observation_id that doesn't include the camera id.
+                    let sequence_parts = data.uid.split('_')
+                    data.observation_id = sequence_parts[0] + '_' + sequence_parts[2]
+                    data.sequence_id = sequence_parts[0] + '_' + sequence_parts[1] + '_' + sequence_parts[2]
+                    data.sequence_time = sequence_parts[2]
+                    data.unit_id = sequence_parts[0]
+
+                    return data
+                }
+            }
+        )
+    )
+
+    const imagesQuery = computed(() => {
+        return query(
+            allImagesRef.value,
+            where('image_time', '>=', timePeriod.value.toDate()),
+            orderBy('image_time', 'desc'),
         )
     })
 
@@ -67,18 +117,50 @@ export const useUnitsStore = defineStore('units', () => {
             : []
     )
 
+    const currentUnitObservations = useCollection(() =>
+        observationsQuery.value, {wait: true}
+    )
+
+    const currentImages = useCollection(() =>
+        imagesQuery.value, {wait: true}
+    )
+
+    const currentUnitImages = computed(() => {
+        return currentImages.value
+            ? currentImages.value.filter((image) => image.unit_id === route.params.id)
+            : []
+    })
+
     // The currently active unit document.
     const currentUnit = computed(() => {
-            return route.params.id
-                ? units.value.find((unit) => unit.id === route.params.id)
-                : null
+            // Get the active unit and assign observations and images.
+            let unit = units.value.find((unit) => unit.id === route.params.id)
+            if (unit) {
+                unit.observations = currentUnitObservations.value
+                // Assign images to each observation based on the observation_id.
+                unit.observations.forEach((observation) => {
+                    observation.images = currentUnitImages.value.filter((image) => {
+                        return image.uid.startsWith(observation.sequence_id)
+                    })
+                })
+            }
+            return unit
         }
     )
 
-    const currentObservations = computed(() => useCollection(
-        unitObsQuery
-    ))
-
-
-    return {unitsSource, units, currentUnit, unitObsRef, unitObsQuery, currentObservations, previousHours, timePeriod, docLimit}
+    return {
+        unitsSource,
+        units,
+        currentUnit,
+        unitObsRef,
+        allObsRef,
+        allImagesRef,
+        observationsQuery,
+        currentUnitObservations,
+        currentUnitImages,
+        currentImages,
+        previousHours,
+        timePeriod,
+        docLimit
+    }
 })

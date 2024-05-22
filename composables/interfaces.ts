@@ -27,8 +27,8 @@ export interface LocationI {
 
 export interface ImageI {
     id?: string;
-    uid?: string;
-    path?: string;
+    sequence_id?: string;
+    public_url?: string;
     exptime?: number;
 }
 

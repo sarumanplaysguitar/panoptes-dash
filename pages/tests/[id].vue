@@ -5,7 +5,6 @@ const dayjs = useDayjs()
 const unitsStore = useUnitsStore()
 
 const unit = computed(() => unitsStore.currentUnit)
-const observations = computed(() => unitsStore.currentObservations)
 
 onServerPrefetch(() => usePendingPromises())
 </script>
@@ -25,25 +24,14 @@ onServerPrefetch(() => usePendingPromises())
           </pre>
         </template>
       </Card>
-      <Card>
-        <template #header>
-          <p class="status-header">{{ unit?.id }}</p>
-        </template>
-        <template #content>
-          <pre class="text-xs">
-<!--            {{ unit?.status?.received_time.toDate() }}-->
-          </pre>
-        </template>
-      </Card>
     </div>
     <div>
       <Card>
-        <template #header>Observations</template>
+        <template #header>Observations ({{unit?.observations?.length}})</template>
         <template #content>
-          <RecentObservationsTable :observations="observations"/>
+          <RecentObservationsTable :observations="unit?.observations"/>
         </template>
       </Card>
     </div>
-    <RouterView/>
   </div>
 </template>
