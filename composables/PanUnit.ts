@@ -114,6 +114,12 @@ export class PanUnit {
         return this.observatory?.can_observe
     }
 
+    get free_space(): number {
+        if (this.status == null) return 'unknown'
+        if (this.status?.system?.free_space == null) return 'unknown'
+        return parseFloat(this.status?.system?.free_space.split(' ')[0]).toFixed(2)
+    }
+
     get moon(): MoonI {
         return <MoonI>{
             phase: this.status?.observatory?.observer?.local_moon_phase,

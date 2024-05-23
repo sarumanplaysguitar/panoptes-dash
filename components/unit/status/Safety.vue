@@ -26,9 +26,7 @@ onServerPrefetch(() => usePendingPromises())
       <br/>
       <Tag :severity="getSeverity(safetyDoc?.is_dark)">Dark (Sun: {{unit.sun?.position?.toFixed(2)}}°)</Tag>
       <br/>
-      <Tag :severity="getSeverity(safetyDoc?.free_space_root)">Free Space (/)</Tag>
-      <br/>
-      <Tag :severity="getSeverity(safetyDoc?.free_space_images)">Free Space (images)</Tag>
+      <Tag :severity="getSeverity(safetyDoc?.free_space_root)">Free Space ({{ unit?.free_space }}GB)</Tag>
       <br/>
       <Tag :severity="getSeverity(safetyDoc?.good_weather)">Weather</Tag>
       <br/>
