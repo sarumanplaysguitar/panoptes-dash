@@ -23,7 +23,7 @@ onServerPrefetch(() => usePendingPromises())
                   class="align-self-center animate-avg-ping absolute inline-flex bg-neutral-100 h-[0.57rem] w-[0.57rem] me-[0.4rem] rounded-full"></span>
               <span
                   class="align-self-center flex bg-neutral-100 animate-modified-ping h-[0.57rem] w-[0.57rem] me-[0.4rem] rounded-full"></span>
-              {{ unit.status?.from_state }}
+              {{ unit.status?.state }}
             </div>
           </div>
         </div>
