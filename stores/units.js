@@ -87,6 +87,7 @@ export const useUnitsStore = defineStore('units', () => {
         if (!unitsRef.value) return null
         return query(
             unitsRef.value,
+            orderBy('unit_id' ),
             orderBy('last_updated', 'desc'),
             limit(100)  // arbitrarily large number of units
         )

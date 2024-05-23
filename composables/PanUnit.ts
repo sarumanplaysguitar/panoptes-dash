@@ -129,6 +129,16 @@ export class PanUnit {
         }
     }
 
+    get moon_phase(): string {
+        // Get the moon phase name from the phase angle
+        let phase = this.moon?.phase
+        if (phase == null) return 'unknown'
+        if (phase >= 45 && phase < 135) return 'Third Quarter'
+        if (phase >= 135 && phase < 225) return 'New Moon'
+        if (phase >= 225 && phase < 315) return 'First Quarter'
+        return 'Full Moon'
+    }
+
     get sun(): SunI {
         return <SunI>{
             sunrise: dayjs(this.status?.observatory?.observer?.local_sun_rise_time),

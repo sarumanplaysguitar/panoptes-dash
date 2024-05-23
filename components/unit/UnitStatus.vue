@@ -8,8 +8,8 @@
       <!--      <LazyUnitStatusCurrentTarget/>-->
       <!--      <LazyUnitStatusTelemetry/>-->
       <LazyUnitStatusSafety/>
+      <LazyUnitStatusMoon/>
       <LazyUnitStatusWeather/>
-      <!--      <LazyUnitStatusMoon/>-->
       <!--      <LazyUnitStatusOverheadSky/>-->
     </div>
   </div>
@@ -21,7 +21,7 @@
 }
 
 .status-card {
-  @apply col-span-1 rounded-md p-4
+  @apply col-span-2 rounded-md p-4
 }
 
 .status-header {
