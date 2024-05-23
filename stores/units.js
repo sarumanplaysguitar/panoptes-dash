@@ -14,7 +14,7 @@ export const useUnitsStore = defineStore('units', () => {
 
 
     // A reference to the 'units' collection.
-    const unitsRef =
+    const unitsRef = computed(() =>
         collection(useFirestore(), 'units').withConverter({
                 toFirestore: firestoreDefaultConverter.toFirestore,
                 fromFirestore: (snapshot) => {
@@ -24,6 +24,7 @@ export const useUnitsStore = defineStore('units', () => {
                 }
             }
         )
+    )
 
     // All the observations as a collectionGroup.
     const allObsRef = computed(() =>
@@ -81,6 +82,16 @@ export const useUnitsStore = defineStore('units', () => {
             )
     )
 
+    // Only show and load units that have been recently active.
+    const unitsQuery = computed(() => {
+        if (!unitsRef.value) return null
+        return query(
+            unitsRef.value,
+            orderBy('last_updated', 'desc'),
+            limit(100)  // arbitrarily large number of units
+        )
+    })
+
     // The query for the observations.
     const observationsQuery = computed(() => {
         return query(
@@ -132,7 +143,7 @@ export const useUnitsStore = defineStore('units', () => {
 
     // All units in the 'units' collection.
     const unitsSource = useCollection(() =>
-        unitsRef, {wait: true}
+        unitsQuery.value ? unitsQuery.value : null, {wait: true}
     )
 
     // Make a PanUnit object from the unit document.
