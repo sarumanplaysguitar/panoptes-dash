@@ -8,6 +8,8 @@ const db = useFirestore()
 const dayjs = useDayjs()
 const colorMode = useColorMode()
 
+const colorPreference = computed(() => colorMode.value)
+
 const sinceValue = 1
 const sinceUnit = 'hour'
 const docLimit = 100
@@ -113,7 +115,7 @@ const plotOptions = computed(() => {
       xaxis: stateLabelAnnotations.value
     },
     theme: {
-      mode: colorMode.preference
+      mode: colorPreference.value
     }
   }
 })
