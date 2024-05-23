@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-import {useDayjs} from '#dayjs'
-import {doc} from "firebase/firestore"
+import {usePendingPromises} from 'vuefire'
 
-const route = useRoute()
-const db = useFirestore()
 const dayjs = useDayjs()
 
-const obsDoc = useDocument(doc(db, 'units', route.params.id, 'metadata', 'observations'), {wait: true})
+const unitsStore = useUnitsStore()
+const unit = computed(() => unitsStore.currentUnit ?? null)
+const recentObservation = computed(() => unit.value ? unit.value.observations[0] : null)
+const recentImage = computed(() => recentObservation.value ? recentObservation.value?.images[0] : null)
+
+onServerPrefetch(() => usePendingPromises())
 </script>
 
 <template>
@@ -15,27 +17,19 @@ const obsDoc = useDocument(doc(db, 'units', route.params.id, 'metadata', 'observ
       <p class="status-header">Current Target</p>
     </template>
     <template #content>
-      <div class="col-span-1 md:col-span-2 grid grid-cols-[8rem_1fr] rounded-md py-2 px-4 text-neutral-500">
-        <div
-            class="flex flex-col col-span-1 text-neutral-500 text-center md:text-left w-full justify-center md:justify-normal">
-          <!-- Header + Info -->
-          <div class="flex flex-col w-full justify-center md:justify-normal">
-            <div class="rounded-t backdrop-blur-sm w-full aspect-square"></div>
-          </div>
-        </div>
-
+<!--      <div class="col-span-2 md:col-span-2 grid grid-cols-[8rem_1fr] rounded-md py-2 px-4 text-neutral-500">-->
         <div class="text-neutral-500 text-center md:text-left w-full">
           <p class="text-sm uppercase pb-0">
             Current Target
           </p>
-          <h2 class="text-neutral-300 text-2xl uppercase">{{ obsDoc?.FIELD }}</h2>
+          <h2 class="text-neutral-300 text-2xl uppercase">{{ recentObservation?.field_name }}</h2>
 
           <!-- Coords -->
           <!-- TODO: Copy-paste (convenient formatting) button? -->
           <div class="flex flex-col md:flex-row flex-wrap items-center p-1 gap-2 md:justify-normal">
 
             <!-- RA -->
-            <div class="flex justify-center" v-if="obsDoc.RA_MNT != undefined">
+            <div class="flex justify-center" v-if="recentObservation?.coordinates?.mount_ra != undefined">
               <div class="border-2 border-neutral-700 rounded-l ml-0 py-0 px-2">
                 <p class="inline-block align-middle font-sans text-xs">
                   Mount Coords
@@ -44,14 +38,14 @@ const obsDoc = useDocument(doc(db, 'units', route.params.id, 'metadata', 'observ
               <div
                   class="border-1 border-neutral-700 rounded-r ml-0 outline outline-0 outline-neutral-800 py-0 px-2">
                 <p class="inline-block align-middle font-mono text-xs">
-                  {{ obsDoc?.RAMNT }}° {{ obsDoc?.DECMNT }}° <br/>
+                  {{ recentObservation?.coordinates?.mount_ra }}° {{ recentObservation?.coordinates?.mount_dec }}° <br/>
                 </p>
               </div>
             </div>
 
             <!-- Dec -->
 
-            <div class="flex justfify-center" v-if="obsDoc.CRVAL1 != undefined">
+            <div class="flex justify-center">
               <div class="border-2 border-neutral-700 rounded-l ml-0 py-0 px-2">
                 <p class="inline-block align-middle font-sans text-xs">
                   Solved Coords
@@ -60,21 +54,22 @@ const obsDoc = useDocument(doc(db, 'units', route.params.id, 'metadata', 'observ
               <div
                   class="border-1 border-neutral-700 rounded-r ml-0 outline outline-0 outline-neutral-800 py-0 px-2">
                 <p class="inline-block align-middle font-mono text-xs">
-                  {{ obsDoc?.CRVAL1?.toPrecision(5) }}° {{ obsDoc?.CRVAL2?.toPrecision(5) }}°
+                  {{ recentImage?.coordinates?.ra.toPrecision(5) }}° {{ recentImage?.coordinates?.dec.toPrecision(5) }}°
                 </p>
               </div>
             </div>
           </div>
 
-          <p class="text-md md:pt-4">Observing for <span class="font-semibold text-neutral-400">{{
-              $dayjs().to($dayjs(obsDoc?.received_time.toDate()).utc(), true)
-            }}</span></p>
+          <p class="text-md">Observing for
+            <span class="font-semibold text-neutral-400">
+              {{ $dayjs().to($dayjs(recentObservation?.time.toDate()).utc(), true) }}
+            </span>
+          </p>
         </div>
-      </div>
-      <!--      <LazyUnitObservationMeta/>-->
+<!--      </div>-->
     </template>
     <template #footer>
-      Last updated: {{ dayjs(obsDoc.received_time.toDate().toLocaleString()).from(dayjs()) }}
+<!--      Last updated: {{ dayjs(recentImage?.received_time?.toDate().toLocaleString()).from(dayjs()) }}-->
     </template>
   </Card>
 

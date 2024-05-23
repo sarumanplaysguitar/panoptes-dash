@@ -5,8 +5,7 @@
 <template>
   <div class="flex">
     <div class="status-layout">
-      <!--      <LazyUnitStatusCurrentTarget/>-->
-      <!--      <LazyUnitStatusTelemetry/>-->
+      <LazyUnitStatusCurrentTarget/>
       <LazyUnitStatusSafety/>
       <LazyUnitStatusMoon/>
       <LazyUnitStatusWeather/>
@@ -17,11 +16,11 @@
 
 <style>
 .status-layout {
-  @apply grid grid-cols-4 gap-2
+  @apply grid grid-cols-3 gap-2
 }
 
 .status-card {
-  @apply col-span-2 rounded-md p-4
+  @apply col-span-1 rounded-md p-4
 }
 
 .status-header {
