@@ -10,14 +10,13 @@
 
     <div class="basis-3/16">
       <Panel header="Unit Info">
-        <UnitAboutSelectedUnit/>
+      <UnitAboutSelectedUnit/>
       </Panel>
     </div>
 
     <div class="basis-3/4">
       <UnitDashboardContent/>
     </div>
-
     <RouterView/>
   </div>
 </template>

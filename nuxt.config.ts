@@ -36,7 +36,6 @@ export default defineNuxtConfig({
             appId: "1:897068131063:web:f66ef8e66cae47937fe9f2",
             measurementId: "G-FWPP66SEZ3"
         },
-
     },
     primevue: {
         options: {
