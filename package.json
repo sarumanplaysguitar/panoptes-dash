@@ -1,16 +1,32 @@
 {
-  "name": "panoptes-dash",
-  "version": "1.0.0",
-  "description": "",
-  "main": "./server/index.js",
-  "scripts": {
-    "start": "node ./server/index.js"
-  },
+  "name": "nuxt-app",
+  "private": true,
   "type": "module",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
   "dependencies": {
-    "express": "^4.18.3"
+    "@firebase/app-types": "^0.9.1",
+    "@nuxtjs/tailwindcss": "^6.12.0",
+    "@pinia/nuxt": "^0.5.1",
+    "apexcharts": "^3.49.0",
+    "firebase-admin": "^11.11.1",
+    "firebase-functions": "^4.9.0",
+    "nuxt": "^3.11.2",
+    "nuxt-vuefire": "^1.0.2",
+    "pinia": "^2.1.7",
+    "primevue": "^3.52.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "vue3-apexcharts": "^1.5.2"
+  },
+  "devDependencies": {
+    "@nuxtjs/color-mode": "^3.4.1",
+    "dayjs-nuxt": "^2.1.9",
+    "nuxt-primevue": "^0.3.1"
   }
 }

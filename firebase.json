@@ -1,0 +1,32 @@
+{
+  "functions": {
+    "source": ".output/server"
+  },
+  "hosting": {
+    "site": "project-panoptes-01",
+    "public": ".output/public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [{ "source": "**", "function": "server" }],
+    "cleanUrls": true,
+    "frameworksBackend": {
+      "region": "us-central1",
+      "memory": "512MiB"
+    }
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
+}
