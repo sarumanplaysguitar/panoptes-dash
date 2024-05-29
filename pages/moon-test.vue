@@ -30,7 +30,6 @@ const cameraPosition = computed(() => ({
   z: cameraPositionZ.value
 }))
 
-// Change the sunlight position once mounted
 onMounted(() => {
   if (sunlight.value) {
     sunlight.value.position.x = 0
