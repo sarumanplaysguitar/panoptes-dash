@@ -25,7 +25,6 @@ const cameraPositionX = computed(() => 0)
 const cameraPositionY = computed(() => 0)
 const cameraPositionZ = computed(() => 10)
 const cameraPosition = computed(() => ({x: cameraPositionX.value, y: cameraPositionY.value, z: cameraPositionZ.value}))
-const cameraRotation = computed(() => ({x: 0, y: 0, z: cameraTilt.value}))
 
 // Change the sunlight position once mounted
 onMounted(() => {
