@@ -20,6 +20,8 @@
     "nuxt-vuefire": "^1.0.2",
     "pinia": "^2.1.7",
     "primevue": "^3.52.0",
+    "three": "^0.134.0",
+    "troisjs": "^0.3.4",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
     "vue3-apexcharts": "^1.5.2"
