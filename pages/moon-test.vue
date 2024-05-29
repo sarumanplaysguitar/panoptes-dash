@@ -9,7 +9,7 @@ const ambient = ref<null | AmbientLight>(null)
 
 const lightAngle = ref(-0.4 * Math.PI) // radians
 const lightRadius = ref(10)
-const cameraTilt = ref(0.3 * Math.PI) // radians
+const cameraTilt = ref(Math.PI) // radians
 
 const sunPositionX = computed(() => 0)
 const sunPositionY = computed(() => lightRadius.value * Math.sin(lightAngle.value))
@@ -33,10 +33,6 @@ const cameraPosition = computed(() => ({
 // Add keypress events.
 onMounted(() => {
   if (sunlight.value) {
-    sunlight.value.position.x = 0
-    sunlight.value.position.y = lightRadius.value * Math.sin(lightAngle.value)
-    sunlight.value.position.z = lightRadius.value * Math.cos(lightAngle.value)
-
     // Add a keypress to change the z angle before each render.
     window.addEventListener('keydown', (event) => {
       if (event.key === 'w') {
