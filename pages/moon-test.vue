@@ -24,7 +24,11 @@ const viewSize = Math.min(width, height); // for square aspect ratio
 const cameraPositionX = computed(() => 0)
 const cameraPositionY = computed(() => 0)
 const cameraPositionZ = computed(() => 10)
-const cameraPosition = computed(() => ({x: cameraPositionX.value, y: cameraPositionY.value, z: cameraPositionZ.value}))
+const cameraPosition = computed(() => ({
+  x: cameraPositionX.value,
+  y: cameraPositionY.value,
+  z: cameraPositionZ.value
+}))
 
 // Change the sunlight position once mounted
 onMounted(() => {
