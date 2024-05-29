@@ -30,6 +30,7 @@ const cameraPosition = computed(() => ({
   z: cameraPositionZ.value
 }))
 
+// Add keypress events.
 onMounted(() => {
   if (sunlight.value) {
     sunlight.value.position.x = 0
