@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from 'vue'
-import {AmbientLight, DirectionalLight, GltfModel, Camera, Renderer, Scene, OrthographicCamera} from 'troisjs';
+import {AmbientLight, DirectionalLight, GltfModel, OrthographicCamera, Renderer, Scene} from 'troisjs';
 
 const renderer = ref<null | Renderer>(null)
 const camera = ref<null | OrthographicCamera>(null)
