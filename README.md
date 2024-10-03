@@ -20,7 +20,7 @@ JavaScript and related web technologies were chosen to create this dashboard, as
 
 A brief overview of the tech stack we're using.
 
-![](D:\tmcook\Documents\panoptes\panoptes-dash\docs\tech stack.png)
+![](./docs/tech stack.png)
 
 - **Frontend**: The [Vue.js](https://vuejs.org/) framework (Composition API) with [Nuxt 3](https://nuxt.com/) (for server-side rendering capabilities) is used to create the dashboard UI, binding HTML to JavaScript automatically and coupling the real-time unit data to the UI components (i.e., with [Vuefire](https://vuefire.vuejs.org/)).
 - The [Tailwind CSS](https://tailwindcss.com/) framework is largely used to style these components. Premade elements from the [Primevue](https://primevue.org/) component library are also incorporated.
