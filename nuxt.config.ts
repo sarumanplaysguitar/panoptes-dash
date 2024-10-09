@@ -18,6 +18,12 @@ export default defineNuxtConfig({
         },
     },
     css: ['~/assets/css/main.css'],
+    head: {
+        title: 'PANOPTES Dash',
+        link: [
+            { rel: 'icon', type: 'image/x-icon', href: '~/public/favicon.ico' }
+        ]
+    },
     modules: [
         "dayjs-nuxt",
         '@nuxtjs/color-mode',

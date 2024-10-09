@@ -11,6 +11,10 @@ export default {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['Inter', 'sans-serif'],
+                mono: ['"Martian Mono"', 'monospace'],
+            },
             colors: {
                 'primary-50': 'rgb(var(--primary-50))',
                 'primary-100': 'rgb(var(--primary-100))',

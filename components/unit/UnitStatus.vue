@@ -15,7 +15,7 @@
 </template>
 
 <style>
-.status-layout {
+/* .status-layout {
   @apply grid grid-cols-3 gap-2
 }
 
@@ -25,5 +25,5 @@
 
 .status-header {
   @apply text-sm uppercase pb-2
-}
+} */
 </style>

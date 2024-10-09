@@ -64,7 +64,7 @@ Notable directories and files are listed below. You can visit the official [Nuxt
 │
 ├── 📄 App.vue (The root Nuxt component that sets up the basic layout and renders the current page.)
 │
-├── 📄 nuxt.config.ts (Configure Nuxt plugins, modules, server settings, etc.)
+├── 📄 nuxt.config.ts (Configure Nuxt plugins, modules, server settings, etc. Note that this is where you define properties that usually go in an HTML file's header.)
 │
 ├── 📄 package.json (Lists the app's dependencies and scripts.)
 └── ...
