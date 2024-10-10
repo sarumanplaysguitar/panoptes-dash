@@ -146,7 +146,7 @@ export default {
             const material = new THREE.MeshPhongMaterial({
                 color: 0xd7d7d7,  // A soft blue color
                 specular: 0x222222, // Specular highlights
-                shininess: 25 // Shininess level
+                shininess: 5 // Shininess level
             });
 
             const sphere = new THREE.Mesh(geometry, material);
@@ -197,7 +197,7 @@ export default {
                         child.material = new THREE.MeshPhongMaterial({
                             map: child.material.map,  // Use the existing map
                             specular: 0x222222,       // Specular color to give it a bit of a shine
-                            shininess: 10             // Shininess level
+                            shininess: 0             // Shininess level
 
                             // map: child.material.map,  // Use the existing map
                             // specular: 0x222222,       // Specular color to give it a bit of a shine
@@ -282,7 +282,7 @@ export default {
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.09);
             this.scene.add(ambientLight);
 
-            this.sunlight = new THREE.DirectionalLight(0xffffff, 0.5);
+            this.sunlight = new THREE.DirectionalLight(0x010101, 150);
             this.sunlight.position.set(0, this.lightRadius * Math.sin(this.lightAngle), -this.lightRadius * Math.cos(this.lightAngle)); // rotate about x-axis; start from the sun aiming from -z axis (new moon)
             this.sunlight.position.z = -this.lightRadius * Math.cos(this.lightAngle);
             this.sunlight.position.y = this.lightRadius * Math.sin(this.lightAngle);
