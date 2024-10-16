@@ -4,6 +4,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+// TODO: import mrdoob stats.
+// TODO: import stars_arr data from data/mag_5_stars.js
+import { onMounted, ref } from 'vue';
 
 
 // const unitsStore = useUnitsStore()
@@ -12,366 +15,140 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 // onServerPrefetch(() => usePendingPromises())
 
 export default {
-    name: 'MainThreeCanvas',
 
-    data() {
-        return {
-            zoom: 90,
-            // lightAngle: Math.PI / 4,
-            lightAngle: -0.4 * Math.PI, // radians
-            lightRadius: 10,
-            cameraTilt: 0.3 * Math.PI // radians, should come from latitude.
+    // Vue Composition API
+
+    setup() {
+
+        // General utils 🔨
+        const PI = Math.PI;
+
+        function degreesToRadians(angle) {
+            return angle * PI / 180;
         }
-    },
 
-    // Lifecycle hooks
-    mounted() {
-        this.initThree();
-        // window.addEventListener('keydown', this.handleKeyDown);
-    },
+        function smoothstep(x, t1, t2) {
+            let k = Math.max(0, Math.min(1, (x - t1)/(t2 - t1)));
+            let s = k**2 * (3-2*k);
+            return s;
+        }
 
-    beforeDestroy() {
-        // For cleanup
-        // window.removeEventListener('resize', this.onWindowResize);
-        // window.removeEventListener('keydown', this.handleKeyDown);
-        this.stopAnimation();
-        this.renderer.dispose();
-    },
-
-    methods: {
-        initThree() {
-            // Scene setup 🖼
-            this.scene = new THREE.Scene();
-            // this.scene.background = new THREE.Color(0x87ceeb);
-            this.scene.background = new THREE.Color(0x262626);
-
-            // Camera setup 🎥
-            const width = this.$refs.moonThreeCanvas.offsetWidth;
-            const height = this.$refs.moonThreeCanvas.offsetHeight;
-            const viewSize = Math.min(width, height); // for square aspect ratio
-
-            this.camera = new THREE.OrthographicCamera(
-                -viewSize / this.zoom,   // Left
-                viewSize / this.zoom,    // Right
-                viewSize / this.zoom,   // Top
-                -viewSize / this.zoom,  // Bottom
-                0.5,          // Near
-                100          // Far
-            );
+        // Declare Three variables 🌐🎥
+        // The canvas DOM element is a ref, so it can be  accessed once Vue has rendered it/the component is mounted inside onMounted() later.
+        const mainThreeCanvasRef = ref(null);
+        let scene, camera, renderer, controls;
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let fov = 45;
+        let aspect = width/height;
+        let nearLimit = 0.5;
+        let farLimit = 80;
 
 
-            this.camera.position.z = 5;
-            this.camera.rotation.z = this.cameraTilt; // rotate about z axis
-            this.camera.updateProjectionMatrix();
+        // Declare Panoptes3D variables 🔭
+        // QUESTION: DO I NEED TO DECLARE EVERYTHIIING HERE? lotta book-keeping if so.
+        // or only... things that need to be accessible to update functions that change them?
+        let sky_uniforms, stars_uniforms, ground_uniforms;
+        let env_scale_fac = 1; // used for rescaling star positions
+        const mesh;
+        // Astronomical positions and data, in degrees. 🌙
+        // TODO: Get from API later
+        let sunAltitude = -10.3;
+        let previousSunAltitude = sunAltitude;
+        let diurnal = 0.;
+        let unitLatitude = 34.;
+        let cameraRotX = 0.;
+        let cameraRotY = 0.;
+        let cameraRotZ = 0.;
+        // stars data was imported from data/mag_5_stars.js in stars_arr
 
-            this.renderer = new THREE.WebGLRenderer({ antialias: true });
-            this.renderer.setSize(width, height);
-            this.renderer.outputEncoding = THREE.sRGBEncoding;
-            this.$refs.moonThreeCanvas.appendChild(this.renderer.domElement);
+        // Declare dev mode debugging variables 🐞
+        let stats;
+
+        // Initialize Three.js scene, camera, and renderer and Pan3D objects 🌐🎥🌳🔭
+        const initScene = () => {
+
+            // Scene 🌐
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x3A3A3A);
+            scene.fog = new THREE.Fog(0xffffff, -7, 15);
+
+            // Camera + Renderer 🎥
+            const camera = new THREE.PerspectiveCamera(fov, aspect, nearLimit, farLimit);
+            camera.position.set(3, 0.6, 3); // xyz
+
+            renderer = new THREE.WebGLRenderer({
+                canvas: mainThreeCanvasRef.value,
+                alpha: false,
+                antialias: true,
+                precision: 'highp'
+            });
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.NoToneMapping;
+
+            // Orbit controls 🎮
+            // TODO
 
             // Lighting 💡
-            this.addSunlight();
+            lighting();
 
-            // Objects 🌒
-            const gltfLoader = new GLTFLoader();
+            // Objects
+            makeCube();
+        }
 
-            // const addModel = async () => {
-            //     const gltf = await gltfLoader.loadAsync('/moon.glb');
-            //     const model = gltf.scene.children[0];
+        const lighting = () => {
+            // Add lighting
+            const light1 = new THREE.PointLight(0xffffff, 1000, 0);
+            light1.position.set(10, 10, 10);
+            scene.add(light1);
 
-            //     const texture = await new THREE.TextureLoader().loadAsync('/two-tone.jpg');
-            //     texture.minFilter = texture.magFilter = THREE.NearestFilter;
+            const ambientLight = new THREE.AmbientLight(0xffffff);
+            ambientLight.intensity = 500;
+            scene.add(ambientLight);
+        }
 
-            //     model.texture = new THREE.MeshToonMaterial({
-            //         map: model.material.map,
-            //         gradientMap: texture
-            //     });
-
-            //     scene.add(model);
-            //     this.renderScene();
-            // }
-            this.addPhongMoon();
-            // this.addToonMoon();
-            // this.addTestToonSphere();
-            // this.addPhongSphere();
-
-            // Resize canvas with window ↗
-            // window.addEventListener('resize', this.onWindowResize, false);
-
-            // Render! 🎬
-            this.renderScene();
-
-            // const axesHelper = new THREE.AxesHelper( 5 );
-            // this.scene.add( axesHelper );
-            // this.renderScene();
-        },
-
-
-        // addMoon() {
-        //     console.log('i want to die')
-        //     const loader = new GLTFLoader();
-        //     loader.load('/moon2.glb', (gltf) => {
-        //         console.log("Loaded model:", gltf.scene);
-
-        //         gltf.scene.traverse((child) => {
-        //             if (child.isMesh) {
-        //                 console.log("Original material for mesh:", child.material);
-
-        //                 const gradientMap = new THREE.TextureLoader().load('/two-tone-gradient-map.jpg');
-        //                 gradientMap.minFilter = THREE.NearestFilter;
-        //                 gradientMap.magFilter = THREE.NearestFilter;
-
-        //                 // Create a new toon material
-        //                 const toonMaterial = new THREE.MeshToonMaterial({
-        //                     map: child.material.map, // Preserving any existing diffuse map
-        //                     gradientMap: gradientMap
-        //                 });
-
-        //                 // Assign the new material
-        //                 child.material = toonMaterial;
-
-        //                 console.log("New material for mesh:", child.material);
-        //             }
-        //         });
-
-        //         this.scene.add(gltf.scene);
-        //         this.renderScene();
-        //     }, undefined, (error) => {
-        //         console.error('Error loading the model:', error);
-        //     });
-        // },
-
-
-        addPhongSphere() {
-            const geometry = new THREE.SphereGeometry(1, 32, 32); // Radius, widthSegments, heightSegments
+        const makeCube = () => {
+            const geometry = new THREE.BoxGeometry(2, 2, 2);
+            
             const material = new THREE.MeshPhongMaterial({
-                color: 0xd7d7d7,  // A soft blue color
-                specular: 0x222222, // Specular highlights
-                shininess: 5 // Shininess level
+                color: 0x555555,
+                specular: 0xffffff,
+                shininess: 50,
+                shading: THREE.SmoothShading
             });
 
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(0, 0, 0);  // Positioned at the origin for visibility
-            this.scene.add(sphere);
+            mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+        }
 
-            this.renderScene();
-        },
+        const animate = () => {
+            const time = performance.now() * 0.001; // convert ms to seconds
 
-        // WORKED?
-        addToonMoon() {
-            const loader = new GLTFLoader();
-            loader.load('/moon2.glb', (gltf) => {
-                gltf.scene.traverse((child) => {
-                    if (child.isMesh && child.material.map) {
-                        // Create a new Phong material using the existing texture map from the model
-                        // child.material = new THREE.MeshPhongMaterial({
-                        //     map: child.material.map,  // Use the existing map
-                        //     specular: 0x222222,       // Specular color to give it a bit of a shine
-                        //     shininess: 25             // Shininess level
-                        // });
-
-
-                        const gradientMap = new THREE.TextureLoader().load('/two-tone.jpg');
-                        gradientMap.minFilter = THREE.NearestFilter;
-                        gradientMap.magFilter = THREE.NearestFilter;
-
-                        child.material = new THREE.MeshToonMaterial({
-                                    map: child.material.map,
-                                    gradientMap: gradientMap
-                        });
-                    }
-                });
-                this.scene.add(gltf.scene);
-                this.renderScene();
-            }, undefined, (error) => {
-                console.error('Error loading the model:', error);
-            });
-        },
-
-        addPhongMoon() {
-            const loader = new GLTFLoader();
-            loader.load('/moon2.glb', (gltf) => {
-                gltf.scene.traverse((child) => {
-                    if (child.isMesh && child.material.map) {
-                      console.log('loaded!')
-                        // Create a new Phong material using the existing texture map from the model
-                        child.material = new THREE.MeshPhongMaterial({
-                            map: child.material.map,  // Use the existing map
-                            specular: 0x222222,       // Specular color to give it a bit of a shine
-                            shininess: 0             // Shininess level
-
-                            // map: child.material.map,  // Use the existing map
-                            // specular: 0x222222,       // Specular color to give it a bit of a shine
-                            // shininess: 25             // Shininess level
-                        });
-
-
-                        // const gradientMap = new THREE.TextureLoader().load('/two-tone.jpg');
-                        // gradientMap.minFilter = THREE.NearestFilter;
-                        // gradientMap.magFilter = THREE.NearestFilter;
-
-                        // child.material = new THREE.MeshToonMaterial({
-                        //             map: child.material.map,
-                        //             gradientMap: gradientMap
-                        // });
-                    }
-                });
-                this.scene.add(gltf.scene);
-                this.renderScene();
-            }, undefined, (error) => {
-                console.error('Error loading the model:', error);
-            });
-        },
-
-
-
-        addMoon() {
-            this.loader = new GLTFLoader();
-            this.loader.load('/moon2.glb', this.onLoad);
-            this.renderScene();
-        },
-
-        onLoad(gltf) {
-            const mesh = gltf.scene;
-            this.scene.add(mesh);
-            this.renderScene();
-        },
-
-        // addMoon() {
-        //     const loader = new GLTFLoader();
-        //     loader.load('/moon.glb', (gltf) => {
-        //         gltf.scene.traverse((child) => {
-        //             if (child.isMesh) {
-        //                 const gradientMap = new THREE.TextureLoader().load('/two-tone.jpg');
-        //                 gradientMap.minFilter = THREE.NearestFilter;
-        //                 gradientMap.magFilter = THREE.NearestFilter;
-
-        //                 child.material = new THREE.MeshToonMaterial({
-        //                     map: child.material.map,
-        //                     gradientMap: gradientMap
-        //                 });
-        //             }
-        //         });
-        //         this.scene.add(gltf.scene);
-        //         // render scene here? or out in the init...? eh.
-        //         this.renderScene();
-        //     }, undefined, (error) => {
-        //         console.error('Red alert red alert: ', error);
-        //     });
-        // },
-
-        addTestToonSphere() {
-            const geometry = new THREE.SphereGeometry(1, 32, 32); // Same sphere geometry
-            // const gradientMap = new THREE.TextureLoader().load('/two-tone-gradient-map.jpg');
-            const gradientMap = new THREE.TextureLoader().load('/two-tone.jpg');
-            gradientMap.minFilter = THREE.NearestFilter;
-            gradientMap.magFilter = THREE.NearestFilter;
-
-            const material = new THREE.MeshToonMaterial({
-                color: 0xffffff,  // Set to white for maximum contrast
-                gradientMap: gradientMap
-            });
-
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(0, 0, 0);
-            this.scene.add(sphere);
-
-            this.renderScene();
-        },
-
-        addSunlight() {
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.09);
-            this.scene.add(ambientLight);
-
-            this.sunlight = new THREE.DirectionalLight(0x010101, 150);
-            this.sunlight.position.set(0, this.lightRadius * Math.sin(this.lightAngle), -this.lightRadius * Math.cos(this.lightAngle)); // rotate about x-axis; start from the sun aiming from -z axis (new moon)
-            this.sunlight.position.z = -this.lightRadius * Math.cos(this.lightAngle);
-            this.sunlight.position.y = this.lightRadius * Math.sin(this.lightAngle);
-            this.scene.add(this.sunlight);
-            this.renderScene();
-        },
-
-        handleKeyDown(event) {
-            switch(event.key) {
-                case 'w':
-                    this.lightAngle -= Math.PI / 36; // -5 deg
-                    this.updateSunlightPosition();
-                    break;
-                case 's':
-                    this.lightAngle += Math.PI / 36; // +5 deg
-                    this.updateSunlightPosition();
-                    break;
-                case 'd':
-                    this.cameraTilt += Math.PI / 36; // +5 deg
-                    this.tiltCamera();
-                    break;
-                case 'a':
-                    this.cameraTilt -= Math.PI / 36; // -5 deg
-                    this.tiltCamera();
-                    break;
+            if (mesh) {
+                mesh.rotation.x = time * 0.5;
+                mesh.rotation.y = time * 1;
             }
-        },
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
 
-        updateSunlightPosition() {
-            // hella trig 📐
-            this.sunlight.position.z = -this.lightRadius * Math.cos(this.lightAngle);
-            this.sunlight.position.y = this.lightRadius * Math.sin(this.lightAngle);
-            this.renderScene();
-        },
+        // Mount the scene (Vue lifecycle hook)
+        onMounted(() => {
+            initScene();
+            animate();
+            window.addEventListener('resize', resizeCanvas);
+        });
 
-        tiltCamera() {
-            this.camera.rotation.z = this.cameraTilt; // rotate about z axis
-            this.camera.updateProjectionMatrix();
-            this.renderScene();
-        },
-
-        // addMoon() {
-        //     const loader = new GLTFLoader();
-        //     loader.load('/moon2.glb', (gltf) => {
-        //         gltf.scene.traverse((child) => {
-        //             if (child.isMesh) {
-        //                 const gradientMap = new THREE.TextureLoader().load('/two-tone-gradient-map.png');
-        //                 gradientMap.minFilter = THREE.NearestFilter;
-        //                 child.material = new THREE.MeshToonMaterial({
-        //                     map: child.material.map,
-        //                     gradientMap: gradientMap
-        //                 });
-        //             }
-        //         });
-        //         this.scene.add(gltf.scene);
-        //         // render scene here? or out in the init...? eh.
-        //         this.renderScene();
-        //     }, undefined, (error) => {
-        //         console.error('Red alert red alert: ', error);
-        //     });
-        // },
-
-        renderScene() {
-            this.renderer.render(this.scene, this.camera);
-        },
-
-        // onWindowResize() {
-        //     // BROKEN BUT NOT PRIORITY RN CUZ IM NOT RESIZING THIS COMPONENT? IDK....
-        //     const width = this.$refs.moonThreeCanvas.offsetWidth;
-        //     const height = this.$refs.moonThreeCanvas.offsetHeight;
-        //     const viewSize = Math.min(width, height); // for square aspect ratio
-
-        //     // Update the ortho camera & renderer size 🎥
-        //     this.camera.left = -viewSize / this.zoom;
-        //     this.camera.right = viewSize / this.zoom;
-        //     this.camera.top = viewSize / this.zoom;
-        //     this.camera.bottom = -viewSize / this.zoom;
-        //     this.camera.updateProjectionMatrix();
-        //     this.renderer.setSize(width, height);
-
-        //     this.renderScene();
-        // }
+        // Return the Three canvas for <template>
+        return {
+            mainThreeCanvasRef,
+        };
     }
-  }
+}
 </script>
 
 <template>
-  <div ref="moonThreeCanvas" class="moon-three-canvas"></div>
+  <canvas ref="mainThreeCanvas" class="main-three-canvas"></canvas>
 
     <!-- <Card class="status-card"> -->
     <!-- <template #header> -->
@@ -406,5 +183,4 @@ export default {
         width: 100%;
         height: 100%;
     }
-
 </style>
