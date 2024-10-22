@@ -1,14 +1,26 @@
 <script setup>
-  import {usePendingPromises} from 'vuefire'
+  import { defineProps, defineEmits } from 'vue';
+  import { usePendingPromises } from 'vuefire';
 
-  const dayjs = useDayjs()
-  const unitsStore = useUnitsStore()
-  const unit = computed(() => unitsStore.currentUnit ? unitsStore.currentUnit : {})
+  const dayjs = useDayjs();
+  const unitsStore = useUnitsStore();
+  const unit = computed(() => unitsStore.currentUnit ? unitsStore.currentUnit : {});
 
-  onServerPrefetch(() => usePendingPromises())
+  onServerPrefetch(() => usePendingPromises());
 
   // later: change this to have the country code be determined from the lat/long and replaced below.
   import flag from '@/assets/country_flags/s/US.svg';
+
+  // Event emitter to expand 3D viewer on side panel (parent component has logic to change state)
+  const props = defineProps({
+    isPanelExpanded: Boolean,
+  });
+
+  const emit = defineEmits(['toggle-panel']);
+
+  const togglePanel = () => {
+    emit('toggle-panel'); // gets emitted onclick
+  };
 </script>
 
 <template>
@@ -32,6 +44,12 @@
                         </div>
                     </div>
                 </div>
+                <button
+                  class="bg-blue-500 text-white p-2 mt-4"
+                  @click="togglePanel"
+                >
+                  {{ isPanelExpanded ? 'Collapse Panel' : 'Expand Panel' }}
+                </button>
                 <div class="flex flex-col space-y-1 text-neutral-600 text-xs font-semibold leading-3 py-2 martian-mono-300">
                     <p>UTC <span class="text-neutral-300">05:05:37</span> FEB 24</p>
                     <p>PDT <span class="text-neutral-300">10:05:37</span> FEB 24</p>
