@@ -9,7 +9,7 @@ const togglePanel = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col md:flex-row bg-neutral-900">
+  <div class="min-h-screen flex flex-col md:flex-row">
     <!-- Unit Selector (fixed) -->
     <div class="h-14 md:h-auto md:w-[3.6rem]">
       <UnitSelector />

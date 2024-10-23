@@ -22,10 +22,12 @@
     "pinia": "^2.1.7",
     "primevue": "^3.52.0",
     "three": "^0.134.0",
+    "topojson": "^3.0.2",
     "troisjs": "^0.3.4",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
-    "vue3-apexcharts": "^1.5.2"
+    "vue3-apexcharts": "^1.5.2",
+    "world-atlas": "^2.0.2"
   },
   "devDependencies": {
     "@nuxtjs/color-mode": "^3.4.1",
