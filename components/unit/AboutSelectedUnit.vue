@@ -150,12 +150,12 @@
         <div class="mt-auto flex flex-rows">
             <div class="w-14 h-14 rounded-full bg-[#ffffff] opacity-20"> </div>
             <div class="ml-2 pb-2">
-                <div class="font-light text-4xl text-white">PAN012</div>
+                <div class="font-light text-4xl text-white">{{ unit.unit_id }}</div>
                 <div class="animate-avg-pulse flex font-semibold tracking-widest text-xs uppercase text-white leading-3 items-center">
                     <span class="align-self-center animate-avg-ping absolute inline-flex bg-neutral-100 h-[0.57rem] w-[0.57rem] me-[0.4rem] rounded-full"></span>
                     <!-- <span class="relative inline-flex bg-neutral-100 h-[0.5rem] w-[0.5rem] me-[0.4rem] rounded-full"></span> -->
                     <span class="align-self-center flex bg-neutral-100 animate-modified-ping h-[0.57rem] w-[0.57rem] me-[0.4rem] rounded-full"></span>
-                    Observing
+                    <span class="placeholder-data">{{ unit.status?.state }}</span>
                 </div>
             </div>
         </div>
@@ -171,12 +171,14 @@
             <p><span class="opacity-20">PDT</span> <span class="text-white opacity-100">10:05</span> <span class="opacity-20">FEB 24</span></p>
         </div>
         <div class="text-[#ffffff] text-sm mt-2">
-            <p class="flex flex-col items-center text-white text-sm text-center">
-                <img :src="flag" alt="Country Flag" class="inline-block rounded-sm scale-90 pr-[0.35rem]" /> Mt. Wilson, California, USA</p>
-            <p class="text-center font-mono font-normal pb-4 opacity-20">
-                34°N, 118°W
-            </p>
-            <UnitMap />
+          <div class="flex justify-center items-center text-white text-sm text-center">
+            <img :src="flag" alt="Country Flag" class="inline-block rounded-sm scale-90 pr-[0.35rem]" />
+            <span>Mt. Wilson, California, USA</span>
+          </div>
+          <p class="text-center font-mono font-normal pb-4 opacity-20">
+            34°N, 118°W
+          </p>
+          <UnitMap />
         </div>
         <div>
           <p class="text-[#ffffff] text-xs font-semibold mt-3 pb-2 opacity-20">© 2024 Project PANOPTES</p>

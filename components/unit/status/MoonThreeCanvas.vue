@@ -8,7 +8,7 @@ const unitsStore = useUnitsStore();
 const unit = computed(() => unitsStore.currentUnit ?? {});
 
 const zoom = ref(90);
-const lightAngle = ref(-0.4 * Math.PI); // radians
+const lightAngle = ref(0 * Math.PI); // radians
 const lightRadius = ref(10);
 const cameraTilt = ref(0.3 * Math.PI); // radians, should come from latitude
 

@@ -7,6 +7,8 @@
     //     latitude: ?,
     // });
 
+    const moonPhaseName = "new_moon";
+
     const iconUrl = computed(() => new URL(`/moon_phase_icons/${moonPhaseName}.svg`, import.meta.url).href);
 
 
