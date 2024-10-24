@@ -44,15 +44,15 @@
                 <div class="grid grid-cols-3">
                     <div class="p-1 col-span-1 text-center">
                         <p class="text-xs uppercase semibold">Illumination</p>
-                        <p class="text-zinc-300 text-lg">54%</p>
+                        <p class="text-zinc-300 text-lg placeholder-data">0%</p>
                     </div>
                     <div class="p-1 col-span-1 text-center">
                         <p class="text-xs uppercase semibold">Moonset</p>
-                        <p class="text-zinc-300 text-lg">2:10<span class="text-sm pl-0.5">AM</span></p>
+                        <p class="text-zinc-300 text-lg placeholder-data">00:00<span class="text-sm pl-0.5">AM</span></p>
                     </div>
                     <div class="p-1 col-span-1 text-center">
                         <p class="text-xs uppercase semibold">Moonrise</p>
-                        <p class="text-zinc-300 text-lg">11:53<span class="text-sm pl-0.5">AM</span></p>
+                        <p class="text-zinc-300 text-lg placeholder-data">00:00<span class="text-sm pl-0.5">AM</span></p>
                     </div>
                 </div>
             </div>

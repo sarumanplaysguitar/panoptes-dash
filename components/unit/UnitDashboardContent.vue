@@ -87,7 +87,7 @@
                                 </span>
                                 Current Target
                             </p>
-                            <h2 class="text-zinc-300 text-2xl uppercase">TESS Sector 20</h2>
+                            <h2 class="placeholder-data text-zinc-300 text-2xl uppercase">TESS Sector 20</h2>
                             
                             <!-- Coords -->
                             <!-- TODO: Copy-paste (convenient formatting) button? -->

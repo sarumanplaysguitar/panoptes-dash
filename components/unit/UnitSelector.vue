@@ -27,12 +27,12 @@
         <!-- <div class="font-['Oxanium'] text-xs mt-[0.1rem] ml-2 md:mt-2 md:ml-0 bg-zinc-500 min-w-9 min-h-9 rounded-full flex items-top justify-center text-zinc-300 pt-1" :style="backgroundStyle">012</div> -->
         <div class="relative inline-block">
             <!-- <div class="font-['Oxanium'] text-xs mt-[0.1rem] ml-2 md:mt-2 md:ml-0 bg-zinc-500 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-200 pt-1 ring-2 ring-offset-2 ring-offset-zinc-900 ring-zinc-700"><span class="animate-avg-pulse">012</span></div> -->
-            <div class="font-['Oxanium'] text-xs mt-[0.1rem] ml-2 md:mt-2 md:ml-0 bg-zinc-500 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-200 pt-1 \">012</div>
+            <div class="placeholder-data font-['Oxanium'] text-xs mt-[0.1rem] ml-2 md:mt-2 md:ml-0 bg-zinc-500 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-200 pt-1 \">012</div>
 
             <span class="align-self-center inline-flex w-[0.8rem] h-[0.8rem] rounded-full border-2 border-zinc-900 bg-zinc-300 absolute -bottom-0.5 -right-0.5"></span>
             <!-- <span class="w-[0.8rem] h-[0.8rem] rounded-full border-2 border-zinc-800 bg-zinc-400 absolute -bottom-0.5 -right-0.5"></span> -->
         </div>
-        <div class="relative inline-block">
+        <div class="placeholder-data relative inline-block">
             <div class="font-['Oxanium'] text-xs mt-[0.1rem] bg-zinc-800 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-300">000</div>
             <!-- <span class="align-self-center animate-modified-ping inline-flex w-[0.8rem] h-[0.8rem] rounded-full border-2 border-zinc-900 bg-zinc-300 absolute -bottom-0.5 -right-0.5"></span> -->
             <span class="align-self-center inline-flex w-[0.8rem] h-[0.8rem] rounded-full border-2 border-zinc-900 bg-zinc-300 absolute -bottom-0.5 -right-0.5"></span>
@@ -42,7 +42,7 @@
 
         </div>
 
-        <div class="relative inline-block">
+        <div class="placeholder-data relative inline-block">
             <div class="font-['Oxanium'] text-xs mt-[0.1rem] bg-zinc-800 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-600">007</div>
             <!-- <span class="align-self-center animate-modified-ping inline-flex w-[0.8rem] h-[0.8rem] rounded-full border-2 border-zinc-900 bg-zinc-300 absolute -bottom-0.5 -right-0.5"></span> -->
             <!-- <span class="font-['Oxanium'] w-[0.8rem] h-[0.8rem] absolute bottom-1 -right-0.5 text-zinc-500">z</span> -->
@@ -54,8 +54,8 @@
 
 
         <!-- <div class="font-['Oxanium'] text-xs mt-[0.1rem] bg-zinc-800 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-600">007</div> -->
-        <div class="font-['Oxanium'] text-xs mt-[0.1rem] bg-zinc-800 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-600">026</div>
-        <div class="font-['Oxanium'] text-xs mt-[0.1rem] bg-zinc-800 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-600">008</div>
+        <div class="placeholder-data font-['Oxanium'] text-xs mt-[0.1rem] bg-zinc-800 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-600">026</div>
+        <div class="placeholder-data font-['Oxanium'] text-xs mt-[0.1rem] bg-zinc-800 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-600">008</div>
     </div>
   <!-- <Card>
     <template #content>

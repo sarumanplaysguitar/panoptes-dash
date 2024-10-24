@@ -167,26 +167,30 @@
           {{ isPanelExpanded ? 'Collapse Panel' : 'Expand Panel' }}
         </button> -->
         <div class="flex flex-col space-y-1 text-xs text-[#ffffff] font-semibold leading-3 py-2 martian-mono-300">
-            <p><span class="opacity-20">UTC</span> <span class="text-white opacity-100">05:05</span> <span class="opacity-20">FEB 24</span></p>
-            <p><span class="opacity-20">PDT</span> <span class="text-white opacity-100">10:05</span> <span class="opacity-20">FEB 24</span></p>
+            <p><span class="opacity-20">UTC</span> <span class="text-white opacity-100">{{ dayjs().utc().format('HH:mm') }}</span> <span class="opacity-20">{{ dayjs.utc().format('MMM DD').toUpperCase() }}</span></p>
+            <p><span class="opacity-20">{{ unit.local_time?.format('z') }}</span> <span class="text-white opacity-100">{{ unit.local_time?.format('HH:mm') }}</span> <span class="opacity-20">{{ unit.local_time?.format('MMM DD').toUpperCase() }}</span></p>
         </div>
         <div class="text-[#ffffff] text-sm mt-2">
           <div class="flex justify-center items-center text-white text-sm text-center">
             <img :src="flag" alt="Country Flag" class="inline-block rounded-sm scale-90 pr-[0.35rem]" />
-            <span>Mt. Wilson, California, USA</span>
+            <span class="placeholder-data">Mt. Wilson, California, USA</span>
+            <!-- TODO: format unit.location?.name in google cloud db to full loc like that ^ -->
           </div>
           <p class="text-center font-mono font-normal pb-4 opacity-20">
-            34°N, 118°W
+            {{ Math.round(parseFloat(unit.location?.latitude)) }}°N, {{ Math.round(parseFloat(unit.location?.longitude)) }}°W
           </p>
           <UnitMap />
         </div>
         <div>
-          <p class="text-[#ffffff] text-xs font-semibold mt-3 pb-2 opacity-20">© 2024 Project PANOPTES</p>
+          <p class="text-[#ffffff] text-xs font-semibold mt-3 pb-2 opacity-20">© {{ dayjs().year() }} <a href="https://www.projectpanoptes.org/" target="_blank" rel="noopener noreferrer">Project PANOPTES</a></p>
         </div>
       </div>
     </div>
 
   <div class="z-0 row-start-1 col-start-1 bg-gradient-to-b from-[#27272a] from-55% to-[#18181b] to-65% rounded-md h-full"> </div>
+
+  <!-- <UnitStatusPanoptes3D /> -->
+
 
 </div>
 <!-- 
