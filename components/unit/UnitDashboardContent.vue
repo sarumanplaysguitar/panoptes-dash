@@ -29,7 +29,7 @@
         <ul class="flex h-10">
             <li class="pt-1 px-1">
                 <button :class="['inline-block', 'font-semibold', 'rounded-md', 'py-2', 'px-4', 'mr-2', 'tracking-widest', 'text-xs', 'uppercase', tab === 1 ? 'bg-zinc-800 text-zinc-300 border-2 border-zinc-800' : ' text-zinc-500 border-2 border-zinc-900']" @click="tab = 1">
-                    <span class="material-symbols-outlined !text-xs !inline-block !align-top pr-0.5">
+                    <span class="material-symbols-outlined text-zinc-400 !text-xs !inline-block !align-top pr-0.5">
                         bid_landscape
                         <!-- dashboard -->
                     </span>
@@ -37,7 +37,7 @@
                 </button>
                 
                 <button :class="['inline-block', 'font-semibold', 'rounded-md', 'py-2', 'px-4', 'tracking-widest', 'text-xs', 'uppercase', tab === 2 ? 'bg-zinc-800 text-zinc-300 border-2 border-zinc-800' : ' text-zinc-500 border-2 border-zinc-900']" @click="tab = 2">
-                    <span class="material-symbols-outlined !text-xs inline-block align-top pr-0.5">
+                    <span class="material-symbols-outlined text-zinc-400 !text-xs inline-block align-top pr-0.5">
                         <!-- menu_book -->
                         summarize
                         <!-- event_note -->
@@ -82,7 +82,7 @@
                         <!-- Header + Info -->
                         <div class="text-zinc-500 text-center md:text-left w-full">
                             <p class="text-sm uppercase pb-0">
-                                <span class="material-symbols-outlined !text-sm align-bottom pr-1">
+                                <span class="material-symbols-outlined text-zinc-400 !text-sm align-bottom pr-1">
                                     my_location
                                 </span>
                                 Current Target
@@ -140,7 +140,7 @@
                 <!-- Card: Sky Overhead -->
                 <div class="rounded-md col-span-1 bg-zinc-800 px-4 pb-4 pt-2.5 text-zinc-500">
                     <p class="text-sm uppercase pb-2">
-                        <span class="material-symbols-outlined !text-sm align-bottom">
+                        <span class="material-symbols-outlined text-zinc-400 !text-sm align-bottom">
                             <!-- arrow_circle_up -->
                             blur_on
                         </span>
@@ -155,7 +155,7 @@
                 <!-- Card: Sensors -->
                 <div class="rounded-md bg-zinc-800 p-4 text-zinc-500 col-span-1">
                     <p class="text-sm uppercase pb-0">
-                        <span class="material-symbols-outlined !text-sm align-bottom pr-1">
+                        <span class="material-symbols-outlined text-zinc-400 !text-sm align-bottom pr-1">
                             timeline
                         </span>
                         TELEMETRY

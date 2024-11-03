@@ -8,8 +8,8 @@
 
 <style>
   .placeholder-data {
-    text-decoration-line: underline;
-    text-decoration-color: #C55;
-    text-decoration-thickness: 0.25rem;
+    /* text-decoration-line: underline; */
+    /* text-decoration-color: #C55; */
+    /* text-decoration-thickness: 0.25rem; */
   }
 </style>

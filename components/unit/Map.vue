@@ -4,6 +4,7 @@
     import { feature } from "topojson-client";
 
     // TODO get unit lat and long here as a prop
+    const coordinates = [-118, 34] // placeholder long, lat
 
     onMounted(() => {
         // Initialize map when component loads
@@ -49,7 +50,8 @@
                     .attr("d", pathGenerator)
                     .attr("fill", "none")
                     .attr("stroke", "white")
-                    .attr("stroke-width", 1.5);
+                    .attr("stroke-width", 1.5)
+                    .attr("stroke-opacity", 0.35);
 
                 // that thing is an array. there is a path for each country
 
@@ -61,8 +63,24 @@
                 paths.enter().append("path")
                     .attr("d", d => pathGenerator(d))
                     .attr("stroke", "white")
-                    .attr("stroke-width", 1)
-                    .attr("fill", "white");
+                    .attr("stroke-width", 0.05)
+                    .attr("stroke-opacity", 0.35)
+                    .attr("fill", "white")
+                    .style("fill-opacity", 0.35);
+
+                // drop the unit's location pin
+                const [pin_x, pin_y] = projection(coordinates);
+                const pin_scale_fac = 0.07;
+                // note, if you want to change the svg color
+                // you can open location_pin.svg in any text editor
+                // and change the two instances of its fill hexcode "#..."
+                svg.append("image")
+                    .attr("href", "/location_pin.svg")
+                    .attr("x", pin_x - (pin_scale_fac * 161/2))
+                    .attr("y", pin_y - pin_scale_fac * 253)
+                    .attr("width", pin_scale_fac * 161)
+                    .attr("height", pin_scale_fac * 253)
+                    .style("opacity", 0.8);
             });
     }
 
@@ -80,6 +98,6 @@
 <style scoped>
     .map-container {
         z-index: 100;
-        opacity: 0.2;
+        opacity: 1;
     }
 </style>

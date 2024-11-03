@@ -70,12 +70,13 @@ export default {
 
             // Scene 🌐
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x3A3A3A);
+            // scene.background = new THREE.Color(0x3A3A3A);
+            scene.background = new THREE.Color(0xffffff);
             scene.fog = new THREE.Fog(0xffffff, -7, 15);
 
             // Camera + Renderer 🎥
             const camera = new THREE.PerspectiveCamera(fov, aspect, nearLimit, farLimit);
-            camera.position.set(3, 0.6, 3); // xyz
+            camera.position.set(15, 15, 15); // xyz
 
             renderer = new THREE.WebGLRenderer({
                 canvas: mainThreeCanvasRef.value,
@@ -94,6 +95,9 @@ export default {
 
             // Objects
             makeCube();
+
+            const axesHelper = new THREE.AxesHelper( 5 );
+            scene.add( axesHelper );
         }
 
         const lighting = () => {
