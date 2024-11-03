@@ -139,17 +139,7 @@
 
                 <!-- Card: Sky Overhead -->
                 <div class="rounded-md col-span-1 bg-zinc-800 px-4 pb-4 pt-2.5 text-zinc-500">
-                    <p class="text-sm uppercase pb-2">
-                        <span class="material-symbols-outlined text-zinc-400 !text-sm align-bottom">
-                            <!-- arrow_circle_up -->
-                            blur_on
-                        </span>
-                        Overhead Sky
-                    </p>
-
-                    <!-- Planisphere -->
-                    <div class="aspect-square w-full rounded-full bg-zinc-900">
-                    </div>
+                    <UnitStatusOverheadSky />
                 </div>
 
                 <!-- Card: Sensors -->
