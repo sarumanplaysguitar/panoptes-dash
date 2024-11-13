@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref, nextTick } from 'vue';
+import { onMounted, onBeforeUnmount, ref, defineProps, inject, nextTick } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -7,6 +7,14 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { stars_vshader, stars_fshader, sky_vshader, sky_fshader, ground_vshader, ground_fshader } from '@/assets/shaders/shaders.js';
 import { sky_colors, ambient_light_colors, star_colors, star_color_index, sun_thresholds } from '@/assets/shaders/colors.js'
 import { brightest_stars_arr, bright_stars_arr, average_stars_arr, faint_stars_arr, faintest_stars_arr} from '@/assets/data/mag_5_stars.js';
+
+// Bring in state of the side panel 
+// (affects whether to reset camera to default upon side panel collapse, in animation fn below)
+const props = defineProps({
+  isPanelExpanded: Boolean,
+});
+
+// const isPanelExpanded = inject('isPanelExpanded')
 
 // General utils 🔨
 const PI = Math.PI;
@@ -48,6 +56,8 @@ let debug_cube;
 
 // Initialize Three.js scene, camera, and renderer and Pan3D objects 🌐🎥🌳🔭
 const initThree = () => {
+  console.log(props.isPanelExpanded);
+
   const container = document.getElementById('mainThreeCanvasContainer');
   const width = container.clientWidth;
   const height = container.clientHeight;
@@ -330,6 +340,13 @@ const animate = () => {
       // line.rotation.x = degreesToRadians(guiControls.RA);
       // line.rotation.y = degreesToRadians(guiControls.Dec  + 180) * 1;
       // line.rotation.z = degreesToRadians(guiControls.Latitude);
+  }
+
+  if (!props.isPanelExpanded) {
+    // the Panoptes3D side panel is collapsed in the dashboard UI; reset camera view to default.
+    camera.position.set(3, 0.6, 3); // xyz
+    controls.target.set(0, 0.5, 0);
+    controls.update();
   }
 
   renderer.render(scene, camera);

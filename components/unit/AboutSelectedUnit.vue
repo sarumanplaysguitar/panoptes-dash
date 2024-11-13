@@ -142,10 +142,11 @@
     @click="togglePanel">
   </div>
 
-  <UnitStatusUnitPanelInfo />
+  <transition>
+    <UnitStatusUnitPanelInfo v-if="!isPanelExpanded" />
+  </transition>
 
-  <UnitStatusPanoptes3D />
-
+  <UnitStatusPanoptes3D :isPanelExpanded="isPanelExpanded" />
 
 </div>
 <!-- 
@@ -204,6 +205,24 @@
 </template>
 
 <style scoped>
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  transition: opacity 0.1s ease-out;
+}
+
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-leave-active {
+  transition: opacity 0.1s ease-out;
+}
+
+
 /* .background-col {
   @apply h-[calc(100vh_-_3.5rem)] grid grid-cols-1 grid-rows-1 md:py-3 md:h-screen
 } */

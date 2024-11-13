@@ -20,6 +20,7 @@ const addSunlight = () => {
   const ambientLight = new THREE.AmbientLight(0x27272a, 0.5);
   scene.add(ambientLight);
 
+  // sunlight = new THREE.DirectionalLight(0x64748b, 1);
   sunlight = new THREE.DirectionalLight(0x010101, 150);
   sunlight.position.set(
     0,
