@@ -344,11 +344,13 @@ const animate = () => {
 
   if (!props.isPanelExpanded) {
     // the Panoptes3D side panel is collapsed in the dashboard UI; reset camera view to default.
+    // if this is inefficient set up a vue watcher thing instead
     camera.position.set(3, 0.6, 3); // xyz
     controls.target.set(0, 0.5, 0);
-    controls.update();
+    // controls.update();
   }
 
+  controls.update(); // damping
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 };

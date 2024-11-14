@@ -157,12 +157,34 @@
                 </div>
 
                 <!-- Card: Weather -->
-                <div class="rounded-md bg-zinc-800 p-4 text-zinc-500 col-span-1 md:col-span-2">[weather]
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit nesciunt, tenetur earum placeat explicabo harum doloremque eveniet aliquam assumenda in quae repudiandae corporis voluptatum eum consectetur incidunt eligendi cum architecto?
+                <div class="rounded-md bg-zinc-800 p-4 text-zinc-500 col-span-1 md:col-span-2">
+                    <p class="text-sm uppercase pb-0">
+                        <span class="material-symbols-outlined text-zinc-400 !text-sm align-bottom pr-1">
+                            cloud
+                        </span>
+                        WEATHER
+                    </p>
+
+                    <p>try using NOAA API</p>
+                    the temperature and current overhead sky conditions (ie. clear or cloudy or rain or snow). then, some kinda forecast on the other side!
                 </div>
 
                 <!-- Card: Moon -->
                 <UnitStatusMoon />
+
+                <!-- Card: debug panel -->
+                <div class="rounded-md bg-[#221316] p-4 text-red-400 col-span-1 md:col-span-2">
+                    <p class="text-sm uppercase pb-0">
+                        <span class="material-symbols-outlined text-red-200 !text-sm align-bottom pr-1">
+                            asterisk
+                        </span>
+                        PLACEHOLDERS
+                    </p>
+                    <p>-moon illumination % (from astropy)</p>
+                    <p>-sidereal time (astropy?)</p>
+                    <p>-sun altitude @ location (from astropy)</p>
+                    <p>-unit pointing RA & Dec</p>
+                </div>
                 
             </div>
 

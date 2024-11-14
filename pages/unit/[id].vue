@@ -42,37 +42,38 @@ const togglePanel = () => {
 /* Panel transition setup */
 .panel-transition {
   transition-property: flex-grow, width; /* Animate these properties */
-  transition-duration: 700ms; /* Duration for both */
+  transition-duration: 700ms, 700ms; /* Duration for both */
 }
 
 .panel-expanded {
-  width: 100%;
+  /* PROBLEM: WIDTH? */
+  /* width: 100%; */
   flex-grow: 1;
-  transition-delay: 300ms; /* Start expanding after 300ms */
+  transition-delay: 0.25s; /* Start expanding after 300ms */
 }
 
 .panel-collapsed {
   width: 18rem;
   min-width: 18rem;
   flex-grow: 0;
-  transition-delay: 0ms; /* Immediate collapse */
+  transition-delay: 0.25s;
 }
 
 /* Dashboard content transition setup */
 .content-transition {
   transition-property: opacity, width; /* Animate opacity and width */
-  transition-duration: 500ms, 700ms; /* Different durations for opacity and width */
+  transition-duration: 0.25s, 0.25s; /* durations for opacity and width */
 }
 
 .content-expanded {
   opacity: 1;
   width: auto;
-  transition-delay: 300ms, 0ms; /* Fade in after 300ms, width immediate */
+  transition-delay: 0.25s, 0.25s; /* Fade in after 300ms, width immediate */
 }
 
 .content-collapsed {
   opacity: 0;
   width: 0;
-  transition-delay: 0ms, 300ms; /* Immediate fade out, width shrinks after 300ms */
+  transition-delay: 0ms, 0.25s; /* Immediate fade out, width shrinks after 300ms */
 }
 </style>

@@ -129,24 +129,27 @@
 <div 
   class="h-[calc(100vh_-_3.5rem)] grid grid-cols-1 grid-rows-1 md:py-2.5 md:h-screen relative"
   :style="{
-    paddingRight: isPanelExpanded ? '0.625rem' : '0rem',
+    marginRight: isPanelExpanded ? '0.625rem' : '0rem'
   }">
 
   <!-- Button to open/close 3D viewer -->
   <div 
     class="button-container pt-2" 
     ref="iconButton"
-    :style="{
-      paddingRight: isPanelExpanded ? '0.625rem' : '0rem',
-    }"
     @click="togglePanel">
   </div>
 
-  <transition>
+  <transition name="fade">
     <UnitStatusUnitPanelInfo v-if="!isPanelExpanded" />
   </transition>
 
-  <UnitStatusPanoptes3D :isPanelExpanded="isPanelExpanded" />
+ 
+  <div class="transition-cover row-start-1 col-start-1 rounded-md h-full"></div>
+
+  <transition name="fade">
+    <UnitStatusPanoptes3D v-if="!isPanelExpanded" :isPanelExpanded="isPanelExpanded" />
+  </transition>
+  
 
 </div>
 <!-- 
@@ -206,22 +209,22 @@
 
 <style scoped>
 
-.fade-enter {
-  opacity: 0;
+.transition-cover {
+  display: absolute;
+  min-width: 18rem;
+  background: linear-gradient(#385974, #576971, #53556A, #344C71);
+  /* z-index: 2; */
 }
 
-.fade-enter-active {
-  transition: opacity 0.1s ease-out;
-}
-
+.fade-enter,
 .fade-leave-to {
   opacity: 0;
 }
 
+.fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.1s ease-out;
 }
-
 
 /* .background-col {
   @apply h-[calc(100vh_-_3.5rem)] grid grid-cols-1 grid-rows-1 md:py-3 md:h-screen

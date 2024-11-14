@@ -40,8 +40,6 @@
       //   { offset: "100%", color: "#5e9cf2" }
       // ])
       .data([
-        { offset: "30%", color: "#27272a" },
-        { offset: "80%", color: "#27272a" },
         { offset: "90%", color: "#27272a" },
         { offset: "100%", color: "#52525b" }
       ])
