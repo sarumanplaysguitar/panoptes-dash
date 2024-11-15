@@ -143,12 +143,12 @@
     <UnitStatusUnitPanelInfo v-if="!isPanelExpanded" />
   </transition>
 
- 
   <div class="transition-cover row-start-1 col-start-1 rounded-md h-full"></div>
 
   <transition name="fade">
     <UnitStatusPanoptes3D v-if="!isPanelExpanded" :isPanelExpanded="isPanelExpanded" />
   </transition>
+  
   
 
 </div>
@@ -212,7 +212,9 @@
 .transition-cover {
   display: absolute;
   min-width: 18rem;
+  max-width: 100%;
   background: linear-gradient(#385974, #576971, #53556A, #344C71);
+  /* opacity: 0; */
   /* z-index: 2; */
 }
 
