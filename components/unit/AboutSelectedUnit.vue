@@ -144,11 +144,11 @@
   </transition>
 
  
-  <div class="transition-cover row-start-1 col-start-1 rounded-md h-full"></div>
+  <!-- <div class="transition-cover row-start-1 col-start-1 rounded-md h-full"></div> -->
 
-  <transition name="fade">
-    <UnitStatusPanoptes3D v-if="!isPanelExpanded" :isPanelExpanded="isPanelExpanded" />
-  </transition>
+  <!-- <transition name="fade"> -->
+    <UnitStatusPanoptes3D :isPanelExpanded="isPanelExpanded" />
+  <!-- </transition> -->
   
 
 </div>
