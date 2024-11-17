@@ -150,6 +150,7 @@
     <UnitStatusPanoptes3D :isPanelExpanded="isPanelExpanded" />
   <!-- </transition> -->
   
+  
 
 </div>
 <!-- 
@@ -212,7 +213,9 @@
 .transition-cover {
   display: absolute;
   min-width: 18rem;
+  max-width: 100%;
   background: linear-gradient(#385974, #576971, #53556A, #344C71);
+  /* opacity: 0; */
   /* z-index: 2; */
 }
 
