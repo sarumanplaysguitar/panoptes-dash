@@ -1,10 +1,21 @@
 <script setup>
-    import { ref } from 'vue';
+    import { ref, computed } from 'vue';
+    import Slider from 'primevue/slider';
     // import MoonThreeCanvas from './MoonThreeCanvas.vue';
     // import UnitObservationLog from './UnitObservationLog.vue';
     import placeholder_preview from '@/assets/mock_cmos_data.png';
 
+    // Show first tab (Unit Status) on page load
     const tab = ref(1);
+    
+    // TODO: move these astro placeholders up a level(?)
+    const phase_angle = ref(0); // deg
+    const tolerance = 0.1; // radians, small (~6 degrees)
+    const illumination = computed(() => {
+        const radians = (phase_angle.value * Math.PI) / 180;
+        return (1 - Math.cos(radians)) / 2.0; // normalized
+    });
+    const phase_name = "new_moon"
 
     const previewThumbnail = {
         // backgroundImage:`url(${placeholder_preview})`,
@@ -178,8 +189,53 @@
                         <span class="material-symbols-outlined text-red-200 !text-sm align-bottom pr-1">
                             asterisk
                         </span>
-                        PLACEHOLDERS
+                        ASTROPY PLACEHOLDERS
                     </p>
+                    <div class="text-[#5d3139] font-sans pt-4">
+                        <i>Moon phase info (for moon widget, 3D viewer panel):</i>
+                    </div>
+                    <div class="p-4 pr-56 pt-1 font-mono">
+                        <h2 class="text-xl font-bold mb-4">
+                            <span class="text-sm pr-2 text-red-300">
+                                phase_angle: 
+                            </span>
+
+                            {{ phase_angle }}°
+                        </h2>
+                        <div class="placeholder-slider">
+                            <Slider
+                                v-model="phase_angle"
+                                :min="0"
+                                :max="360"
+                                class="w-full"
+                            />
+                        </div>
+                        <h2 class="text-xl font-bold">
+                            <span class="text-sm pr-2 text-red-300">
+                                <span 
+                                    class="material-symbols-outlined text-[#5d3139] align-text-bottom mt-2"
+                                    style="transform: scale(-1, 1)">
+                                    keyboard_return
+                                </span>
+                                illumination: 
+                            </span>
+                            {{ Math.round(illumination * 100) }}%
+                        </h2>
+                        <h2 class="text-xl font-bold">
+                            <span class="text-sm pr-2 text-red-300">
+                                <span 
+                                    class="material-symbols-outlined text-[#5d3139] align-text-bottom"
+                                    style="transform: scale(-1, 1)">
+                                    keyboard_return
+                                </span>
+                                phase_name: 
+                                <span class="text-red-400">
+                                    {{ phase_name }}
+                                </span>
+                            </span>
+                            
+                        </h2>
+                    </div>
                     <p>-moon illumination % (from astropy)</p>
                     <p>-sidereal time (astropy?)</p>
                     <p>-sun altitude @ location (from astropy)</p>
@@ -206,3 +262,9 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+.placeholder-slider {
+    background-color: #371d22;
+}
+</style>
