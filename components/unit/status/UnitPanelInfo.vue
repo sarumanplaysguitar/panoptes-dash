@@ -6,6 +6,20 @@
     const dayjs = useDayjs();
     const unitsStore = useUnitsStore();
     const unit = computed(() => unitsStore.currentUnit ? unitsStore.currentUnit : {});
+    // console.log(unit);
+    // const unit = {
+    //   elevation: 1684,
+    //   id: "PAN007",
+    //   last_updated: 123,
+    //   latitude: 34.32,
+    //   longitude: -118.06,
+    //   metadata: null,
+    //   name: "MtWilson",
+    //   num_images: 702,
+    //   observations: null,
+    //   total_exptime: 84221.2,
+    //   unit_id: "PAN007",
+    // };
 
     onServerPrefetch(() => usePendingPromises());
 </script>

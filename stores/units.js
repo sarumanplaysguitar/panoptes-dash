@@ -191,11 +191,14 @@ export const useUnitsStore = defineStore('units', () => {
             if (unit) {
                 unit.observations = currentObservations.value
                 // Assign images to each observation based on the observation_id.
-                unit.observations.forEach((observation) => {
-                    observation.images = currentUnitImages.value.filter((image) => {
-                        return image.uid.startsWith(observation.sequence_id)
-                    })
-                })
+
+                // The commented-out code below resulted in some sort of bad memory leak
+
+                // unit.observations.forEach((observation) => {
+                //     observation.images = currentUnitImages.value.filter((image) => {
+                //         return image.uid.startsWith(observation.sequence_id)
+                //     })
+                // })
                 unit.metadata_records = currentUnitMetadata.value
             }
             return unit
