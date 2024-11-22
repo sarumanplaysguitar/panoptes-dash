@@ -7,9 +7,19 @@
     //     latitude: ?,
     // });
 
-    const moonPhaseName = "new_moon";
+    const props = defineProps({
+        phase_name: {
+            type: String,
+            required: true,
+        },
+    });
 
-    const iconUrl = computed(() => new URL(`/moon_phase_icons/${moonPhaseName}.svg`, import.meta.url).href);
+    const iconUrl = computed(() => {
+        return `/moon_phase_icons/${props.phase_name}.svg`});
+
+    console.log(iconUrl)
+
+    // const iconUrl = "/moon_phase_icons/new_moon.svg";
 
 
     // create d3 canvas for icon
@@ -31,14 +41,14 @@
 </script>
 
 <template>
-    <div class="moon-icon" ref="icon-canvas">
-        <img :src="`/moon_phase_icons/${moonPhaseName}.svg`" />
+    <div class="moon-icon">
+        <img :src="iconUrl" />
     </div>
 </template>
 
 <style scoped>
     .moon-icon {
-        transform: rotate(80deg);
+        transform: rotate(-124deg);
         width: 0.75rem;
         height: 0.75rem;
         min-width: 0.75rem;

@@ -1,18 +1,34 @@
 <script setup>
     import { usePendingPromises } from 'vuefire';
+    import { defineProps } from 'vue';
 
     const unitsStore = useUnitsStore();
     const unit = computed(() => unitsStore.currentUnit ?? {});
 
     onServerPrefetch(() => usePendingPromises());
 
-    const illuminationPct = ref(0);
+    const props = defineProps({
+        phase_name: {
+            type: String,
+            required: true,
+        },
+        illumination: {
+            type: Number,
+            required: true,
+        },
+        phase_angle: {
+            type: Number,
+            required: true,
+        },
+    });
 
-    const moonPhaseName = moonPhaseNameOf(illuminationPct);
+    // const illuminationPct = ref(0);
 
-    function moonPhaseNameOf(illuminationPct) {
+    // const moonPhaseName = moonPhaseNameOf(illuminationPct);
 
-    }
+    // function moonPhaseNameOf(illuminationPct) {
+
+    // }
 </script>
 
 <template>
@@ -24,16 +40,16 @@
             </span> -->
             <span class="!text-sm pt-1 pr-2">
                 <LazyUnitStatusMoonIcon
-                    :moonPhaseName="moonPhaseName"
+                    :phase_name="props.phase_name"
                 />
             </span>
             
-            New Moon
+            {{ props.phase_name.replace(/_/g, ' ') }}
         </div>
 
         <div class="row-start-2 col-span-1">
             <div class="md:pl-2 pt-0 pb-3">
-                <LazyUnitStatusMoonThreeCanvas />
+                <LazyUnitStatusMoonThreeCanvas :phase_angle="props.phase_angle" />
             </div>
         </div>
 
@@ -44,15 +60,15 @@
                 <div class="grid grid-cols-3">
                     <div class="p-1 col-span-1 text-center">
                         <p class="text-xs uppercase semibold">Illumination</p>
-                        <p class="text-zinc-300 text-lg placeholder-data">0%</p>
+                        <p class="text-zinc-300 text-lg placeholder-data">{{ Math.round(props.illumination * 100) }}%</p>
                     </div>
                     <div class="p-1 col-span-1 text-center">
-                        <p class="text-xs uppercase semibold">Moonset</p>
-                        <p class="text-zinc-300 text-lg placeholder-data">00:00<span class="text-sm pl-0.5">AM</span></p>
+                        <p class="text-xs uppercase semibold"><s>Moonset</s></p>
+                        <p class="text-zinc-300 text-lg placeholder-data"><s>00:00</s><span class="text-sm pl-0.5">AM</span></p>
                     </div>
                     <div class="p-1 col-span-1 text-center">
-                        <p class="text-xs uppercase semibold">Moonrise</p>
-                        <p class="text-zinc-300 text-lg placeholder-data">00:00<span class="text-sm pl-0.5">AM</span></p>
+                        <p class="text-xs uppercase semibold"><s>Moonrise</s></p>
+                        <p class="text-zinc-300 text-lg placeholder-data"><s>00:00</s><span class="text-sm pl-0.5">AM</span></p>
                     </div>
                 </div>
             </div>

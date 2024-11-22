@@ -133,6 +133,10 @@
 
 </div>
 
+
+display LST/GST,
+toggle option for displaying either  bright stars or constellations
+
 </template>
 
 <style scoped>

@@ -1,21 +1,59 @@
 <script setup>
     import { ref, computed } from 'vue';
     import Slider from 'primevue/slider';
+    import Checkbox from 'primevue/checkbox';
     // import MoonThreeCanvas from './MoonThreeCanvas.vue';
     // import UnitObservationLog from './UnitObservationLog.vue';
     import placeholder_preview from '@/assets/mock_cmos_data.png';
 
     // Show first tab (Unit Status) on page load
     const tab = ref(1);
+
+    const unitsStore = useUnitsStore()
+    const units = computed(() => unitsStore.units)
     
     // TODO: move these astro placeholders up a level(?)
+
+    const sun_altitude = ref(-13); // deg
+
+    const sidereal_time = ref(0); // decimal deg
+
+    const observing = ref(false);
+
     const phase_angle = ref(0); // deg
-    const tolerance = 0.1; // radians, small (~6 degrees)
+
     const illumination = computed(() => {
         const radians = (phase_angle.value * Math.PI) / 180;
         return (1 - Math.cos(radians)) / 2.0; // normalized
     });
-    const phase_name = "new_moon"
+
+    const tolerance = 0.1; // radians, small (~6 degrees)
+
+    // Phase definitions
+    const moonPhases = [
+        { name: 'new_moon', range: [0 - tolerance, 0 + tolerance] },
+        { name: 'waxing_crescent', range: [0 + tolerance, Math.PI / 2 - tolerance] },
+        { name: 'first_quarter', range: [Math.PI / 2 - tolerance, Math.PI / 2 + tolerance] },
+        { name: 'waxing_gibbous', range: [Math.PI / 2 + tolerance, Math.PI - tolerance] },
+        { name: 'full_moon', range: [Math.PI - tolerance, Math.PI + tolerance] },
+        { name: 'waning_gibbous', range: [Math.PI + tolerance, (3 * Math.PI) / 2 - tolerance] },
+        { name: 'third_quarter', range: [(3 * Math.PI) / 2 - tolerance, (3 * Math.PI) / 2 + tolerance] },
+        { name: 'waning_crescent', range: [(3 * Math.PI) / 2 + tolerance, 2 * Math.PI - tolerance] },
+    ];
+
+    // Determine the moon phase
+    const phase_name = computed(() => {
+        const radians = (phase_angle.value * Math.PI) / 180; // rad
+
+        // loop thru moon phases to find the matching phase
+        for (const phase of moonPhases) {
+            const [start, end] = phase.range;
+            
+            if (radians >= start && radians < end) {
+                return phase.name;
+            }
+        }
+    });
 
     const previewThumbnail = {
         // backgroundImage:`url(${placeholder_preview})`,
@@ -181,20 +219,20 @@
                 </div>
 
                 <!-- Card: Moon -->
-                <UnitStatusMoon />
+                <UnitStatusMoon :phase_name="phase_name" :illumination="illumination" :phase_angle="phase_angle" />
 
                 <!-- Card: debug panel -->
-                <div class="rounded-md bg-[#221316] p-4 text-red-400 col-span-1 md:col-span-2">
+                <div class="rounded-md bg-[#221316] p-4 text-[#894955] col-span-1 md:col-span-2">
                     <p class="text-sm uppercase pb-0">
                         <span class="material-symbols-outlined text-red-200 !text-sm align-bottom pr-1">
                             asterisk
                         </span>
                         ASTROPY PLACEHOLDERS
                     </p>
-                    <div class="text-[#5d3139] font-sans pt-4">
-                        <i>Moon phase info (for moon widget, 3D viewer panel):</i>
+                    <div class="text-[#894955] font-sans pt-4">
+                        <b>Moon phase info </b><i>(for moon widget, 3D viewer panel):</i>
                     </div>
-                    <div class="p-4 pr-56 pt-1 font-mono">
+                    <div class="pl-4 pr-20 pt-1 font-mono">
                         <h2 class="text-xl font-bold mb-4">
                             <span class="text-sm pr-2 text-red-300">
                                 phase_angle: 
@@ -203,17 +241,18 @@
                             {{ phase_angle }}°
                         </h2>
                         <div class="placeholder-slider">
+                            <!-- the 360 edge case breaks the widget... -->
                             <Slider
                                 v-model="phase_angle"
                                 :min="0"
-                                :max="360"
+                                :max="359"
                                 class="w-full"
                             />
                         </div>
-                        <h2 class="text-xl font-bold">
+                        <h2 class="text-xl font-bold text-[#894955]">
                             <span class="text-sm pr-2 text-red-300">
                                 <span 
-                                    class="material-symbols-outlined text-[#5d3139] align-text-bottom mt-2"
+                                    class="material-symbols-outlined text-[#894955] align-text-bottom mt-2"
                                     style="transform: scale(-1, 1)">
                                     keyboard_return
                                 </span>
@@ -222,24 +261,88 @@
                             {{ Math.round(illumination * 100) }}%
                         </h2>
                         <h2 class="text-xl font-bold">
-                            <span class="text-sm pr-2 text-red-300">
+                            <span class="text-sm text-red-300">
                                 <span 
-                                    class="material-symbols-outlined text-[#5d3139] align-text-bottom"
+                                    class="material-symbols-outlined text-[#894955] align-text-bottom"
                                     style="transform: scale(-1, 1)">
                                     keyboard_return
                                 </span>
-                                phase_name: 
-                                <span class="text-red-400">
+                                phase_name:
+                                <span class="pl-8 text-[#894955]">
                                     {{ phase_name }}
                                 </span>
                             </span>
-                            
                         </h2>
+                        <h2 class="text-xl font-bold">
+                            <span class="text-sm text-red-300">
+                                <span 
+                                    class="material-symbols-outlined text-[#894955] align-text-bottom"
+                                    style="transform: scale(-1, 1)">
+                                    keyboard_return
+                                </span>
+                                moon_rise, moon_set <span class="font-sans text-[#894955] text-md pl-8">(calculate in astropy)</span>
+                            </span>
+                        </h2>
+
                     </div>
-                    <p>-moon illumination % (from astropy)</p>
-                    <p>-sidereal time (astropy?)</p>
-                    <p>-sun altitude @ location (from astropy)</p>
-                    <p>-unit pointing RA & Dec</p>
+
+                    <hr class="h-px my-8 bg-[#894955] border-0">
+
+                    <div class="text-[#894955] font-sans">
+                        <b>Sun altitude at unit's location </b><i>(for calculating sky colors app-wide):</i>
+
+                        <div class="pl-4 pr-20 pt-1 font-mono">
+                            <h2 class="text-xl font-bold mb-4">
+                                <span class="text-sm pr-2 text-red-300">
+                                    sun_altitude: 
+                                </span>
+
+                                {{ sun_altitude }}°
+                            </h2>
+                            <div class="placeholder-slider">
+                                <Slider
+                                    v-model="sun_altitude"
+                                    :min="-90"
+                                    :max="90"
+                                    class="w-full"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="h-px my-8 bg-[#894955] border-0">
+
+                    <div class="text-[#894955] font-sans">
+                        <b>Sidereal time </b><i>(for rotating sky in 2d overhead sky panel, 3D side panel):</i>
+                    </div>
+                    <p>Ask Mike</p>
+
+                    <hr class="h-px my-8 bg-[#894955] border-0">
+
+                    <div class="text-[#894955] font-sans">
+                        <b>Unit RA & Dec </b><i>(for 3D viewer panel):</i>
+                        <div class="p-4">
+                            <div class="flex items-center space-x-2 text-red-300">
+                                <Checkbox v-model="observing" binary />
+                                <label class="text-lg">Observing</label>
+                                </div>
+                                <p class="mt-4">Status: <span class="font-bold">
+                                    {{ observing 
+                                        ? 'Currently observing—use plate solved coordinates for center of field' 
+                                        : 'Not observing—use "parking" coordinates' 
+                                    }}
+                                </span></p>
+                            </div>
+                    </div>
+                    <ul>
+                        <div v-for="unit in units">
+                            <li>
+                                <NuxtLink :to="`${unit?.unit_id}`">
+                                    {{ unit?.unit_id.slice(3) }}
+                                </NuxtLink>
+                            </li>
+                        </div>
+                    </ul>
                 </div>
                 
             </div>

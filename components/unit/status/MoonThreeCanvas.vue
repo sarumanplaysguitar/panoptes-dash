@@ -1,14 +1,22 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref, computed } from 'vue';
+import { onMounted, onBeforeUnmount, ref, computed, defineProps, watch } from 'vue';
 import { usePendingPromises } from 'vuefire';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+const props = defineProps({
+    phase_angle: {
+        type: Number,
+        required: true,
+    },
+});
 
 const unitsStore = useUnitsStore();
 const unit = computed(() => unitsStore.currentUnit ?? {});
 
 const zoom = ref(90);
-const lightAngle = ref(0 * Math.PI); // radians
+const lightAngle = computed(() => props.phase_angle * (Math.PI / 180)); // rad
+// const lightAngle = ref(0 * Math.PI); // radians
 const lightRadius = ref(10);
 const cameraTilt = ref(0.3 * Math.PI); // radians, should come from latitude
 
@@ -21,7 +29,8 @@ const addSunlight = () => {
   scene.add(ambientLight);
 
   // sunlight = new THREE.DirectionalLight(0x64748b, 1);
-  sunlight = new THREE.DirectionalLight(0x010101, 150);
+  sunlight = new THREE.DirectionalLight(0x0f0f10, 8);
+  // sunlight = new THREE.DirectionalLight(0x010101, 150);
   sunlight.position.set(
     0,
     lightRadius.value * Math.sin(lightAngle.value),
@@ -100,7 +109,8 @@ const initThree = () => {
 
   // Objects 🌒
   const loader = new GLTFLoader();
-  loader.load('/moon2.glb', (gltf) => {
+  
+  loader.load('/moon_cool.glb', (gltf) => {
     gltf.scene.traverse((child) => {
       if (child.isMesh && child.material.map) {
         child.material = new THREE.MeshPhongMaterial({
@@ -118,6 +128,11 @@ const initThree = () => {
 
   renderScene();
 };
+
+// Watch for changes to props.phase_angle and update sunlight position
+watch(() => props.phase_angle, () => {
+  updateSunlightPosition();
+});
 
 onMounted(() => {
   initThree();
