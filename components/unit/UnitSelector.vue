@@ -1,5 +1,9 @@
 <script setup>
+  import { useSkyColors } from '@/composables/useSkyColors';
   // import Avatar from 'primevue/avatar';
+
+  // sky hex colors calculated in panoptes3D component
+  const { groundColor, horizonColor, lowSkyColor, midSkyColor, upperSkyColor, setSkyColors } = useSkyColors();
 
   const unitsStore = useUnitsStore()
   const units = computed(() => unitsStore.units)
@@ -27,12 +31,12 @@
         <!-- <div class="font-['Oxanium'] text-xs mt-[0.1rem] ml-2 md:mt-2 md:ml-0 bg-zinc-500 min-w-9 min-h-9 rounded-full flex items-top justify-center text-zinc-300 pt-1" :style="backgroundStyle">012</div> -->
         <div class="relative inline-block">
 
-            <div class="placeholder-data font-['Oxanium'] text-xs mt-[0.1rem] ml-2 md:mt-2 md:ml-0 selected-unit-icon min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-200 pt-1">007</div>
+            <div class="placeholder-data font-['Oxanium'] text-xs mt-[0.1rem] ml-2 md:mt-2 md:ml-0 selected-unit-icon min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-100 pt-1">007</div>
 
             <!-- <div class="placeholder-data font-['Oxanium'] text-xs mt-[0.1rem] ml-2 md:mt-2 md:ml-0 bg-zinc-500 min-w-9 min-h-9 rounded-full flex items-center justify-center text-zinc-200 pt-1">007</div> -->
 
             <!-- online status ping icon -->
-            <span class="align-self-center inline-flex w-[0.8rem] h-[0.8rem] rounded-full border-2 border-zinc-900 bg-zinc-300 absolute -bottom-0.5 -right-0.5"></span>
+            <span class="align-self-center inline-flex w-[0.8rem] h-[0.8rem] rounded-full border-2 border-zinc-900 bg-zinc-100 absolute -bottom-0.5 -right-0.5"></span>
 
         </div>
         <div class="placeholder-data relative inline-block">
@@ -78,10 +82,10 @@
 .selected-unit-icon {
   background-image: linear-gradient(
     to top,
-    var(--gradient-ground, #5e9cf2) 40%,
-    var(--gradient-sky1, #ababfd) 60%,
-    var(--gradient-sky2, #b9d8eb) 70%,
-    var(--gradient-sky3, #68bcfb)
+    rgba(var(--ground-color), 0.8) 40%,
+    rgba(var(--horizon-color), 0.8) 55%,
+    rgba(var(--low-sky-color), 0.8) 70%,
+    rgba(var(--mid-sky-color), 0.8)
   )
 }
 

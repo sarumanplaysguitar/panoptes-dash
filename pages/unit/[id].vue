@@ -6,6 +6,20 @@ const isPanelExpanded = ref(false);
 const togglePanel = () => {
   isPanelExpanded.value = !isPanelExpanded.value;
 };
+
+// lat
+// long
+// sun altitude
+// sidereal time
+// observing status
+
+// ALL moon vars:
+// phase angle
+// computed illumination
+// computed phase name
+// API calls for moon_rise and moon_set
+// remember moon's rotation driven by latitude
+
 </script>
 
 <template>

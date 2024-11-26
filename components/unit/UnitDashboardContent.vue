@@ -1,59 +1,47 @@
 <script setup>
-    import { ref, computed } from 'vue';
+    import { ref, computed, watch } from 'vue';
     import Slider from 'primevue/slider';
     import Checkbox from 'primevue/checkbox';
     // import MoonThreeCanvas from './MoonThreeCanvas.vue';
     // import UnitObservationLog from './UnitObservationLog.vue';
     import placeholder_preview from '@/assets/mock_cmos_data.png';
+    import { useSkyColors } from '@/composables/useSkyColors';
+    import { useMoon, useSun, useSiderealTime, useUnit } from '@/composables/useAstro';
+
+    const { groundColor, horizonColor, lowSkyColor, midSkyColor, upperSkyColor, setSkyColors } = useSkyColors();
+
+    const {
+        // moon vars
+        phase_angle,
+        illumination,
+        phase_name,
+        moon_rise,
+        moon_set
+    } = useMoon();
+
+    const {
+        // sun
+        sun_altitude,
+    } = useSun();
+
+    const {
+        // sidereal time
+        current_lst,
+        current_gst,
+    } = useSiderealTime();
+
+    const {
+        // unit status
+        observing,
+        current_ra,
+        current_dec,
+    } = useUnit();
 
     // Show first tab (Unit Status) on page load
     const tab = ref(1);
 
-    const unitsStore = useUnitsStore()
-    const units = computed(() => unitsStore.units)
-    
-    // TODO: move these astro placeholders up a level(?)
-
-    const sun_altitude = ref(-13); // deg
-
-    const sidereal_time = ref(0); // decimal deg
-
-    const observing = ref(false);
-
-    const phase_angle = ref(0); // deg
-
-    const illumination = computed(() => {
-        const radians = (phase_angle.value * Math.PI) / 180;
-        return (1 - Math.cos(radians)) / 2.0; // normalized
-    });
-
-    const tolerance = 0.1; // radians, small (~6 degrees)
-
-    // Phase definitions
-    const moonPhases = [
-        { name: 'new_moon', range: [0 - tolerance, 0 + tolerance] },
-        { name: 'waxing_crescent', range: [0 + tolerance, Math.PI / 2 - tolerance] },
-        { name: 'first_quarter', range: [Math.PI / 2 - tolerance, Math.PI / 2 + tolerance] },
-        { name: 'waxing_gibbous', range: [Math.PI / 2 + tolerance, Math.PI - tolerance] },
-        { name: 'full_moon', range: [Math.PI - tolerance, Math.PI + tolerance] },
-        { name: 'waning_gibbous', range: [Math.PI + tolerance, (3 * Math.PI) / 2 - tolerance] },
-        { name: 'third_quarter', range: [(3 * Math.PI) / 2 - tolerance, (3 * Math.PI) / 2 + tolerance] },
-        { name: 'waning_crescent', range: [(3 * Math.PI) / 2 + tolerance, 2 * Math.PI - tolerance] },
-    ];
-
-    // Determine the moon phase
-    const phase_name = computed(() => {
-        const radians = (phase_angle.value * Math.PI) / 180; // rad
-
-        // loop thru moon phases to find the matching phase
-        for (const phase of moonPhases) {
-            const [start, end] = phase.range;
-            
-            if (radians >= start && radians < end) {
-                return phase.name;
-            }
-        }
-    });
+    const unitsStore = useUnitsStore();
+    const units = computed(() => unitsStore.units);
 
     const previewThumbnail = {
         // backgroundImage:`url(${placeholder_preview})`,
@@ -61,7 +49,7 @@
         backgroundRepeat: 'none',
         backgroundPosition: 'center',
         backgroundColor: '#212124'
-    }
+    };
 </script>
 
 <template>
@@ -229,6 +217,7 @@
                         </span>
                         ASTROPY PLACEHOLDERS
                     </p>
+
                     <div class="text-[#894955] font-sans pt-4">
                         <b>Moon phase info </b><i>(for moon widget, 3D viewer panel):</i>
                     </div>
@@ -245,7 +234,8 @@
                             <Slider
                                 v-model="phase_angle"
                                 :min="0"
-                                :max="359"
+                                :max="360"
+                                :step="1"
                                 class="w-full"
                             />
                         </div>
@@ -304,9 +294,76 @@
                                     v-model="sun_altitude"
                                     :min="-90"
                                     :max="90"
+                                    :step="0.01"
                                     class="w-full"
                                 />
                             </div>
+
+                            <h2 class="text-xl font-bold mt-4">
+                                <span class="text-sm text-red-300">
+                                    <span 
+                                        class="material-symbols-outlined text-[#894955] align-text-bottom"
+                                        style="transform: scale(-1, 1)">
+                                        keyboard_return
+                                    </span>
+                                    groundColor: <span :style="{ color: groundColor }">
+                                        {{ groundColor }}
+                                    </span>
+                                </span>
+                            </h2>
+
+                            <h2 class="text-xl font-bold">
+                                <span class="text-sm text-red-300">
+                                    <span 
+                                        class="material-symbols-outlined text-[#894955] align-text-bottom"
+                                        style="transform: scale(-1, 1)">
+                                        keyboard_return
+                                    </span>
+                                    horizonColor: <span :style="{ color: horizonColor }">
+                                        {{ horizonColor }}
+                                    </span>
+                                </span>
+                            </h2>
+
+                            <h2 class="text-xl font-bold">
+                                <span class="text-sm text-red-300">
+                                    <span 
+                                        class="material-symbols-outlined text-[#894955] align-text-bottom"
+                                        style="transform: scale(-1, 1)">
+                                        keyboard_return
+                                    </span>
+                                    lowSkyColor: <span :style="{ color: lowSkyColor }">
+                                        {{ lowSkyColor }}
+                                    </span>
+                                </span>
+                            </h2>
+
+                            <h2 class="text-xl font-bold">
+                                <span class="text-sm text-red-300">
+                                    <span 
+                                        class="material-symbols-outlined text-[#894955] align-text-bottom"
+                                        style="transform: scale(-1, 1)">
+                                        keyboard_return
+                                    </span>
+                                    midSkyColor: <span :style="{ color: midSkyColor }">
+                                        {{ midSkyColor }}
+                                    </span>
+                                </span>
+                            </h2>
+
+                            <h2 class="text-xl font-bold">
+                                <span class="text-sm text-red-300">
+                                    <span 
+                                        class="material-symbols-outlined text-[#894955] align-text-bottom"
+                                        style="transform: scale(-1, 1)">
+                                        keyboard_return
+                                    </span>
+                                    upperSkyColor: <span :style="{ color: upperSkyColor }">
+                                        {{ upperSkyColor }}
+                                    </span>
+                                </span>
+                            </h2>
+
                         </div>
                     </div>
 
@@ -343,6 +400,7 @@
                             </li>
                         </div>
                     </ul>
+
                 </div>
                 
             </div>

@@ -7,6 +7,11 @@ import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { stars_vshader, stars_fshader, sky_vshader, sky_fshader, ground_vshader, ground_fshader } from '@/assets/shaders/shaders.js';
 import { sky_colors, ambient_light_colors, star_colors, star_color_index, sun_thresholds } from '@/assets/shaders/colors.js'
 import { brightest_stars_arr, bright_stars_arr, average_stars_arr, faint_stars_arr, faintest_stars_arr} from '@/assets/data/mag_5_stars.js';
+import { useSkyColors } from '@/composables/useSkyColors';
+import { useSun } from '@/composables/useAstro';
+
+// update sky colors calculated in update_colors here, for the rest of app
+const { groundColor, horizonColor, lowSkyColor, midSkyColor, upperSkyColor, setSkyColors } = useSkyColors();
 
 // Bring in state of the side panel 
 // (affects whether to reset camera to default upon side panel collapse, in animation fn below)
@@ -38,15 +43,32 @@ let nearLimit = 0.5;
 let farLimit = 80;
 let resizeObserver;
 const env_scale_fac = 1;
+let sky_uniforms = {
+  u_ground: { value: new THREE.Color(0x09090b) },
+  u_horizon: { value: new THREE.Color(0x18181b) },
+  u_low: { value: new THREE.Color(0x18181b) },
+  u_mid: { value: new THREE.Color(0x18181b) },
+  u_upper: { value: new THREE.Color(0x18181b) },
+  u_white: { value: new THREE.Color(0x000000) },
+  u_time: { value: 0.0 },
+  u_resolution: { value: { x: 0, y: 0 } },
+};
+let ground_uniforms = { 
+  u_time: { value: 0.0 },
+  u_resolution: { value: { x: 0, y: 0 } },
+}; 
+let stars_uniforms = { 
+  u_time: { value: 0.0 },
+  u_resolution: { value: { x: 0, y: 0 } },
+};
 
 // Astronomy variables ☀️
 // TODO replace these placeholders with props of API or firebase data
-let sunAltitude = -5.1;
-let previousSunAltitude = sunAltitude;
+const { sun_altitude } = useSun();
+const previous_sun_altitude = ref(sun_altitude.value);
 let dec = 88.;
 let ra = -40.;
 let unitLatitude = 34.;
-console.log(degreesToRadians(ra));
 
 // Unit + scene variables 🔭
 let unit, control_box, sky, clouds;
@@ -56,7 +78,6 @@ let debug_cube;
 
 // Initialize Three.js scene, camera, and renderer and Pan3D objects 🌐🎥🌳🔭
 const initThree = () => {
-  console.log(props.isPanelExpanded);
 
   const container = document.getElementById('mainThreeCanvasContainer');
   const width = container.clientWidth;
@@ -193,9 +214,9 @@ const makeAxes = () => {
   scene.add( axesHelper );
 }
 
-// TODO move this fn to a composable
-function blend_sky_colors(sunAltitude, sun_thresholds, sky_colors) {
-  // Returns array of linearly interpolated sky colors (one for each degree breakpoint in sun_thresholds)
+function blend_sky_colors(sun_altitude, sun_thresholds, sky_colors) {
+  // Returns array of linearly interpolated sky colors (THREE.Color objects),
+  // one for each degree breakpoint in sun_thresholds,
   // based on sun's altitude, and blended from a few key, preset sky colors/edge cases (hex codes in sky_colors)
   // Also blends fog and ambient light colors, and sets fog strength to increase after sunset
 
@@ -205,69 +226,90 @@ function blend_sky_colors(sunAltitude, sun_thresholds, sky_colors) {
   const num_colors = sky_colors['day'].length;
   const sky_colors_keys = Object.keys(sky_colors);
 
-  // Determine what "time of day" it is by seeing which of the 2 thresholds sunAltitude is within
+  // Determine what "time of day" it is by seeing which of the 2 thresholds sun_altitude is within
   for (let i = 0; i < num_thresholds; i++) {
-  if (sunAltitude >= sun_thresholds[i]) {
+    if (sun_altitude >= sun_thresholds[i]) {
 
-      // ambient_light.color.set(ambient_light_colors[sky_colors_keys[i]]);
-      // console.log(ambient_light_colors[i]);
+        // ambient_light.color.set(ambient_light_colors[sky_colors_keys[i]]);
+        // console.log(ambient_light_colors[i]);
 
-      if (sunAltitude == sun_thresholds[i]) {
-      // It's equal to an edge case, so nothing to interpolate - just return pre-made sky colors.
-      // sky_color_lerp_array = sky_colors[sky_colors_keys[i]];
-      for (let j = 0; j < num_colors; j++) {
-          const key_color = new THREE.Color(sky_colors[sky_colors_keys[i]][j]);
-          sky_color_lerp_array.push(key_color);
+        if (sun_altitude == sun_thresholds[i]) {
+          // It's equal to an edge case, so nothing to interpolate - just return pre-made sky colors.
+          // sky_color_lerp_array = sky_colors[sky_colors_keys[i]];
+          for (let j = 0; j < num_colors; j++) {
+              const key_color = new THREE.Color(sky_colors[sky_colors_keys[i]][j]);
+              sky_color_lerp_array.push(key_color);
 
-          // Update fog color if color calculated was ground (first entry in color table)
-          if (j == 0) {
-              scene.fog.color = key_color;
-              scene.fog.near = -10 + -22 * smoothstep(sunAltitude, 5, -19);
+              // Update fog color if color calculated was ground (first entry in color table)
+              if (j == 0) {
+                  scene.fog.color = key_color;
+                  scene.fog.near = -10 + -22 * smoothstep(sun_altitude, 5, -19);
+              }
+              if (j == 0) ambient_light.color.set(key_color);
           }
-          if (j == 0) ambient_light.color.set(key_color);
-      }
-      } else {
-      // Need to interpolate between 2 thresholds, in order of day -> night (or, higher sun altitude -> lower)
-      const upper_threshold = sun_thresholds[i - 1];
-      const lower_threshold = sun_thresholds[i];
+        } else {
+          // Need to interpolate between 2 thresholds, in order of day -> night (or, higher sun altitude -> lower)
+          const upper_threshold = sun_thresholds[i - 1];
+          const lower_threshold = sun_thresholds[i];
 
-      const percent = Math.round(((upper_threshold - sunAltitude) / (upper_threshold - lower_threshold) + 0.00001) * 100) / 100;
-      // console.log(percent, '%', sun_thresholds[i - 1], 'to', sun_thresholds[i], 'for i: ', i);
+          const percent = Math.round(((upper_threshold - sun_altitude) / (upper_threshold - lower_threshold) + 0.00001) * 100) / 100;
+          // console.log(percent, '%', sun_thresholds[i - 1], 'to', sun_thresholds[i], 'for i: ', i);
 
 
 
-      // Create LERP blends of all colors between the two edge case skies
-      for (let j = 0; j < num_colors; j++) {
-          const start_color = new THREE.Color(sky_colors[sky_colors_keys[i - 1]][j]);
-          // Even if this works it's bad and i need to fix it
-          const end_color = new THREE.Color(sky_colors[sky_colors_keys[i]][j]);
-          // console.log("yo", sky_colors[sky_colors_keys[i]][j]);
+          // Create LERP blends of all colors between the two edge case skies
+          for (let j = 0; j < num_colors; j++) {
+              const start_color = new THREE.Color(sky_colors[sky_colors_keys[i - 1]][j]);
+              // Even if this works it's bad and i need to fix it
+              const end_color = new THREE.Color(sky_colors[sky_colors_keys[i]][j]);
+              // console.log("yo", sky_colors[sky_colors_keys[i]][j]);
 
-          const blend_color = start_color.lerpHSL(end_color, percent);
+              const blend_color = start_color.lerpHSL(end_color, percent);
 
-          sky_color_lerp_array.push(blend_color)
+              sky_color_lerp_array.push(blend_color)
 
-          // Update fog color if color calculated was ground (first entry in color table)
-          if (j == 0) {
-              scene.fog.color = blend_color;
-              scene.fog.near = -10 + -22 * smoothstep(sunAltitude, 5, -19);
+              // Update fog color if color calculated was ground (first entry in color table)
+              if (j == 0) {
+                  scene.fog.color = blend_color;
+                  scene.fog.near = -10 + -22 * smoothstep(sun_altitude, 5, -19);
+              }
+              // TODO ERROR! ambient_light was not accessible.
+              // if (j == 0) ambient_light.color.set(blend_color);
           }
-          // TODO ERROR! ambient_light was not accessible.
-          // if (j == 0) ambient_light.color.set(blend_color);
-      }
-      }
+        }
+    }
+
+    // if (sky_color_lerp_array.length != 0) console.log(sky_color_lerp_array);
+    if (sky_color_lerp_array.length != 0) break;
+
   }
-  // if (sky_color_lerp_array.length != 0) console.log(sky_color_lerp_array);
-  if (sky_color_lerp_array.length != 0) break;
-  }
+
+  // Create a copy of the array in hex format for the composable
+  const hexColorsArray = sky_color_lerp_array.map(color => `#${color.getHexString()}`);
+
+  // Pass hexColorsArray to the sky colors composable for use in rest of app
+  setSkyColors(hexColorsArray);
+
   return sky_color_lerp_array;
+}
+
+function update_colors(sky_uniforms, ground_uniforms, new_sky_colors) {
+  // Update any colors dependent on sun latitude here, ie. sky and ground
+  // also fog...?
+  sky_uniforms.u_ground = { value: new_sky_colors[0] },
+  sky_uniforms.u_horizon = { value: new_sky_colors[1] },
+  sky_uniforms.u_low = { value: new_sky_colors[2] },
+  sky_uniforms.u_mid = { value: new_sky_colors[3] },
+  sky_uniforms.u_upper = { value: new_sky_colors[4] },
+  ground_uniforms.u_ground_glow = { value: new_sky_colors[5] }
+  // console.log(new_sky_colors);
 }
 
 const makeSky = () => {
   // Assign initial sky colors
-  const blended_sky_colors = blend_sky_colors(sunAltitude, sun_thresholds, sky_colors);
+  const blended_sky_colors = blend_sky_colors(sun_altitude.value, sun_thresholds, sky_colors);
 
-  const sky_uniforms = {
+  sky_uniforms = {
     u_ground: { value: blended_sky_colors[0] },
     u_horizon: { value: blended_sky_colors[1] },
     u_low: { value: blended_sky_colors[2] },
@@ -303,6 +345,19 @@ const resizeCanvas = () => {
   renderer.setSize(width, height);
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
+  
+  if (sky_uniforms?.u_resolution?.value) {
+    sky_uniforms.u_resolution.value.x = width;
+    sky_uniforms.u_resolution.value.y = height;
+  }
+  if (ground_uniforms?.u_resolution?.value) {
+    ground_uniforms.u_resolution.value.x = width;
+    ground_uniforms.u_resolution.value.y = height;
+  }
+  if (stars_uniforms?.u_resolution?.value) {
+    stars_uniforms.u_resolution.value.x = width;
+    stars_uniforms.u_resolution.value.y = height;
+  }
 };
 
 // Use ResizeObserver to observe size changes of the parent container
@@ -318,6 +373,10 @@ const observeParentSize = () => {
 
 const animate = () => {
   const time = performance.now() * 0.001; // convert ms to seconds
+
+  // Put in shader uniform objects update function?
+  sky_uniforms.u_time.value = time;
+  stars_uniforms.u_time.value = time;
 
   if (debug_cube) {
     debug_cube.rotation.x = time * 0.5;
@@ -342,6 +401,16 @@ const animate = () => {
       // line.rotation.z = degreesToRadians(guiControls.Latitude);
   }
 
+  if (sun_altitude.value != previous_sun_altitude.value) {
+    // Update sky colors 🌅
+    // Should I only try to do these sorta updates if the sun actually moved a lot (ie. some fraction of a degree)?
+    update_colors(sky_uniforms, ground_uniforms, blend_sky_colors(sun_altitude.value, sun_thresholds, sky_colors));
+    // console.log(sun_altitude);
+    previous_sun_altitude.value = sun_altitude.value;
+
+    // setStarVisibility();
+  }
+  
   if (!props.isPanelExpanded) {
     // the Panoptes3D side panel is collapsed in the dashboard UI; reset camera view to default.
     // if this is inefficient set up a vue watcher thing instead
@@ -359,6 +428,12 @@ onMounted(() => {
   // Make sure DOM is loaded and container exists
   nextTick(() => {
     initThree();
+    
+    // Initialize colors for the composable
+    const blended_sky_colors = blend_sky_colors(sun_altitude.value, sun_thresholds, sky_colors);
+    const hexColorsArray = blended_sky_colors.map(color => `#${color.getHexString()}`);
+    setSkyColors(hexColorsArray);
+
     animate();
 
     // set up resize observer and window resize event listener
