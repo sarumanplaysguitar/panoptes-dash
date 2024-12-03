@@ -354,66 +354,40 @@ function update_colors(sky_uniforms, ground_uniforms, new_sky_colors) {
 
 // Stars
 
+function createStarGeometry(starData, material) {
+  // A helper function to create star geometry, based on some arbitrary magnitude classes (bright/faint/etc)
+  // (The stars are grouped this way, for now, to stagger when they become visible as the sun sets)
+  const geometry = new THREE.BufferGeometry();
+  const data = get_star_data(starData, 0., 3. * 0.001);
+
+  return new THREE.Points(
+    geometry
+      .setAttribute('position', new THREE.Float32BufferAttribute(data.positions, 3))
+      .setAttribute('star_color', new THREE.Float32BufferAttribute(data.colors, 3))
+      .setAttribute('size', new THREE.Float32BufferAttribute(data.sizes, 1).setUsage(THREE.DynamicDrawUsage))
+      .setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage)),
+    material
+  );
+}
+
+
 const makeStars = () => {
 
   stars_material = new THREE.ShaderMaterial({
-    defines: {
-    USE_COLOR: true,
-    },
+    defines: { USE_COLOR: true },
     uniforms: stars_uniforms,
     vertexShader: stars_vshader,
     fragmentShader: stars_fshader,
-    transparent: true
-    // vertexColors: true
+    transparent: true,
+    // depthWrite: false,
   });
 
-  // Brightest stars 🌟
-  brightest_stars_geometry = new THREE.BufferGeometry();
-  brightest_stars_data = get_star_data(brightest_stars_arr, 0., 3. * 0.001);
-  brightest_stars_geometry.setAttribute('position', new THREE.Float32BufferAttribute(brightest_stars_data.positions, 3));
-  brightest_stars_geometry.setAttribute('star_color', new THREE.Float32BufferAttribute(brightest_stars_data.colors, 3));
-  brightest_stars_geometry.setAttribute('size', new THREE.Float32BufferAttribute(brightest_stars_data.sizes, 1).setUsage(THREE.DynamicDrawUsage));
-  brightest_stars_geometry.setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(brightest_stars_data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage));
+  brightest_stars = createStarGeometry(brightest_stars_arr, stars_material);
+  bright_stars = createStarGeometry(bright_stars_arr, stars_material);
+  average_stars = createStarGeometry(average_stars_arr, stars_material);
+  faint_stars = createStarGeometry(faint_stars_arr, stars_material);
 
-  // TODO ^ try to condense the above setAttributes (method chaining???)
-  brightest_stars = new THREE.Points(brightest_stars_geometry, stars_material);
-  scene.add(brightest_stars);
-
-  // Bright stars 🌟
-  bright_stars_geometry = new THREE.BufferGeometry();
-  bright_stars_data = get_star_data(bright_stars_arr, 0., 3. * 0.001);
-  bright_stars_geometry.setAttribute('position', new THREE.Float32BufferAttribute(bright_stars_data.positions, 3));
-  bright_stars_geometry.setAttribute('star_color', new THREE.Float32BufferAttribute(bright_stars_data.colors, 3));
-  bright_stars_geometry.setAttribute('size', new THREE.Float32BufferAttribute(bright_stars_data.sizes, 1).setUsage(THREE.DynamicDrawUsage));
-  bright_stars_geometry.setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(bright_stars_data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage));
-
-  // TODO ^ try to condense the above setAttributes (method chaining???)
-  bright_stars = new THREE.Points(bright_stars_geometry, stars_material);
-  scene.add(bright_stars);
-
-  // Average stars ⭐️
-  average_stars_geometry = new THREE.BufferGeometry();
-  average_stars_data = get_star_data(average_stars_arr, 0., 3. * 0.001);
-  average_stars_geometry.setAttribute('position', new THREE.Float32BufferAttribute(average_stars_data.positions, 3));
-  average_stars_geometry.setAttribute('star_color', new THREE.Float32BufferAttribute(average_stars_data.colors, 3));
-  average_stars_geometry.setAttribute('size', new THREE.Float32BufferAttribute(average_stars_data.sizes, 1).setUsage(THREE.DynamicDrawUsage));
-  average_stars_geometry.setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(average_stars_data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage));
-
-  // TODO ^ try to condense the above setAttributes (method chaining???)
-  average_stars = new THREE.Points(average_stars_geometry, stars_material);
-  scene.add(average_stars);
-
-  // Faint stars ✨
-  faint_stars_geometry = new THREE.BufferGeometry();
-  faint_stars_data = get_star_data(faint_stars_arr, 0., 3. * 0.001);
-  faint_stars_geometry.setAttribute('position', new THREE.Float32BufferAttribute(faint_stars_data.positions, 3));
-  faint_stars_geometry.setAttribute('star_color', new THREE.Float32BufferAttribute(faint_stars_data.colors, 3));
-  faint_stars_geometry.setAttribute('size', new THREE.Float32BufferAttribute(faint_stars_data.sizes, 1).setUsage(THREE.DynamicDrawUsage));
-  faint_stars_geometry.setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(faint_stars_data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage));
-
-  // TODO ^ try to condense the above setAttributes (method chaining???)
-  faint_stars = new THREE.Points(faint_stars_geometry, stars_material);
-  scene.add(faint_stars);
+  scene.add(brightest_stars, bright_stars, average_stars, faint_stars);
 }
 
 function get_star_data(stars_arr, median_magnitude, base_size) {
@@ -489,29 +463,17 @@ function setStarVisibility() {
   // Thresholds for star visibility based on sun altitude
   // Meant to be run if sun altitude changes or every frame.
 
-    if (sun_altitude.value < -8) {
-        brightest_stars.visible = true;
-    } else {
-        brightest_stars.visible = false;
-    }
+  const sunAltitude = sun_altitude.value;
+  const visibilityThresholds = [
+    { threshold: -8, object: brightest_stars },
+    { threshold: -10, object: bright_stars },
+    { threshold: -13, object: average_stars },
+    { threshold: -18, object: faint_stars }
+  ];
 
-    if (sun_altitude.value < -10) {
-        bright_stars.visible = true;
-    } else {
-        bright_stars.visible = false;
-    }
-
-    if (sun_altitude.value < -13) {
-        average_stars.visible = true;
-    } else {
-        average_stars.visible = false;
-    }
-
-    if (sun_altitude.value < -18) {
-        faint_stars.visible = true;
-    } else {
-        faint_stars.visible = false;
-    }
+  visibilityThresholds.forEach(({ threshold, object }) => {
+    if (object) object.visible = sunAltitude < threshold;
+  });
 }
 
 const rotateStars = () => {
