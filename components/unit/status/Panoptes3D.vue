@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref, defineProps, inject, nextTick } from 'vue';
+import { onMounted, onBeforeUnmount, ref, defineProps, nextTick, watch } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -8,10 +8,16 @@ import { stars_vshader, stars_fshader, sky_vshader, sky_fshader, ground_vshader,
 import { sky_colors, ambient_light_colors, star_colors, star_color_index, sun_thresholds } from '@/assets/shaders/colors.js'
 import { brightest_stars_arr, bright_stars_arr, average_stars_arr, faint_stars_arr, faintest_stars_arr} from '@/assets/data/mag_5_stars.js';
 import { useSkyColors } from '@/composables/useSkyColors';
-import { useSun } from '@/composables/useAstro';
+import { useSun, useSiderealTime } from '@/composables/useAstro';
 
 // update sky colors calculated in update_colors here, for the rest of app
 const { groundColor, horizonColor, lowSkyColor, midSkyColor, upperSkyColor, setSkyColors } = useSkyColors();
+
+const {
+  // sidereal time
+  current_lst,
+  current_gst,
+} = useSiderealTime();
 
 // Bring in state of the side panel 
 // (affects whether to reset camera to default upon side panel collapse, in animation fn below)
@@ -43,6 +49,15 @@ let nearLimit = 0.5;
 let farLimit = 80;
 let resizeObserver;
 const env_scale_fac = 1;
+
+// Astronomy variables ☀️
+// TODO replace any placeholders with props of API or firebase data
+const { sun_altitude } = useSun();
+const previous_sun_altitude = ref(sun_altitude.value);
+let dec = 88.;
+let ra = -40.;
+let unitLatitude = 34.;
+
 let sky_uniforms = {
   u_ground: { value: new THREE.Color(0x09090b) },
   u_horizon: { value: new THREE.Color(0x18181b) },
@@ -53,22 +68,27 @@ let sky_uniforms = {
   u_time: { value: 0.0 },
   u_resolution: { value: { x: 0, y: 0 } },
 };
-let ground_uniforms = { 
-  u_time: { value: 0.0 },
-  u_resolution: { value: { x: 0, y: 0 } },
-}; 
-let stars_uniforms = { 
-  u_time: { value: 0.0 },
-  u_resolution: { value: { x: 0, y: 0 } },
+
+let ground_uniforms = {
+  u_ground_glow: { value: 0.0 },
+  u_resolution: { value: { x: 0, y: 0 } }
 };
 
-// Astronomy variables ☀️
-// TODO replace these placeholders with props of API or firebase data
-const { sun_altitude } = useSun();
-const previous_sun_altitude = ref(sun_altitude.value);
-let dec = 88.;
-let ra = -40.;
-let unitLatitude = 34.;
+let stars_uniforms = {
+  u_time: { value: 0.0 },
+  u_diurnal: { value: 0.0 },
+  u_resolution: { value: { x: window.innerWidth, y: window.innerHeight } },
+  u_scale: { value: window.innerHeight / 2. },
+  u_unitLatitude: { value: -1. * degreesToRadians(unitLatitude) }
+}
+
+let stars_material;
+
+// Star variables ✨
+let brightest_stars_geometry, brightest_stars_data, brightest_stars;
+let bright_stars_geometry, bright_stars_data, bright_stars;
+let average_stars_geometry, average_stars_data, average_stars;
+let faint_stars_geometry, faint_stars_data, faint_stars;
 
 // Unit + scene variables 🔭
 let unit, control_box, sky, clouds;
@@ -144,6 +164,9 @@ const initThree = () => {
   makeSky();
   loader.load('/model_for_export_bw2.glb', onLoadUnit);
   // loader.load('/control_box.glb', onLoadControlBox);
+
+  makeStars();
+  setStarVisibility();
 };
 
 const lighting = () => {
@@ -154,7 +177,7 @@ const lighting = () => {
   const sunlight = new THREE.DirectionalLight(0x010101, 150);
   sunlight.position.set(0, 1, 1);
   scene.add(sunlight);
-}
+};
 
 function onLoadUnit(gltf) {
     // console.log(gltf);
@@ -212,7 +235,10 @@ const makeCube = () => {
 const makeAxes = () => {
   const axesHelper = new THREE.AxesHelper( 5 );
   scene.add( axesHelper );
-}
+};
+
+// Sky color handling
+// TODO replace fns_like_this to fnsLikeThis like bruh wyd
 
 function blend_sky_colors(sun_altitude, sun_thresholds, sky_colors) {
   // Returns array of linearly interpolated sky colors (THREE.Color objects),
@@ -227,61 +253,77 @@ function blend_sky_colors(sun_altitude, sun_thresholds, sky_colors) {
   const sky_colors_keys = Object.keys(sky_colors);
 
   // Determine what "time of day" it is by seeing which of the 2 thresholds sun_altitude is within
-  for (let i = 0; i < num_thresholds; i++) {
-    if (sun_altitude >= sun_thresholds[i]) {
+  // First handle case where the sun is below (or equal to) the lowest threshold
+  if (sun_altitude <= sun_thresholds[num_thresholds - 1]) {
+    // Use deepest night colors
+    const deepNightColors = sky_colors['deep_night'];
+    for (let j = 0; j < num_colors; j++) {
+      const key_color = new THREE.Color(deepestNightColors[j]);
+      sky_color_lerp_array.push(key_color);
 
-        // ambient_light.color.set(ambient_light_colors[sky_colors_keys[i]]);
-        // console.log(ambient_light_colors[i]);
-
-        if (sun_altitude == sun_thresholds[i]) {
-          // It's equal to an edge case, so nothing to interpolate - just return pre-made sky colors.
-          // sky_color_lerp_array = sky_colors[sky_colors_keys[i]];
-          for (let j = 0; j < num_colors; j++) {
-              const key_color = new THREE.Color(sky_colors[sky_colors_keys[i]][j]);
-              sky_color_lerp_array.push(key_color);
-
-              // Update fog color if color calculated was ground (first entry in color table)
-              if (j == 0) {
-                  scene.fog.color = key_color;
-                  scene.fog.near = -10 + -22 * smoothstep(sun_altitude, 5, -19);
-              }
-              if (j == 0) ambient_light.color.set(key_color);
-          }
-        } else {
-          // Need to interpolate between 2 thresholds, in order of day -> night (or, higher sun altitude -> lower)
-          const upper_threshold = sun_thresholds[i - 1];
-          const lower_threshold = sun_thresholds[i];
-
-          const percent = Math.round(((upper_threshold - sun_altitude) / (upper_threshold - lower_threshold) + 0.00001) * 100) / 100;
-          // console.log(percent, '%', sun_thresholds[i - 1], 'to', sun_thresholds[i], 'for i: ', i);
-
-
-
-          // Create LERP blends of all colors between the two edge case skies
-          for (let j = 0; j < num_colors; j++) {
-              const start_color = new THREE.Color(sky_colors[sky_colors_keys[i - 1]][j]);
-              // Even if this works it's bad and i need to fix it
-              const end_color = new THREE.Color(sky_colors[sky_colors_keys[i]][j]);
-              // console.log("yo", sky_colors[sky_colors_keys[i]][j]);
-
-              const blend_color = start_color.lerpHSL(end_color, percent);
-
-              sky_color_lerp_array.push(blend_color)
-
-              // Update fog color if color calculated was ground (first entry in color table)
-              if (j == 0) {
-                  scene.fog.color = blend_color;
-                  scene.fog.near = -10 + -22 * smoothstep(sun_altitude, 5, -19);
-              }
-              // TODO ERROR! ambient_light was not accessible.
-              // if (j == 0) ambient_light.color.set(blend_color);
-          }
-        }
+      if (j==0) {
+        scene.fog.color = key_color;
+        scene.fog.near = -10 + -22 * smoothstep(sun_altitude, 5, -19);
+      }
     }
+  } else {
+    // Handle any "brighter" cases
+    for (let i = 0; i < num_thresholds; i++) {
+      if (sun_altitude > sun_thresholds[i]) {
 
-    // if (sky_color_lerp_array.length != 0) console.log(sky_color_lerp_array);
-    if (sky_color_lerp_array.length != 0) break;
+          // ambient_light.color.set(ambient_light_colors[sky_colors_keys[i]]);
+          // console.log(ambient_light_colors[i]);
 
+          if (sun_altitude == sun_thresholds[i]) {
+            // It's equal to an edge case, so nothing to interpolate - just return pre-made sky colors.
+            // sky_color_lerp_array = sky_colors[sky_colors_keys[i]];
+            for (let j = 0; j < num_colors; j++) {
+                const key_color = new THREE.Color(sky_colors[sky_colors_keys[i]][j]);
+                sky_color_lerp_array.push(key_color);
+
+                // Update fog color if color calculated was ground (first entry in color table)
+                if (j == 0) {
+                    scene.fog.color = key_color;
+                    scene.fog.near = -10 + -22 * smoothstep(sun_altitude, 5, -19);
+                }
+                if (j == 0) ambient_light.color.set(key_color);
+            }
+          } else {
+            // Need to interpolate between 2 thresholds, in order of day -> night (or, higher sun altitude -> lower)
+            const upper_threshold = sun_thresholds[i - 1];
+            const lower_threshold = sun_thresholds[i];
+
+            const percent = Math.round(((upper_threshold - sun_altitude) / (upper_threshold - lower_threshold) + 0.00001) * 100) / 100;
+            // console.log(percent, '%', sun_thresholds[i - 1], 'to', sun_thresholds[i], 'for i: ', i);
+
+
+
+            // Create LERP blends of all colors between the two edge case skies
+            for (let j = 0; j < num_colors; j++) {
+                const start_color = new THREE.Color(sky_colors[sky_colors_keys[i - 1]][j]);
+                // Even if this works it's bad and i need to fix it
+                const end_color = new THREE.Color(sky_colors[sky_colors_keys[i]][j]);
+                // console.log("yo", sky_colors[sky_colors_keys[i]][j]);
+
+                const blend_color = start_color.lerpHSL(end_color, percent);
+
+                sky_color_lerp_array.push(blend_color)
+
+                // Update fog color if color calculated was ground (first entry in color table)
+                if (j == 0) {
+                    scene.fog.color = blend_color;
+                    scene.fog.near = -10 + -22 * smoothstep(sun_altitude, 5, -19);
+                }
+                // TODO ERROR! ambient_light was not accessible.
+                // if (j == 0) ambient_light.color.set(blend_color);
+            }
+          }
+      }
+
+      // if (sky_color_lerp_array.length != 0) console.log(sky_color_lerp_array);
+      if (sky_color_lerp_array.length != 0) break;
+
+    }
   }
 
   // Create a copy of the array in hex format for the composable
@@ -291,6 +333,11 @@ function blend_sky_colors(sun_altitude, sun_thresholds, sky_colors) {
   setSkyColors(hexColorsArray);
 
   return sky_color_lerp_array;
+
+  console.log('sky_colors:', sky_colors);
+  console.log('sky_colors_keys:', sky_colors_keys);
+  console.log('Current i:', i);
+  console.log('Accessing key:', sky_colors_keys[i - 1]);
 }
 
 function update_colors(sky_uniforms, ground_uniforms, new_sky_colors) {
@@ -304,6 +351,181 @@ function update_colors(sky_uniforms, ground_uniforms, new_sky_colors) {
   ground_uniforms.u_ground_glow = { value: new_sky_colors[5] }
   // console.log(new_sky_colors);
 }
+
+// Stars
+
+const makeStars = () => {
+
+  stars_material = new THREE.ShaderMaterial({
+    defines: {
+    USE_COLOR: true,
+    },
+    uniforms: stars_uniforms,
+    vertexShader: stars_vshader,
+    fragmentShader: stars_fshader,
+    transparent: true
+    // vertexColors: true
+  });
+
+  // Brightest stars 🌟
+  brightest_stars_geometry = new THREE.BufferGeometry();
+  brightest_stars_data = get_star_data(brightest_stars_arr, 0., 3. * 0.001);
+  brightest_stars_geometry.setAttribute('position', new THREE.Float32BufferAttribute(brightest_stars_data.positions, 3));
+  brightest_stars_geometry.setAttribute('star_color', new THREE.Float32BufferAttribute(brightest_stars_data.colors, 3));
+  brightest_stars_geometry.setAttribute('size', new THREE.Float32BufferAttribute(brightest_stars_data.sizes, 1).setUsage(THREE.DynamicDrawUsage));
+  brightest_stars_geometry.setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(brightest_stars_data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage));
+
+  // TODO ^ try to condense the above setAttributes (method chaining???)
+  brightest_stars = new THREE.Points(brightest_stars_geometry, stars_material);
+  scene.add(brightest_stars);
+
+  // Bright stars 🌟
+  bright_stars_geometry = new THREE.BufferGeometry();
+  bright_stars_data = get_star_data(bright_stars_arr, 0., 3. * 0.001);
+  bright_stars_geometry.setAttribute('position', new THREE.Float32BufferAttribute(bright_stars_data.positions, 3));
+  bright_stars_geometry.setAttribute('star_color', new THREE.Float32BufferAttribute(bright_stars_data.colors, 3));
+  bright_stars_geometry.setAttribute('size', new THREE.Float32BufferAttribute(bright_stars_data.sizes, 1).setUsage(THREE.DynamicDrawUsage));
+  bright_stars_geometry.setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(bright_stars_data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage));
+
+  // TODO ^ try to condense the above setAttributes (method chaining???)
+  bright_stars = new THREE.Points(bright_stars_geometry, stars_material);
+  scene.add(bright_stars);
+
+  // Average stars ⭐️
+  average_stars_geometry = new THREE.BufferGeometry();
+  average_stars_data = get_star_data(average_stars_arr, 0., 3. * 0.001);
+  average_stars_geometry.setAttribute('position', new THREE.Float32BufferAttribute(average_stars_data.positions, 3));
+  average_stars_geometry.setAttribute('star_color', new THREE.Float32BufferAttribute(average_stars_data.colors, 3));
+  average_stars_geometry.setAttribute('size', new THREE.Float32BufferAttribute(average_stars_data.sizes, 1).setUsage(THREE.DynamicDrawUsage));
+  average_stars_geometry.setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(average_stars_data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage));
+
+  // TODO ^ try to condense the above setAttributes (method chaining???)
+  average_stars = new THREE.Points(average_stars_geometry, stars_material);
+  scene.add(average_stars);
+
+  // Faint stars ✨
+  faint_stars_geometry = new THREE.BufferGeometry();
+  faint_stars_data = get_star_data(faint_stars_arr, 0., 3. * 0.001);
+  faint_stars_geometry.setAttribute('position', new THREE.Float32BufferAttribute(faint_stars_data.positions, 3));
+  faint_stars_geometry.setAttribute('star_color', new THREE.Float32BufferAttribute(faint_stars_data.colors, 3));
+  faint_stars_geometry.setAttribute('size', new THREE.Float32BufferAttribute(faint_stars_data.sizes, 1).setUsage(THREE.DynamicDrawUsage));
+  faint_stars_geometry.setAttribute('twinkle_offset', new THREE.Float32BufferAttribute(faint_stars_data.twinkle_offsets, 1).setUsage(THREE.DynamicDrawUsage));
+
+  // TODO ^ try to condense the above setAttributes (method chaining???)
+  faint_stars = new THREE.Points(faint_stars_geometry, stars_material);
+  scene.add(faint_stars);
+}
+
+function get_star_data(stars_arr, median_magnitude, base_size) {
+
+  // Each star has data in this order: [x, y, z, vmag, color, con]
+  // Get star data and determine the following for each star in this array:
+  var star_data;
+  var position;
+  var mag;
+  var size;
+  var bv_index;
+  var color = new THREE.Color();
+  var twinkle_offset;
+
+  // Store that data in the respective arrays, to be returned:
+  var star_positions = [];
+  // var star_colors = new Float32Array(stars_arr.length * 3);
+  var star_colors = [];
+  var star_sizes = [];
+  var twinkle_offsets = [];
+
+  for (let i = 0; i < stars_arr.length; i++) {
+  star_data = stars_arr[i];
+  position = star_data.slice(0, 3);
+
+  // Set vertex position: x, y, z
+  star_positions.push(position[0] * env_scale_fac);
+  star_positions.push(position[1] * env_scale_fac);
+  star_positions.push(position[2] * env_scale_fac);
+
+  // Calculate size
+  mag = star_data[3];
+  size = -1 * mag + 6;
+  // console.log(size);
+  // size = base_size * (2.5);
+  // size = (8 - mag);
+  star_sizes.push(size);
+
+  // Determine and set color
+  bv_index = star_data[4];
+  if (bv_index <= star_color_index[0]) {
+      color.setHex(0xc3c2ff);
+  } else if (bv_index <= star_color_index[1]) {
+      color.setHex(0xb5d6ff);
+  } else if (bv_index <= star_color_index[2]) {
+      color.setHex(0xe5ebff);
+  } else if (bv_index <= star_color_index[3]) {
+      color.setHex(0xebffff);
+  } else if (bv_index <= star_color_index[4]) {
+      color.setHex(0xf9fff0);
+  } else if (bv_index <= star_color_index[5]) {
+      color.setHex(0xffffc5);
+  } else {
+      color.setHex(0xffc9c9);
+  }
+
+  // star_colors.push([color.r, color.g, color.b]);
+  star_colors.push(color.r, color.g, color.b);
+  // color.toArray(star_colors, i * 3);
+  // if (i == 5) console.log(star_colors);
+  // if (i == 1) console.log(star_colors[0]);
+
+  // Unique, random twinkle phase shift
+  twinkle_offset = Math.random() * 10
+  twinkle_offsets.push(twinkle_offset)
+  }
+
+  return { positions: star_positions, colors: star_colors, sizes: star_sizes, twinkle_offsets: twinkle_offsets };
+
+}
+
+function setStarVisibility() {
+  // Thresholds for star visibility based on sun altitude
+  // Meant to be run if sun altitude changes or every frame.
+
+    if (sun_altitude.value < -8) {
+        brightest_stars.visible = true;
+    } else {
+        brightest_stars.visible = false;
+    }
+
+    if (sun_altitude.value < -10) {
+        bright_stars.visible = true;
+    } else {
+        bright_stars.visible = false;
+    }
+
+    if (sun_altitude.value < -13) {
+        average_stars.visible = true;
+    } else {
+        average_stars.visible = false;
+    }
+
+    if (sun_altitude.value < -18) {
+        faint_stars.visible = true;
+    } else {
+        faint_stars.visible = false;
+    }
+}
+
+const rotateStars = () => {
+  stars_uniforms.u_diurnal.value = degreesToRadians(current_lst.value);
+};
+
+// Watch for changes to astronomical variables
+watch(() => sun_altitude.value, () => {
+  setStarVisibility();
+});
+
+watch(() => current_lst.value, () => {
+  rotateStars();
+});
 
 const makeSky = () => {
   // Assign initial sky colors

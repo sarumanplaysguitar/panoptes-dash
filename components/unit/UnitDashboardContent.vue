@@ -370,9 +370,26 @@
                     <hr class="h-px my-8 bg-[#894955] border-0">
 
                     <div class="text-[#894955] font-sans">
-                        <b>Sidereal time </b><i>(for rotating sky in 2d overhead sky panel, 3D side panel):</i>
+                        <b>Sidereal time </b><i>(in decimal degrees; for rotating sky in 2d overhead sky panel, 3D side panel):</i>
                     </div>
-                    <p>Ask Mike</p>
+                    <div class="pl-4 pr-20 pt-1 font-mono">
+                        <h2 class="text-xl font-bold mb-4">
+                            <span class="text-sm pr-2 text-red-300">
+                                current_lst: 
+                            </span>
+
+                            {{ current_lst }}°
+                        </h2>
+                        <div class="placeholder-slider">
+                            <Slider
+                                v-model="current_lst"
+                                :min="0"
+                                :max="360"
+                                :step="0.01"
+                                class="w-full"
+                            />
+                        </div>
+                    </div>
 
                     <hr class="h-px my-8 bg-[#894955] border-0">
 
@@ -385,7 +402,7 @@
                                 </div>
                                 <p class="mt-4">Status: <span class="font-bold">
                                     {{ observing 
-                                        ? 'Currently observing—use plate solved coordinates for center of field' 
+                                        ? 'Currently observing—use plate solved coordinates for center of field, *if* latest telemetry is "recent"' 
                                         : 'Not observing—use "parking" coordinates' 
                                     }}
                                 </span></p>
