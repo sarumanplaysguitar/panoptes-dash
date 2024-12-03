@@ -1,6 +1,13 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { onMounted, ref, watch } from 'vue';
   import * as d3 from "d3";
+  import { useSiderealTime } from '@/composables/useAstro';
+
+  const {
+    // sidereal time
+    current_lst,
+    current_gst
+  } = useSiderealTime();
 
   onMounted(() => {
     // Initialize planisphere when component loads
@@ -59,7 +66,7 @@
     const projection = d3.geoOrthographic()
       .scale(440) // cuz sky circle has radius of 44%
       .translate([width / 2, height /2])
-      .rotate([unitLongitude, -unitLatitude]);
+      .rotate([current_lst.value, -unitLatitude]);
 
     // Create + draw graticule to represent RA/Dec celestial sphere
     // Set RA and Dec grid lines 15 deg apart
@@ -106,6 +113,10 @@
       .attr("font-size", "50px")
       .attr("fill", "#52525b")
       .attr("text-anchor", "middle");
+
+    watch(() => current_lst.value, () => {
+      projection.rotate([current_lst.value, -unitLatitude]);
+    });
   }
 </script>
 
